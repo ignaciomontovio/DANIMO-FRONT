@@ -1,11 +1,20 @@
 // app/login.tsx
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import GoogleSession from "../components/GoogleSession"; // <<<<<<<<<<<< Componente de Google Session
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter(); // Hook para navegación
+
+  const handleLogin = () => {
+    //  validar el login 
+    router.push("/home"); 
+  };
+  const handleRegister = () => {
+    router.replace("/register");
+  };
 
   return (
     <View className="flex-1 justify-center px-8 bg-white">
@@ -13,7 +22,7 @@ export default function Login() {
         <Text className="text-3xl font-bold text-white mb-6 text-center">
           Iniciar Sesión
         </Text>
-
+        <GoogleSession/>
         <TextInput
           className="bg-white border border-primary p-4 rounded-xl mb-4 text-gray-700"
           placeholder="Email"
@@ -30,13 +39,19 @@ export default function Login() {
           secureTextEntry
         />
 
-        <TouchableOpacity className="bg-secondary py-3 rounded-xl mb-4">
+        <TouchableOpacity
+          className="bg-success py-3 rounded-xl mb-4"
+          onPress={handleLogin} 
+        >
           <Text className="text-center text-white font-bold text-lg">Entrar</Text>
         </TouchableOpacity>
 
-        <Link href="/register" className="text-center text-white underline">
+        <Text 
+          className="text-center text-white underline"
+          onPress={handleRegister}
+        >
           ¿No tienes cuenta? Regístrate
-        </Link>
+        </Text>
       </View>
     </View>
   );

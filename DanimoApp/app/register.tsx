@@ -1,7 +1,11 @@
 // app/register.tsx
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+
+const handleLogin = () => {
+  router.replace("/login"); 
+}
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -34,9 +38,13 @@ export default function Register() {
           <Text className="text-center text-white font-bold text-lg">Registrarse</Text>
         </TouchableOpacity>
 
-        <Link href="/login" className="text-center text-white underline">
+        <Text 
+          className="text-center text-white underline"
+          onPress={handleLogin}
+        >
           ¿Ya tienes cuenta? Inicia sesión
-        </Link>
+        </Text>
+        
       </View>
     </View>
   );
