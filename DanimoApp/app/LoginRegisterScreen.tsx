@@ -37,22 +37,13 @@ export default function LoginRegisterScreen() {
               <Text className="font-semibold">Login</Text>
             </TouchableOpacity>
           </View>
-
-          {tab === "signup" ? (
-            <>
-              <Input icon="user" placeholder="Full Name" />
-              <Input icon="envelope" placeholder="Email" keyboardType="email-address" />
-              <Input icon="lock" placeholder="Password" secureTextEntry />
+            <Input icon="envelope" placeholder="Email" keyboardType="email-address" />
+            <Input icon="lock" placeholder="Password" secureTextEntry />
+          {tab === "signup" ? (          
               <Button text="Sign Up" onPress={()=>setTab("login")} />
-            </>
           ) : (
-            <>
-              <Input icon="envelope" placeholder="Email" keyboardType="email-address" />
-              <Input icon="lock" placeholder="Password" secureTextEntry />
               <Button text="Login" onPress={handleLogin}/>
-            </>
           )}
-
           <Text className="text-center text-gray-600 mt-6 mb-4">Or continue with</Text>
           <View className="flex-row justify-center space-x-4">
             <SocialButton bg="bg-red-600" icon="google" text="Google" />
