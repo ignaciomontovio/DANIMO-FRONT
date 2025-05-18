@@ -1,5 +1,6 @@
 // envuelve a toda la app
 import { Stack } from "expo-router";
+import { useState } from "react";
 import { Platform } from "react-native";
 
 export default function RootLayout() {
@@ -9,5 +10,6 @@ export default function RootLayout() {
       import("../index.css");
     } 
   }
+  const [userType, setUserType] = useState<"user" | "pro" | null>(null);
   return <Stack />;
 }

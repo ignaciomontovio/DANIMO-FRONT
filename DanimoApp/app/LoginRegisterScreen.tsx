@@ -2,12 +2,19 @@ import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
-const handleLogin = () => {
+import { useUserStore } from "../stores/userType";
+const handleLogin = (userType: string | null) => {
     //  validar el login 
-    router.push("/home"); 
+    if(userType === "profesional"){
+      router.push("/homeProf");  
+    }
+    else{
+      router.push("/home"); 
+    }
   };
 export default function LoginRegisterScreen() {
   const [tab, setTab] = useState<"login" | "signup">("signup");
+  const userType = useUserStore((state) => state.userType);
 
   return (
     <View className="flex-1 justify-center items-center px-4">
@@ -39,10 +46,15 @@ export default function LoginRegisterScreen() {
           </View>
             <Input icon="envelope" placeholder="Email" keyboardType="email-address" />
             <Input icon="lock" placeholder="Password" secureTextEntry />
-          {tab === "signup" ? (          
+          {tab === "signup" ? (  
+            <>        
+              {userType === "profesional" && ( 
+                <Input icon="info" placeholder="Matrícula profesional" keyboardType="default" />
+              )}
               <Button text="Sign Up" onPress={()=>setTab("login")} />
+            </>
           ) : (
-              <Button text="Login" onPress={handleLogin}/>
+              <Button text="Login" onPress={() => handleLogin(userType)}/>
           )}
           <Text className="text-center text-gray-600 mt-6 mb-4">Or continue with</Text>
           <View className="flex-row justify-center space-x-4">
