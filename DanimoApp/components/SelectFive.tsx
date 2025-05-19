@@ -15,12 +15,12 @@ const goToDetail = (num: number, goto: AllowedRoutes) => {
 export default function SelectFive({ message, goto }: SelectFiveProps) {
 
   return (
-    <View className="w-full bg-primary rounded-2xl p-6 items-center justify-between shadow-2xl">
-      <Text className="mb-4 text-white text-xl font-bold text-center">{message}</Text>
+    <View className="w-full bg-color4 mt-3 rounded-2xl p-6 items-center justify-between shadow-2xl">
+      <Text className="mb-4 text-oscuro text-xl font-bold text-center">{message}</Text>
       <View className="flex-row justify-center space-x-6">
         {[1, 2, 3, 4, 5].map((num) => (
           <TouchableOpacity onPress={() => goToDetail(num,goto)} key={num}>
-            <Text className="text-white text-2xl m">{num}</Text>
+            <Text className="text-oscuro text-2xl m">{num}</Text>
           </TouchableOpacity>
         ))}
       </View>

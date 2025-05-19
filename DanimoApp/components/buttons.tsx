@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { Text, TouchableHighlight, TouchableOpacity } from "react-native";
 
 export type ButtonProps = {
   text: string;
@@ -8,16 +8,16 @@ export type ButtonProps = {
 
 export function ButtonAccept({ text, onPress }: ButtonProps) {
   return (
-    <TouchableOpacity onPress = {onPress} className="w-full bg-success py-3 rounded-md mt-2">
-      <Text className="text-white text-center font-bold text-lg">{text}</Text>
+    <TouchableOpacity onPress = {onPress} className="w-full bg-color1 py-3 rounded-md mt-2 shadow-2xl">
+      <Text className="text-oscuro text-center font-bold text-xl">{text}</Text>
     </TouchableOpacity>
   );
 }
 
 export function ButtonInfo({ text, onPress }: ButtonProps) {
   return (
-    <TouchableOpacity onPress = {onPress} className="w-full bg-accent py-3 rounded-md mt-2">
-      <Text className="text-white text-center font-bold text-lg">{text}</Text>
+    <TouchableOpacity onPress = {onPress} className="w-full bg-oscuro py-3 rounded-md mt-2 shadow-2xl">
+      <Text className="text-oscuro text-center font-bold text-lg">{text}</Text>
     </TouchableOpacity>
   );
 }
@@ -47,12 +47,12 @@ export function ButtonEmergency({ text, onActivate }: ButtonEmergencyProps) {
   };
 
   return (
-    <TouchableOpacity 
+    <TouchableHighlight
       onPressIn = {handlePressIn} 
-      onPressOut={handlePressOut} className="w-full bg-success py-3 rounded-md mt-2"
-      style={{ backgroundColor: pressing ? "#fc1b1b" : "#fc1b1b" }} // Cambia el color de fondo
+      onPressOut={handlePressOut} className="w-full py-3 rounded-md mt-2 shadow-2xl"
+      style={{ backgroundColor: pressing ? "#f93636" : "#f93636" }} 
     >
       <Text className="text-white text-center font-bold text-lg">{text}</Text>
-    </TouchableOpacity>
+    </TouchableHighlight>
   );
 }

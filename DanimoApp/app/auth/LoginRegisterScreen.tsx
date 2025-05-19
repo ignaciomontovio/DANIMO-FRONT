@@ -1,23 +1,31 @@
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ButtonAccept } from "../components/buttons";
-import Input from "../components/input";
-import { useUserStore } from "../stores/userType";
-const handleLogin = (userType: string | null) => {
-    //  validar el login 
-    if(userType === "profesional"){
-      router.push("/homeProf");  
-    }
-    else{
-      router.push("/home"); 
-    }
+import { ButtonAccept } from "../../components/buttons";
+import Input from "../../components/input";
+import { useUserStore } from "../../stores/userType";
+const handleLogin = (userType: string | null, setUserLogIn: { (userLogIn: true | false): void; (arg0: boolean): void; }) => {
+    //  validar el login }
+    setUserLogIn(true);
   };
 export default function LoginRegisterScreen() {
   const [tab, setTab] = useState<"login" | "signup">("signup");
   const userType: string | null = useUserStore((state: { userType: string | null }) => state.userType);
+  const UserLogIn = useUserLogInStore(state => state.userLogIn);
+  const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
+
+  useEffect(() => {
+  if (UserLogIn) {
+    if (userType === "profesional") {
+      router.push("/profesional/home");
+    } else {
+      router.push("/tabs/home");
+    }
+  }
+}, [UserLogIn, userType]);
 
   return (
     <SafeAreaProvider>
@@ -59,7 +67,7 @@ export default function LoginRegisterScreen() {
                 <ButtonAccept text="Sign Up" onPress={()=>setTab("login")} />
               </>
             ) : (
-                <ButtonAccept text="Login" onPress={() => handleLogin(userType)}/>
+                <ButtonAccept text="Login" onPress={() => handleLogin(userType,setUserLogIn)}/>
             )}
             <Text className="text-center text-gray-600 mt-6 mb-4">Or continue with</Text>
             <View className="flex-row justify-center space-x-4">
@@ -87,3 +95,4 @@ function SocialButton({ bg, icon, text }: SocialButtonProps) {
     </TouchableOpacity>
   );
 }
+
