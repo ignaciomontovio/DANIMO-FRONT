@@ -1,10 +1,13 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
+import LoaderDanimo from "@/components/LoaderDanimo";
 import { router } from "expo-router";
+import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useUserStore } from "../stores/userType";
 
 export default function Index() {
   const setUserType = useUserStore((state) => state.setUserType);
+  const [showLoader, setShowLoader] = useState(true);
   // const userType: string | null = useUserStore((state: { userType: string | null }) => state.userType);
   // const UserLogIn = useUserLogInStore(state => state.userLogIn);
 
@@ -30,6 +33,12 @@ export default function Index() {
     setUserType("profesional");
     router.replace("/auth/LoginRegisterScreen");
   };
+  if (showLoader) {
+    setTimeout(() => {
+      setShowLoader(false);
+    }, 1500);
+    return <LoaderDanimo />;
+  }
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">
       <Text className="text-3xl font-bold mb-6">Bienvenido a Danimo</Text>

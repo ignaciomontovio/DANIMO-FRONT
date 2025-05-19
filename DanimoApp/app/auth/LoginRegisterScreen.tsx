@@ -33,17 +33,17 @@ export default function LoginRegisterScreen() {
       <View className="flex-1 justify-center items-center px-4">
         <View className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
           
-          <View className="py-6 bg-primary">
+          <View className="py-6 bg-color1">
             <Text className="text-3xl font-bold text-white text-center">Bienvenido a Danimo</Text>
           </View>
 
 
-          <View className="p-6">
+          <View className="p-6 bg-color3">
             <View className="flex-row justify-center mb-6">
               <TouchableOpacity
                 onPress={() => setTab("signup")}
                 className={`px-4 py-2 rounded-l-md ${
-                  tab === "signup" ? "bg-accent text-white" : "bg-gray-200 text-gray-700"
+                  tab === "signup" ? "bg-color5 text-white" : "bg-gray-200 text-gray-700"
                 }`}
               >
                 <Text className="font-semibold">Sign Up</Text>
@@ -51,7 +51,7 @@ export default function LoginRegisterScreen() {
               <TouchableOpacity
                 onPress={() => setTab("login")}
                 className={`px-4 py-2 rounded-r-md ${
-                  tab === "login" ? "bg-accent text-white" : "bg-gray-200 text-gray-700"
+                  tab === "login" ? "bg-color5 text-white" : "bg-gray-200 text-gray-700"
                 }`}
               >
                 <Text className="font-semibold">Login</Text>

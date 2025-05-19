@@ -10,7 +10,7 @@ export default function Input({ icon, ...props }: InputProps) {
     <View className="relative mb-4">
       <FontAwesome name={icon} size={18} color="gray" style={{ position: "absolute", top: 16, left: 12 }} />
       <TextInput
-        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md text-gray-700"
+        className="w-full pl-10 pr-4 py-3 border border-oscuro rounded-md text-oscuro"
         placeholderTextColor="#999"
         {...props}
       />

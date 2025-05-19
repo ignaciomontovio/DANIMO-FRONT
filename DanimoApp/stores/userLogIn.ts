@@ -1,5 +1,4 @@
-// filepath: x:\Escritorio\DANIMO-FRONT\DanimoApp\stores\userLogIn.ts
-import AsyncStorage from "@react-native-async-storage/async-storage"; // <-- Agrega esto
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
