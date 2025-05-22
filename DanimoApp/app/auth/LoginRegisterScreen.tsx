@@ -38,7 +38,7 @@ export default function LoginRegisterScreen() {
           </View>
 
 
-          <View className="p-6 bg-color3">
+          <View className="p-6 bg-fondo">
             <View className="flex-row justify-center mb-6">
               <TouchableOpacity
                 onPress={() => setTab("signup")}

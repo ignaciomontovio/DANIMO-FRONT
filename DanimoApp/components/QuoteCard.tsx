@@ -4,9 +4,10 @@ import { Text, View } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
 export default function QuoteCard() {
+  const longText ="No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba";
   return (
     <View
-        className="w-[190px] h-[264px] bg-color1 rounded-lg p-5 relative"
+        className="w-[180px] h-[264px] bg-color1 rounded-lg p-5 relative m-2"
         style={{
             shadowColor: "#000",
             shadowOffset: { width: 8, height: 0 }, // solo a la derecha
@@ -16,7 +17,7 @@ export default function QuoteCard() {
         }}
     >
       {/* Título */}
-      <Text className="uppercase font-bold text-color3 leading-[23px]">Una cita para ti </Text>
+      <Text className="uppercase font-bold text-fondo leading-[23px]">Una cita para ti </Text>
 
       {/* Comilla SVG */}
       <View className="pl-7">
@@ -26,15 +27,17 @@ export default function QuoteCard() {
       </View>
 
       {/* Cuerpo del texto */}
-      <Text className="text-[20px] font-extrabold text-oscuro leading-[23px] mt-5 absolute top-[40px] left-4">
-        Salí con tu mujer
+      
+
+      <Text className="text-[20px] font-extrabold text-oscuro leading-[23px] mt-5 absolute top-[30px] left-4">
+        {longText.length > 70 ? longText.substring(0, 70) + "..." : longText}
       </Text>
 
       {/* Autor */}
       <View className="absolute bottom-3 left-5 flex-row items-center space-x-2">
-        <Text className="font-bold text-color3">
-          - Por Don Omar{"\n"}
-          <Text className="text-xs text-color3">(Poeta Latino)</Text>
+        <Text className="font-bold text-fondo">
+          - Por Seneca{"\n"}
+          <Text className="text-xs text-fondo">(Filosofo)</Text>
         </Text>
         <FontAwesome name="heart" size={18} color="#f4e1e6" />
       </View>

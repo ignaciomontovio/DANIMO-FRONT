@@ -3,6 +3,7 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
 export default function profile() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
   const handleLogoff = () => {
     setUserLogIn(false);

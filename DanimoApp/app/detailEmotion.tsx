@@ -27,7 +27,7 @@ export default function DetailEmotionScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-color3 p-4">
+    <ScrollView className="flex-1 bg-fondo p-4">
       <Text className="text-2xl font-bold mb-4 text-oscuro">Actividades que hiciste</Text>
 
       <View className="bg-color4 p-4 rounded-xl mb-4">

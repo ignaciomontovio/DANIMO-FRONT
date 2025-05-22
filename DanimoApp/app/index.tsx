@@ -1,4 +1,5 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
+// eslint-disable-next-line import/no-named-as-default
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -40,7 +41,7 @@ export default function Index() {
     return <LoaderDanimo />;
   }
   return (
-    <View className="flex-1 justify-center items-center bg-white px-6">
+    <View className="flex-1 justify-center items-center bg-fondo px-6">
       <Text className="text-3xl font-bold mb-6">Bienvenido a Danimo</Text>
       <TouchableOpacity
         onPress={() => handleUsuario()}

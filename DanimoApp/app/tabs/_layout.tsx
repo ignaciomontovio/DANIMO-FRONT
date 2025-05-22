@@ -9,8 +9,9 @@ export default function TabsLayout() {
           let iconName: any;
           if (route.name === "home") iconName = "home";
           else if (route.name === "stats") iconName = "bar-chart";
-          else if (route.name === "rutines") iconName = "medkit";
           else if (route.name === "profile") iconName = "user";
+          else if (route.name === "rutines") iconName = "newspaper-o";
+          // else if (route.name === "rutines") iconName = "medkit";
 
           return <FontAwesome name={iconName} size={size} color={color} />;
         },

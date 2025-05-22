@@ -15,6 +15,7 @@ const goToDetail = (num: number, goto: AllowedRoutes) => {
 };
 
 export default function SelectFive({ message, goto }: SelectFiveProps) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const scales = Array(5).fill(0).map(() => useRef(new Animated.Value(1)).current);
 
   const animatePress = (index: number, num: number) => {
