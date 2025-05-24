@@ -1,23 +1,29 @@
-import { ButtonAccept, ButtonEmergency } from "@/components/buttons";
 import QuoteCard from "@/components/QuoteCard";
 import SelectFive from "@/components/SelectFive";
 import { router } from "expo-router";
-import { ScrollView, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
- 
+import { SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native";
+
+import { ButtonDark } from "@/components/buttons";
+import SearchBar from "@/components/SearchBar";
+import LinearGradient from "react-native-linear-gradient";
 import MiniMetrics from "../../components/MiniMetrics";
 export default function Home() {
   return (
-    <SafeAreaView className="flex-1 bg-fondo">
-      <View className="flex-1">
-        {/* Contenido scrollable */}
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+    <LinearGradient
+          colors={["#D2A8D6", "#F4E1E6"]}
+          start={{ x: 0, y: -1 }}
+          end={{ x: 0, y: 1 }}
+          className="w-full h-full"
+        >
+      <SafeAreaView className="flex-1">
+        <ScrollView className="flex-1 px-4 pb-[100px]">
           <View className="space-y-8">
+            <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" />
             <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" />
-            <ButtonAccept text="Recomendacion profesional" onPress={()=>{}} />
+            <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
             <View className="flex-row justify-center">
-              <TouchableOpacity onPress={() => router.push("../detailQuote")}>
+              <TouchableOpacity onPress={() => router.push("../detailQuote")} >
                 <QuoteCard />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/tabs/stats")}>
@@ -25,15 +31,8 @@ export default function Home() {
               </TouchableOpacity>
             </View>
           </View>
-          {/* Botón de emergencia */}
-          <View className="bottom-0 flex-1 justify-end items-center px-4 pb-0 pt-10">
-          <ButtonEmergency
-            text="Boton de Emergencia"
-            onActivate={() => router.push("../profesional/home")}
-          />
-        </View>
         </ScrollView>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

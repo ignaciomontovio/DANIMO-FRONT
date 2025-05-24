@@ -27,8 +27,8 @@ export default function DetailEmotionScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-fondo p-4">
-      <Text className="text-2xl font-bold mb-4 text-oscuro">Actividades que hiciste</Text>
+    <ScrollView className="flex-1 bg-fondo p-4 ">
+      <Text className="text-2xl font-bold mb-4 text-oscuro text-center justify-center">Actividades</Text>
 
       <View className="bg-color4 p-4 rounded-xl mb-4">
         {Object.entries(activities).map(([key, value]) => (
@@ -43,7 +43,7 @@ export default function DetailEmotionScreen() {
         ))}
       </View>
 
-      <Text className="text-2xl font-bold mb-2 text-oscuro">Hobbie</Text>
+      <Text className="text-2xl font-bold mb-2 text-oscuro  text-center justify-center">Hobbie</Text>
       <View className="bg-color4 p-4 rounded-xl mb-4">
         {Object.entries(hobbies).map(([key, value]) => (
           <View key={key} className="flex-row items-center mb-2">

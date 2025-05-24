@@ -9,5 +9,14 @@ export default function Layout() {
     } 
   }
   
-  return <Stack />;
+  return (
+    // <LinearGradient
+    //       colors={["#D2A8D6", "#F4E1E6"]}
+    //       start={{ x: 0, y: -1 }}
+    //       end={{ x: 0, y: 1 }}
+    //       className="w-full h-full"
+    //     >
+      <Stack />
+    // </LinearGradient>
+  );
 }

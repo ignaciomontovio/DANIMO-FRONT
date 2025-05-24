@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import React, { useRef } from "react";
 import { Animated, Text, TouchableWithoutFeedback, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 
 type AllowedRoutes = "/detailSleep" | "/detailEmotion";
 
@@ -32,13 +31,18 @@ export default function SelectFive({ message, goto }: SelectFiveProps) {
   };
 
   return (
-    <LinearGradient
-      colors={["#d2a8d6", "#e3c8e4", "#f6c6d7"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      className="w-full mt-3 rounded-2xl p-6 shadow-2xl"
+    <View
+      className="w-full mb-5 rounded-2xl p-6 shadow-2xl"
+      style={{ 
+        backgroundColor: '#F4E1E680', // 50% opacidad
+        // shadowColor: "#000",
+        // shadowOffset: { width: 10, height: 0 }, // solo a la derecha
+        // shadowOpacity: 0.4,
+        // shadowRadius: 10,
+        // elevation: 10, // para Android
+      }} 
     >
-      <Text className="mb-4 text-oscuro text-xl font-bold text-center">
+      <Text className="text-oscuro text-2xl font-bold text-center">
         {message}
       </Text>
       <View className="flex-row justify-center space-x-10">
@@ -58,6 +62,6 @@ export default function SelectFive({ message, goto }: SelectFiveProps) {
           </TouchableWithoutFeedback>
         ))}
       </View>
-    </LinearGradient>
+    </View>
   );
 }
