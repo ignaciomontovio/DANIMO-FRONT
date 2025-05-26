@@ -97,12 +97,7 @@ export default function LoginRegisterScreen() {
               secureTextEntry
               className="border-solid border-oscuro text-oscuro"
             />
-            <Text
-              className=" text-oscuro text-right mb-2 underline"
-              onPress={() => router.push("/auth/ForgotPassword")}
-            >
-              Olvido su contraseña
-            </Text>
+            
             {tab === "signup" ? (
               <>
                 {userType === "profesional" && (
@@ -115,10 +110,18 @@ export default function LoginRegisterScreen() {
                 <ButtonAccept text="Sign Up" onPress={() => setTab("login")} />
               </>
             ) : (
-              <ButtonAccept
-                text="Login"
-                onPress={() => handleLogin(userType, setUserLogIn)}
-              />
+              <>
+                <Text
+                  className=" text-oscuro text-right mb-2 underline"
+                  onPress={() => router.push("/auth/ForgotPassword")}
+                >
+                  Olvido su contraseña
+                </Text>
+                <ButtonAccept
+                  text="Login"
+                  onPress={() => handleLogin(userType, setUserLogIn)}
+                />
+              </>
             )}
             <Text className="text-center text-oscuro mt-6 mb-4">
               Continuar con

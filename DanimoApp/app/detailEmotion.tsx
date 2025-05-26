@@ -18,7 +18,7 @@ export default function DetailEmotionScreen() {
   useEffect(() => {
     // Simula una llamada al backend con 1 segundo de retraso
     setTimeout(() => {
-      const fetchedActivities = ["Trabajo", "Gym", "Facultad", "Familia", "Amigos", "Pareja", "Mascota", "Estudio", "Otro"];
+      const fetchedActivities = ["Trabajo", "Gym", "Facultad", "Familia", "Amigos", "Pareja", "Mascota", "Estudio","Hogar", "Otro"];
       const fetchedHobbies = ["Deporte", "Lectura", "Videos", "Música", "Arte", "Cine", "Juegos", "Viajes", "Otro"];
 
       // Inicializamos todos como false
@@ -55,7 +55,7 @@ export default function DetailEmotionScreen() {
       />
         <View className="p-4 rounded-2xl">
           <Text className="text-2xl font-bold text-center text-oscuro mb-4">{title}</Text>
-          <View className="flex-row flex-wrap justify-center">
+          <View className="flex-row flex-wrap justify-left">
             {Object.entries(list).map(([key, selected]) => (
               <TouchableOpacity
                 key={key}
@@ -100,7 +100,7 @@ export default function DetailEmotionScreen() {
                 })}
 
               {/* Botones */}
-              <View className="pt-20">
+              <View className="">
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
                 <ButtonDark text="Registrar" onPress={() => router.push("/detailEmotion")} />
               </View>
