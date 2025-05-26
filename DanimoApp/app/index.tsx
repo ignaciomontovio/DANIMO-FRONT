@@ -1,9 +1,11 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
-// eslint-disable-next-line import/no-named-as-default
+ 
+import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 import { useUserStore } from "../stores/userType";
 
 export default function Index() {
@@ -41,21 +43,18 @@ export default function Index() {
     return <LoaderDanimo />;
   }
   return (
-    <View className="flex-1 justify-center items-center bg-fondo px-6">
-      <Text className="text-3xl font-bold mb-6">Bienvenido a Danimo</Text>
-      <TouchableOpacity
-        onPress={() => handleUsuario()}
-        className="w-full bg-color1 py-3 rounded-md mt-2"
-      >
-        <Text className="text-backGrounds text-center font-bold text-lg">Usuario</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => handleProfesional()}
-        className="w-full bg-color1 py-3 rounded-md mt-2"
-      >
-        <Text className="text-backGrounds text-center font-bold text-lg">Profesional</Text>
-      </TouchableOpacity>
-    </View>
+    <LinearGradient
+      colors={["#D2A8D6", "#F4E1E6"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      className="w-full h-full"
+    >
+      <View className="flex-1 justify-center items-center  px-6">
+        <Text className="text-oscuro text-3xl font-bold mb-6">Bienvenido a Danimo</Text>
+        <ButtonAccept text={"Usuario"} onPress={() => handleUsuario()}></ButtonAccept>
+        <ButtonDark text={"Profesional"} onPress={() => handleProfesional()}></ButtonDark>
+      </View>
+    </LinearGradient>
   );
 }
 

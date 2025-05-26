@@ -32,15 +32,10 @@ export default function SelectFive({ message, goto }: SelectFiveProps) {
 
   return (
     <View
-      className="w-full mb-5 rounded-2xl p-6 shadow-2xl"
-      style={{ 
-        backgroundColor: '#F4E1E680', // 50% opacidad
-        // shadowColor: "#000",
-        // shadowOffset: { width: 10, height: 0 }, // solo a la derecha
-        // shadowOpacity: 0.4,
-        // shadowRadius: 10,
-        // elevation: 10, // para Android
-      }} 
+      className="w-full mb-5 rounded-2xl p-6"
+      style={{
+          backgroundColor: '#F4E1E680',
+          }}
     >
       <Text className="text-oscuro text-2xl font-bold text-center">
         {message}

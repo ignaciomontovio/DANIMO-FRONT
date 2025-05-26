@@ -1,7 +1,11 @@
 import React from "react";
 import { View } from "react-native";
 
-export default function MiniMetrics() {
+type MiniMetricsProps = {
+  onPress?: () => void;
+};
+
+export default function MiniMetrics( { onPress }: MiniMetricsProps) {
   return (
     <View
         className="w-[180px] h-[264px] bg-color5 rounded-lg p-5 relative m-2"
@@ -12,6 +16,7 @@ export default function MiniMetrics() {
             shadowRadius: 10,
             elevation: 10, // para Android
         }}
+        onTouchEnd={onPress} 
     >
     </View>
   );

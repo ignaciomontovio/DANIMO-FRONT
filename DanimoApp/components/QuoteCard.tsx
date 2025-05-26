@@ -3,7 +3,11 @@ import React from "react";
 import { Text, View } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
-export default function QuoteCard() {
+type QuoteCardProps = {
+  onPress?: () => void;
+};
+
+export default function QuoteCard( { onPress }: QuoteCardProps ) {
   const longText ="No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba";
   return (
     <View
@@ -15,6 +19,7 @@ export default function QuoteCard() {
             shadowRadius: 10,
             elevation: 10, // para Android
         }}
+        onTouchEnd={onPress} 
     >
       {/* Título */}
       <Text className="uppercase font-bold text-fondo leading-[23px]">Una cita para ti </Text>
@@ -27,8 +32,6 @@ export default function QuoteCard() {
       </View>
 
       {/* Cuerpo del texto */}
-      
-
       <Text className="text-[20px] font-extrabold text-oscuro leading-[23px] mt-5 absolute top-[30px] left-4">
         {longText.length > 70 ? longText.substring(0, 70) + "..." : longText}
       </Text>

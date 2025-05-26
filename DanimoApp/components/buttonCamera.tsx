@@ -36,10 +36,10 @@ export default function ButtonCamera({ onImageTaken }: ButtonCameraProps) {
     <ScrollView>
       <TouchableOpacity
         onPress={openCamera}
-        className="flex-row items-center justify-center bg-color5 py-3 rounded-lg mb-4"
+        className="flex-row items-center justify-center bg-oscuro py-3 rounded-lg mb-4"
       >
-        <FontAwesome name="camera" size={20} color="#fff" />
-        <Text className="text-white font-bold ml-2 text-xl">Tomar Foto</Text>
+        <FontAwesome name="camera" size={30} color="#fff" />
+        <Text className="text-white font-bold ml-2 text-2xl">Tomar Foto</Text>
       </TouchableOpacity>
 
       {/* {imageUri && (

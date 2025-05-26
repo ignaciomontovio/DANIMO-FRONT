@@ -52,7 +52,7 @@ export default function TabsLayout() {
             backgroundColor: "#595154",
             height: 70,
             paddingBottom: 10,
-
+            // marginTop: 30,
           },
           headerShown: false,
         })}
@@ -76,6 +76,6 @@ export default function TabsLayout() {
         <Tabs.Screen name="rutines" />
         <Tabs.Screen name="menu" />
       </Tabs>
-    // </LinearGradient>
+
   );
 }
