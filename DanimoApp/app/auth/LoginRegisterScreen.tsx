@@ -25,7 +25,6 @@ export default function LoginRegisterScreen() {
   const redirectUri = makeRedirectUri({
     scheme: 'com.danimo.app',
   });
-  // const redirectUri = 'danimoapp:/oauthredirect';
   useEffect(() => {
     console.log("Redirect URI:", redirectUri);
   }, []);
@@ -91,6 +90,16 @@ export default function LoginRegisterScreen() {
     promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);})
   }
   
+  const handleRegister = async () => {
+  router.push({
+    pathname: "/auth/DetailRegister",
+    params: {
+      email: email,
+      password: passw
+    }
+  });
+};
+
   // const handleGoogleSignIn = async () => {
   //     setEmail("ignaciomontovio@gmail.com")
   //     setPassw("abcd123")
@@ -109,11 +118,11 @@ export default function LoginRegisterScreen() {
 
             <View className="p-6 bg-fondo rounded-b-2xl">
               <View className="flex-row justify-center mb-6">
-                <TouchableOpacity onPress={() => setTab("signup")} className={`px-4 py-2 rounded-l-md ${tab === "signup" ? "bg-color5 text-white" : "bg-gray-200 text-oscuro"}`}>
-                  <Text className="font-semibold">Sign Up</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setTab("login")} className={`px-4 py-2 rounded-r-md ${tab === "login" ? "bg-color5 text-white" : "bg-gray-200 text-oscuro"}`}>
+                <TouchableOpacity onPress={() => setTab("login")} className={`px-4 py-2 rounded-l-md ${tab === "login" ? "bg-color5 text-white" : "bg-gray-200 text-oscuro"}`}>
                   <Text className="font-semibold">Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setTab("signup")} className={`px-4 py-2 rounded-r-md ${tab === "signup" ? "bg-color5 text-white" : "bg-gray-200 text-oscuro"}`}>
+                  <Text className="font-semibold">Sign Up</Text>
                 </TouchableOpacity>
               </View>
 
@@ -125,7 +134,7 @@ export default function LoginRegisterScreen() {
                   {userType === "profesional" && (
                     <Input icon="info" placeholder="Matrícula profesional" />
                   )}
-                  <ButtonAccept text="Sign Up" onPress={() => setTab("login")} />
+                  <ButtonAccept text="Sign Up" onPress={handleRegister} />
                 </>
               ) : (
                 <>
