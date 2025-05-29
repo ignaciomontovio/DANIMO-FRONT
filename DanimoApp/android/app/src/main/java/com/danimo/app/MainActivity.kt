@@ -1,4 +1,4 @@
-package com.anonymous.DanimoApp
+package com.danimo.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

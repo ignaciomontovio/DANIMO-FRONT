@@ -16,8 +16,8 @@ export default function Home() {
           className="w-full h-full"
         >
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-4 pb-[100px]">
-          <View className="space-y-5">
+        <ScrollView className="flex-1 px-4 pb-20">
+          <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" />
             <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" />

@@ -11,7 +11,7 @@ export default function QuoteCard( { onPress }: QuoteCardProps ) {
   const longText ="No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba";
   return (
     <View
-        className="w-[180px] h-[264px] bg-color1 rounded-lg p-5 relative m-2"
+        className="w-[160px] h-[264px] bg-color1 rounded-lg p-5 relative m-2 ml-10"
         style={{
             shadowColor: "#000",
             shadowOffset: { width: 8, height: 0 }, // solo a la derecha
@@ -33,7 +33,7 @@ export default function QuoteCard( { onPress }: QuoteCardProps ) {
 
       {/* Cuerpo del texto */}
       <Text className="text-[20px] font-extrabold text-oscuro leading-[23px] mt-5 absolute top-[30px] left-4">
-        {longText.length > 70 ? longText.substring(0, 70) + "..." : longText}
+        {longText.length > 60 ? longText.substring(0, 60) + "..." : longText}
       </Text>
 
       {/* Autor */}

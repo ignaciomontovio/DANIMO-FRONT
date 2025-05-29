@@ -37,7 +37,7 @@ export default function SelectFive({ message, goto }: SelectFiveProps) {
           backgroundColor: '#F4E1E680',
           }}
     >
-      <Text className="text-oscuro text-2xl font-bold text-center">
+      <Text className="text-oscuro text-xl font-bold text-center">
         {message}
       </Text>
       <View className="flex-row justify-center space-x-10">
@@ -50,7 +50,7 @@ export default function SelectFive({ message, goto }: SelectFiveProps) {
               style={{
                 transform: [{ scale: scales[idx] }],
               }}
-              className="text-oscuro text-3xl font-bold ml-4"
+              className="text-oscuro text-2xl font-bold ml-5"
             >
               {num}
             </Animated.Text>

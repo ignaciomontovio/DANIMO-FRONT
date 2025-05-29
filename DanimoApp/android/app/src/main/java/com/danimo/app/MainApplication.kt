@@ -1,4 +1,4 @@
-package com.anonymous.DanimoApp
+package com.danimo.app
 
 import android.app.Application
 import android.content.res.Configuration

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-const PILL_STYLE = "px-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-2";
+const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
 const ACTIVE_PILL_STYLE = "bg-color1 text-white";
 const INACTIVE_PILL_STYLE = "bg-color5 text-oscuro";
 
@@ -19,7 +19,7 @@ export default function DetailEmotionScreen() {
     // Simula una llamada al backend con 1 segundo de retraso
     setTimeout(() => {
       const fetchedActivities = ["Trabajo", "Gym", "Facultad", "Familia", "Amigos", "Pareja", "Mascota", "Estudio","Hogar", "Otro"];
-      const fetchedHobbies = ["Deporte", "Lectura", "Videos", "Música", "Arte", "Cine", "Juegos", "Viajes", "Otro"];
+      const fetchedHobbies = ["Deporte", "Lectura", "Arte", "Videos", "Música", "Cine", "Juegos", "Viajes", "Otro"];
 
       // Inicializamos todos como false
       const activityState: Record<string, boolean> = {};
@@ -100,7 +100,7 @@ export default function DetailEmotionScreen() {
                 })}
 
               {/* Botones */}
-              <View className="">
+              <View className="mb-20">
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
                 <ButtonDark text="Registrar" onPress={() => router.push("/detailEmotion")} />
               </View>

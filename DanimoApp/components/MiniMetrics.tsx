@@ -8,7 +8,7 @@ type MiniMetricsProps = {
 export default function MiniMetrics( { onPress }: MiniMetricsProps) {
   return (
     <View
-        className="w-[180px] h-[264px] bg-color5 rounded-lg p-5 relative m-2"
+        className="w-[160px] h-[264px] bg-color5 rounded-lg p-5 relative m-2 mr-10"
         style={{
             shadowColor: "#000",
             shadowOffset: { width: 8, height: 0 }, // solo a la derecha
