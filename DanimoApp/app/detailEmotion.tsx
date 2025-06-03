@@ -3,7 +3,7 @@ import { ButtonDark } from "@/components/buttons";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
@@ -45,6 +45,8 @@ export default function DetailEmotionScreen() {
   function sqare_pills_container({title,list,setList}:sqare_pills_container_props) {
     return (
     <View className="relative mb-10">
+      {/* console.log(); */}
+      
       <View
         className="absolute top-0 left-0 right-0 bottom-0 bg-fondo rounded-2xl"
         style={{
@@ -72,6 +74,31 @@ export default function DetailEmotionScreen() {
     )
   }
 
+  const handleRegister = () => {
+    // Pegarle al back
+    Alert.alert(
+      "Registro de emoción",
+      "Ya registraste una emoción hoy, ¿quieres marcar esta como la principal?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => {
+            console.log("El usuario canceló")
+            router.push("/prechat");
+          },
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            console.log("El usuario aceptó");
+            router.push("/prechat");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   return (
     <LinearGradient
       colors={["#D2A8D6", "#F4E1E6"]}
@@ -102,7 +129,7 @@ export default function DetailEmotionScreen() {
               {/* Botones */}
               <View className="mb-20">
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
-                <ButtonDark text="Registrar" onPress={() => router.push("/detailEmotion")} />
+                <ButtonDark text="Registrar" onPress={handleRegister} />
               </View>
             </>
           )}

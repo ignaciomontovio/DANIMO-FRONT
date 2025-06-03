@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 229 229" preserveAspectRatio="xMidYMid meet">
+ <defs>s
+  <radialGradient id="svg_54" cx="830.51" cy="370.08" fx="908.57" fy="286.85" r="114.1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1,0,0,1,-716.0100326538086,-255.57998657226562)">
+   <stop offset="0.44" stop-color="#057bc4"/>
+   <stop offset="0.72" stop-color="#0579c3"/>
+   <stop offset="0.82" stop-color="#0572bf"/>
+   <stop offset="0.89" stop-color="#0566ba"/>
+   <stop offset="0.95" stop-color="#0555b2"/>
+   <stop offset="1" stop-color="#0541a9"/>
+  </radialGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <g>
+
+   <g>
+    <title>Layer 1</title>
+    <g>
+     <g id="svg_53">
+      <circle class="cls-5" cx="114.5" cy="114.50001" r="114.1" fill="url(#svg_54)"/>
+     </g>
+     <g id="svg_52">
+      <circle class="cls-6" cx="74.3" cy="97.75001" r="31.73" fill="#fcf7fb"/>
+      <circle class="cls-7" cx="83.53" cy="97.68001" r="16.97" fill="#0c010a"/>
+      <circle class="cls-3" cx="95.06" cy="93.84001" r="6.36" fill="#fff"/>
+      <circle class="cls-6" cx="156.3" cy="97.75001" r="31.73" fill="#fcf7fb"/>
+      <circle class="cls-7" cx="148.53" cy="97.68001" r="16.97" fill="#0c010a"/>
+      <circle class="cls-3" cx="161.06" cy="92.84001" r="6.36" fill="#fff"/>
+     </g>
+     <g id="svg_51">
+      <path class="cls-1" d="m91.96,51.42001s-6.07,16.65 -44.11,17.62" stroke-width="4px" fill="none" stroke="#000" stroke-miterlimit="10"/>
+      <path class="cls-4" d="m35.88,117.89001s30.26,-26.57 67.89,-0.74s-30.99,27.3 -30.99,27.3l-36.9,-26.57l0,0.01z" fill="#057bc4"/>
+      <path class="cls-4" d="m120.88,119.23001s30.26,-26.57 67.89,-0.74c37.64,25.83 -30.99,27.3 -30.99,27.3l-36.9,-26.57l0,0.01z" fill="#057bc4"/>
+      <path class="cls-1" d="m137.16,51.57001s5.97,16.58 43.04,17.18" stroke-width="4px" fill="none" stroke="#000" stroke-miterlimit="10"/>
+      <path class="cls-2" d="m41.2,162.89001s-5.3,23.32 18.73,10.6" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="3px"/>
+      <path class="cls-2" d="m189.43,162.89001s5.3,23.32 -18.73,10.6" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="3px"/>
+     </g>
+     <g id="svg_50">
+      <path d="m52.41,166.75001c8.75,-18.21 30.1,-23.79 48.6,-25.34c9.38,-0.79 18.88,-0.72 28.26,0.2c8.83,0.86 17.86,2.47 25.84,6.52c8.83,4.49 15.88,11.49 21.97,19.19c0.75,0.95 2.39,0.79 3.18,0c0.94,-0.94 0.76,-2.23 0,-3.18c-5.7,-7.2 -12.27,-13.81 -20.26,-18.46s-17.6,-6.96 -27.04,-8.15s-19.7,-1.45 -29.52,-0.79c-10.75,0.71 -21.63,2.39 -31.58,6.67c-9.78,4.21 -18.66,11.36 -23.34,21.09c-0.53,1.09 -0.3,2.43 0.81,3.08c0.98,0.58 2.55,0.29 3.08,-0.81l0,0l0,-0.02z"/>
+     </g>
+     <g id="svg_49">
+      <path d="m100.37,168.10001l31.69,0c1.93,0 1.93,-3 0,-3l-31.69,0c-1.93,0 -1.93,3 0,3l0,0z"/>
+     </g>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>

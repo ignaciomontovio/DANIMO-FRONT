@@ -25,9 +25,9 @@ export default function LoginRegisterScreen() {
   const redirectUri = makeRedirectUri({
     scheme: 'com.danimo.app',
   });
-  useEffect(() => {
-    console.log("Redirect URI:", redirectUri);
-  }, []);
+  // useEffect(() => {
+  //   console.log("Redirect URI:", redirectUri);
+  // }, []);
 
 
   const [request, response, promtAsync] = Google.useAuthRequest({
@@ -52,7 +52,7 @@ export default function LoginRegisterScreen() {
   } else if (response?.type === 'error') {
     console.error("Error autenticación Google:", response);
   }
-}, [response]);
+}, [response, setUserLogIn]);
 
 
   useEffect(() => {

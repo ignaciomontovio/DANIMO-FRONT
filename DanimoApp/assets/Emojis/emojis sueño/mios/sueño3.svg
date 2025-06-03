@@ -1,0 +1,24 @@
+<svg viewBox="0 0 229 229" width="229" height="229" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <radialGradient gradientTransform="matrix(1.5235601555107507,0,0,1.5573886632919312,-868.5504410399399,-816.4309692382812)" gradientUnits="userSpaceOnUse" r="74.49" fy="597.43" fx="570.34" cy="597.43" cx="644.79" id="svg_29">
+   <stop stop-color="#fde846" offset="0.44"/>
+   <stop stop-color="#fde646" offset="0.79"/>
+   <stop stop-color="#fddf46" offset="0.91"/>
+   <stop stop-color="#fdd446" offset="1"/>
+  </radialGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <g stroke="null">
+
+   <circle stroke="null" fill="url(#svg_29)" r="112.99" cy="114" cx="113.82601" class="cls-4"/>
+   <path stroke="#000" stroke-width="3px" stroke-miterlimit="10" fill="none" d="m90.60696,45.2257s-25.83958,-10.43451 -49.01293,20.49524" class="cls-2"/>
+   <path stroke="#000" stroke-width="3px" stroke-miterlimit="10" fill="none" d="m138.15727,46.78309s26.12906,-10.43451 49.56142,20.49524" class="cls-2"/>
+   <ellipse stroke="#000" transform="matrix(1.44875 -0.482035 0.471565 1.48091 79.6443 -374.242)" stroke-width="2px" stroke-miterlimit="10" ry="9.94" rx="13.89" cy="345.44728" cx="-65.6495" class="cls-3"/>
+   <g stroke="null" id="svg_28">
+    <path stroke="#000" stroke-miterlimit="10" fill="none" stroke-width="4px" d="m41.74638,103.26959s24.19414,49.0889 58.00194,6.57218" class="cls-1"/>
+    <path stroke="#000" stroke-miterlimit="10" fill="none" stroke-width="4px" d="m189.62314,103.26959s-24.19414,49.0889 -58.00194,6.57218" class="cls-1"/>
+   </g>
+  </g>
+ </g>
+</svg>

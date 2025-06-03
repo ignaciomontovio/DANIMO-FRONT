@@ -1,38 +1,9 @@
+import Sos from "@/app/tabs/sos";
 import { FontAwesome } from "@expo/vector-icons";
-import { router, Tabs } from "expo-router";
-import { useRef, useState } from "react";
-import { Text, TouchableHighlight } from "react-native";
+import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
-   
-    const [pressing, setPressing] = useState(false);
-     
-    const timeoutRef = useRef<number | null>(null);
-
-    const onActivate = () => {
-      // Aquí puedes definir la acción que se ejecuta al activar el botón SOS
-      router.push("../profesional/home");
-    }
-    const handlePressIn = () => {
-      setPressing(true);
-      timeoutRef.current = setTimeout(() => {
-        setPressing(false);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        onActivate(); 
-      }, 4000);
-    };
-  
-    const handlePressOut = () => {
-      setPressing(false);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
   return (
-    // <LinearGradient
-    //           colors={["#D2A8D6", "#F4E1E6"]}
-    //           start={{ x: 0, y: -1 }}
-    //           end={{ x: 0, y: 1 }}
-    //           className="w-full h-full"
-    //         >
       <Tabs
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
@@ -52,7 +23,6 @@ export default function TabsLayout() {
             backgroundColor: "#595154",
             height: 70,
             paddingBottom: 10,
-            // marginTop: 30,
           },
           headerShown: false,
         })}
@@ -63,18 +33,19 @@ export default function TabsLayout() {
           name="sos"
           options={{
             tabBarButton: () => (
-              <TouchableHighlight
-                onPressIn = {handlePressIn} 
-                onPressOut={handlePressOut}
-                className="absolute -top-[30px] justify-center items-center w-[70px] h-[70px] rounded-full bg-[#f44336] shadow-2xl border-2 border-fondo"
-              >
-                <Text className="text-fondo font-bold text-lg">SOS</Text>
-              </TouchableHighlight>
+              <Sos/>
             ),
           }}
         />
         <Tabs.Screen name="rutines" />
         <Tabs.Screen name="menu" />
+        <Tabs.Screen
+          name="chat"
+          options={{
+            tabBarButton: () => null, //  oculta el botón 
+            tabBarStyle: { display: "none" }, // esto elimina el espacio
+          }}
+        />
       </Tabs>
 
   );

@@ -1,0 +1,41 @@
+<svg viewBox="0 0 229 229" width="229" height="229" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <radialGradient gradientTransform="matrix(1.526707410812378,0,0,1.5302724838256836,-379.5628662109375,-800.230712890625)" gradientUnits="userSpaceOnUse" r="74.74" fy="597.43" fx="248.58" cy="597.43" cx="323.28" id="svg_23">
+   <stop stop-color="#fde846" offset="0.44"/>
+   <stop stop-color="#fde646" offset="0.79"/>
+   <stop stop-color="#fddf46" offset="0.91"/>
+   <stop stop-color="#fdd446" offset="1"/>
+  </radialGradient>
+  <radialGradient gradientTransform="matrix(1.526707410812378,0,0,1.5302724838256836,-379.5628662109375,-800.230712890625)" gradientUnits="userSpaceOnUse" r="27.39" fy="598.91" fx="353.97" cy="598.91" cx="353.97" id="svg_22">
+   <stop stop-color="#fdd446" offset="0.83"/>
+   <stop stop-color="#fdd646" offset="0.91"/>
+   <stop stop-color="#fddf46" offset="0.97"/>
+   <stop stop-color="#fde846" offset="1"/>
+  </radialGradient>
+  <radialGradient xlink:href="#svg_22" xlink:href="#svg_22" fx="293.97" cx="293.97" id="svg_21"/>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <g stroke="null">
+
+   <path stroke="null" fill="url(#svg_23)" d="m228.49421,114c0,62.95541 -50.9157,113.99 -113.72444,113.99s-116.21298,-51.84563 -115.25115,-113.99s52.4424,-113.99 115.25115,-113.99s113.72444,51.03459 113.72444,113.99z" class="cls-2"/>
+   <ellipse stroke="null" fill="url(#svg_22)" ry="44.71456" rx="38.83944" cy="116.26481" cx="160.8458" class="cls-4"/>
+   <ellipse stroke="null" fill="url(#svg_21)" ry="44.71456" rx="38.83944" cy="116.26481" cx="69.24335" class="cls-6"/>
+   <g stroke="null" id="svg_20">
+    <line stroke="#000" stroke-width="2px" stroke-miterlimit="10" fill="none" y2="107.05257" x2="31.39627" y1="107.05257" x1="108.75454" class="cls-3"/>
+    <line stroke="#000" stroke-width="2px" stroke-miterlimit="10" fill="none" y2="107.05257" x2="122.99872" y1="107.05257" x1="200.35699" class="cls-3"/>
+    <path stroke="null" d="m59.67089,178.0113l86.21317,1.1477l24.41205,0.32136l0,-4.59082l-21.98459,-0.29075c-2.94655,-0.04591 -2.94655,4.54491 0,4.59082l21.98459,0.29075c2.94655,0.04591 2.94655,-4.54491 0,-4.59082l-86.21317,-1.1477l-24.41205,-0.32136c-2.94655,-0.04591 -2.94655,4.54491 0,4.59082l0,0z"/>
+   </g>
+   <g stroke="null" id="svg_19">
+    <circle stroke="null" fill="#fff" r="38.67014" cy="108.9501" cx="161.04427" class="cls-1"/>
+    <circle stroke="null" fill="#0c010a" r="16.67497" cy="116.31071" cx="161.31908" class="cls-7"/>
+    <circle stroke="null" fill="#fff" r="6.24742" cy="111.50566" cx="173.70068" class="cls-1"/>
+    <circle stroke="null" fill="#fff" r="38.67014" cy="108.9501" cx="69.60976" class="cls-1"/>
+    <circle stroke="null" fill="#0c010a" r="16.67497" cy="116.31071" cx="69.33495" class="cls-7"/>
+    <circle stroke="null" fill="#fff" r="6.24742" cy="111.50566" cx="84.43409" class="cls-1"/>
+   </g>
+   <polygon stroke="null" fill="#fde846" points="108.75454711914062,106.7005615234375 213.4866943359375,107.0831298828125 183.2273406982422,63.256195068359375 123.62466430664062,70.95341491699219 108.75454711914062,106.7005615234375 " class="cls-5"/>
+   <path stroke="null" fill="#fde846" d="m121.88422,106.7006l-93.95358,0.67332s5.57248,-32.25814 19.48079,-40.46041c12.88541,-7.57485 59.60266,4.03992 59.60266,4.03992l14.87013,35.74717z" class="cls-5"/>
+  </g>
+ </g>
+</svg>
