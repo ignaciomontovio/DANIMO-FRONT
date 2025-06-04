@@ -45,8 +45,18 @@ export function ButtonDark_small({ text, onPress }: ButtonProps) {
 
 export function ButtonDark_add({ onPress }: ButtonProps) {
   return (
-    <TouchableOpacity onPress = {onPress} className="w-50 bg-oscuro py-3 rounded-md mt-2 shadow-2xl">
-      <Text className="text-white text-left pl-10 font-bold text-xl">+</Text>
+    <TouchableOpacity
+      onPress={onPress}
+      className="w-16 h-16 bg-oscuro rounded-full items-center justify-center shadow-lg mt-4 mb-20"
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 10, // Android
+      }}
+    >
+      <Text className="text-white font-bold text-3xl">+</Text>
     </TouchableOpacity>
   );
 }

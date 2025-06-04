@@ -38,7 +38,7 @@ export default function profile() {
         <ButtonLight_small onPress={()=>("")} text="Rutinas"/>
         <ButtonLight_small onPress={()=>("")} text="Estadisticas"/>
         <ButtonLight_small onPress={()=>("")} text="Eventos Significativos"/>
-        <ButtonLight_small onPress={()=>("")} text="Contactos de Emergencia"/>
+        <ButtonLight_small onPress={()=>(router.replace("/emergencyContact"))} text="Contactos de Emergencia"/>
         <ButtonLight_small onPress={()=>("")} text="Profesionales Ascociados"/>
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesion"/>
       </View>
