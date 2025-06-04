@@ -27,23 +27,23 @@ export default function Prechat() {
 //   }
 
   return (
-    <View className="flex-1 bg-[#f4e1e6] items-center px-6 pt-12 space-y-5 pb-1">
+    <View className="flex-1 bg-fondo items-center px-6 pt-12 space-y-5 pb-1">
       
       {/* Tarjeta de emoción */}
-      <View className="w-full bg-[#e3c8e4] rounded-xl p-4 mb-4 shadow-lg items-center">
+      <View className="w-full bg-color4 rounded-xl p-4 mb-4 shadow-lg items-center">
         <Image
           source={require('../assets/images/logo.png' )}
           className="w-12 h-12 mb-2"
           resizeMode="contain"
         />
-        <Text className="text-lg font-bold text-[#595154]">Bien</Text>
-        <Text className="text-[#595154] mt-2 text-center">
+        <Text className="text-lg font-bold text-oscuro">Bien</Text>
+        <Text className="text-oscuro mt-2 text-center">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit
         </Text>
       </View>
 
       {/* Burbuja de charla */}
-      <View className="w-full bg-[#d2a8d6] rounded-xl p-4 mb-4 shadow">
+      <View className="w-full bg-color5 rounded-xl p-4 mb-4 shadow">
         <Text className="text-white font-semibold">
           ¿Tuviste algún sueño que me quieras contar?
         </Text>

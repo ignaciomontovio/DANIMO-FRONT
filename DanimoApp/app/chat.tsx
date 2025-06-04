@@ -1,8 +1,8 @@
 import Sos from "@/app/tabs/sos";
 import { ChatBubble } from '@/components/chatBubble';
-import { FontAwesome } from '@expo/vector-icons';
+import HeaderGoBack from "@/components/headerGoBack";
 import { router } from 'expo-router';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 export default function chat() {
   return (
@@ -13,17 +13,11 @@ export default function chat() {
               className="w-full h-full"
     >
       <View className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-2 bg-oscuro">
-          <TouchableOpacity onPress={()=>router.push("/tabs/home")}>
-            <FontAwesome name="arrow-left" size={24} color="#f7a1b2" />
-          </TouchableOpacity>
-          <Text className="text-xlg font-bold text-white">DANI.AI</Text>
-          <Image
-            source={require('../assets/images/logo.png')} 
-            className="w-10 h-10 rounded-full"
-          />
-        </View>
+        <HeaderGoBack
+          text="DANI.AI"
+          onPress={() => router.push("/tabs/home")}
+          img={require('../assets/images/logo.png')}
+        />
 
         {/* Chat */}
         <ScrollView className="flex-1 px-4 pt-4">
