@@ -135,6 +135,16 @@ export default function LoginRegisterScreen() {
                     <Input icon="info" placeholder="Matrícula profesional" />
                   )}
                   <ButtonAccept text="Sign Up" onPress={handleRegister} />
+                  {/* desabilitado si no cumple con password */}
+                  {/* 
+                  password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\={};:"|,.<>?]).{8,}$'))
+                  .required()
+                  .messages({
+                      'any.required': 'La contraseña es obligatoria.',
+                      'string.empty': 'La contraseña es obligatoria.',
+                      'string.pattern.base': 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo.',
+                  }),
+  */}
                 </>
               ) : (
                 <>

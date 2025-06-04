@@ -1,11 +1,67 @@
 import { router } from "expo-router";
+import { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept, ButtonDark } from "../../components/buttons";
 import Input from "../../components/input";
 
+
 export default function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+
+
+  const sendCode = async () => {
+    try {
+      const response = await fetch("https://danimo.onrender.com/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase()}),});
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error:", errorText);
+        throw new Error(errorText);
+      // mejorar salida es json
+      }
+
+      const data = await response.json();
+      console.log("RTA FORGOT PASS: ", data);
+
+    } catch (error) {
+      console.error("Code error:", error);
+      alert(error);
+    }
+  }
+  const validateCode = async () => {
+    // curl -X GET https://danimo.onrender.com/auth/validate-token \ -H "Content-Type: application/json" \ -d '{"tokenId": "B88427"}'
+    try {
+      const response = await fetch("https://danimo.onrender.com/auth/validate-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tokenId:code.trim().toUpperCase(), email: email.trim().toLowerCase()}),});
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error:", errorText);
+        alert(errorText);
+        throw new Error(errorText);
+      // mejorar salida es json
+      }
+
+      const data = await response.json();
+      console.log("RTA VALIDAR CODE: ", data);
+      router.push({ pathname: "/auth/NewPassword", params: { value: code } });
+       
+
+    } catch (error) {
+      console.error("Code error:", error);
+      alert(error);
+    }
+    
+  }
+
   return (
     <SafeAreaProvider>
       <LinearGradient
@@ -41,16 +97,19 @@ export default function ForgotPassword() {
                 placeholder="Email"
                 keyboardType="email-address"
                 className="border-solid border-oscuro text-oscuro"
+                onChange={e => setEmail(e.nativeEvent.text)}
+                // no permitir cambiar ?
               />
-              <ButtonDark text={"Enviar codigo"} onPress={()=>console.log("codigo")}/>
+              <ButtonDark text={"Enviar codigo"} onPress={sendCode}/>
             </View>
             <Input
               icon="lock"
               placeholder="Codigo de verificación"
               secureTextEntry
               className="border-solid border-oscuro text-oscuro"
+              onChangeText={setCode}
             />
-            <ButtonAccept text="Verificar" onPress={() => router.push("/auth/NewPassword")} />
+            <ButtonAccept text="Verificar" onPress={validateCode} />
           </View>
         </View>
       </View>

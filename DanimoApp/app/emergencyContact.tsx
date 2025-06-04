@@ -68,6 +68,7 @@ function ContactCard({ who, name, phone }: PropsContactCard) {
         <ShowInfo text={name} icon="id-card" />
         <ShowInfo text={phone} icon="phone" />
         <ButtonDark text="Editar" onPress={() => console.log(`Editar ${name}`)} />
+        {/* hacer showinfo editable y cambiar de editar a guardar */}
       </View>
     </View>
   );
