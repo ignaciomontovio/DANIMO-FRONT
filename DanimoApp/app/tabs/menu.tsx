@@ -24,14 +24,21 @@ export default function profile() {
       className="w-full h-full"
     >
       <View className="flex-1 items-center justify-start pt-12 space-y-15 px-6"> 
-        <View className="bg-white w-full py-50 flex-row">
-          <FontAwesome name="user" size={70} color="#000" />
-          <View className="flex-column">
-            <Text> Juan Perez </Text>
-            <Text> Perfil </Text>
-          </View>
-          
+        <View className="w-full flex-row items-center justify-center gap-4 px-4 py-6">
+        {/* Ícono de usuario */}
+        <View className="rounded-full p-4 border-2 border-oscuro bg-colo2 shadow-md">
+          <FontAwesome name="user" size={60} color="#595154" />
         </View>
+
+        {/* Info del usuario */}
+        <View className="flex-1">
+          <View className="bg-fondo px-4 py-2 rounded-full border border-oscuro shadow-sm">
+            <Text className="text-oscuro text-center font-bold text-lg">Juan Pérez</Text>
+          </View>
+          <Text className="text-center text-oscuro mt-1 text-base">Perfil</Text>
+        </View>
+      </View>
+
         {/*  poner un componente profile */}
 
         <ButtonLight_small onPress={()=>("")} text="Recomendacion"/>

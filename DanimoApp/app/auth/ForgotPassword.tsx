@@ -1,3 +1,4 @@
+import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { router } from "expo-router";
 import { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
@@ -37,7 +38,7 @@ export default function ForgotPassword() {
   const validateCode = async () => {
     // curl -X GET https://danimo.onrender.com/auth/validate-token \ -H "Content-Type: application/json" \ -d '{"tokenId": "B88427"}'
     try {
-      const response = await fetch("https://danimo.onrender.com/auth/validate-token", {
+      const response = await fetch(URL_BASE + URL_AUTH +"/validate-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tokenId:code.trim().toUpperCase(), email: email.trim().toLowerCase()}),});

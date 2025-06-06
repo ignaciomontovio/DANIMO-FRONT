@@ -1,3 +1,4 @@
+import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { router } from "expo-router";
 import { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
@@ -30,7 +31,7 @@ export default function NewPassword({token}:NewPassProps) {
     }),
     */}
     try {
-      const response = await fetch("https://danimo.onrender.com/auth/reset-password", {
+      const response = await fetch(URL_BASE + URL_AUTH +"/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tokenId:token, password: pass2 }),});

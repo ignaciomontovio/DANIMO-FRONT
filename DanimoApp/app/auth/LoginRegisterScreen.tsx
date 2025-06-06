@@ -6,6 +6,7 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 
 // import { GoogleSignin, statusCodes } from "react-native-google-signin";}
 // import { makeRedirectUri } from "expo-auth-session";
+import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import LinearGradient from "react-native-linear-gradient";
@@ -67,7 +68,7 @@ export default function LoginRegisterScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("https://danimo.onrender.com/auth/login", {
+      const response = await fetch(URL_BASE + URL_AUTH + "/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), password: passw.trim() }),});

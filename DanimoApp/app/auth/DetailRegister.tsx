@@ -1,3 +1,4 @@
+import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
@@ -8,7 +9,6 @@ import Modal from "react-native-modal";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
 import Input from "../../components/input";
-
 export default function DetailRegister() {
   const [userName, setUserName] = useState("");
   const [userLastName, setUserLastName] = useState("");
@@ -45,7 +45,7 @@ export default function DetailRegister() {
     
     // Continuar con el registro
     try {
-      const response = await fetch("https://danimo.onrender.com/auth/register", {
+      const response = await fetch(URL_BASE + URL_AUTH + "/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
