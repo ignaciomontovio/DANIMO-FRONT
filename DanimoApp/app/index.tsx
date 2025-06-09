@@ -11,22 +11,6 @@ import { useUserStore } from "../stores/userType";
 export default function Index() {
   const setUserType = useUserStore((state) => state.setUserType);
   const [showLoader, setShowLoader] = useState(true);
-  // const userType: string | null = useUserStore((state: { userType: string | null }) => state.userType);
-  // const UserLogIn = useUserLogInStore(state => state.userLogIn);
-
-  // useEffect(() => {
-  //   if (UserLogIn !== null) {
-  //   if (UserLogIn) {
-  //     if (userType === "profesional") {
-  //       router.replace("/profesional/home");
-  //     } else {
-  //     router.replace("/tabs/home");
-  //     }
-  //   } else if (userType !== null) {
-  //     router.replace("/auth/LoginRegisterScreen");
-  //   }
-  //   }
-  // }, [UserLogIn, userType]);
   
   const handleUsuario = () => {
     setUserType("usuario");

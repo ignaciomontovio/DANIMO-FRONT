@@ -64,7 +64,6 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
       <View className="flex-row justify-center space-x-10">
         {[1, 2, 3, 4, 5].map((num, idx) => {
         const Icon = icons[idx];
-        console.log("Icon for index", idx, ":", Icon);
         return (
           <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)}>
             <Animated.View 

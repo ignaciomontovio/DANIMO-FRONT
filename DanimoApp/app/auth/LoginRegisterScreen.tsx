@@ -22,6 +22,7 @@ export default function LoginRegisterScreen() {
   const userType = useUserStore((state) => state.userType);
   const UserLogIn = useUserLogInStore((state) => state.userLogIn);
   const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
+  const setUserSession= useUserLogInStore((state) => state.setUserSession);
 
   const redirectUri = makeRedirectUri({
     scheme: 'com.danimo.app',
@@ -81,6 +82,8 @@ export default function LoginRegisterScreen() {
 
       const data = await response.json();
       console.log("Login:", data);
+      console.log("token:", data.token);
+      setUserSession(email, data.token)
       setUserLogIn(true);
     } catch (error) {
       console.error("Login error:", error);
@@ -189,3 +192,5 @@ function SocialButton({ bg, icon, text, onPress }: SocialButtonProps) {
     </TouchableOpacity>
   );
 }
+
+

@@ -10,7 +10,7 @@ export default function sos() {
   const [, setPressing] = useState(false);
         
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onActivate = async () => {
     console.log("activado");

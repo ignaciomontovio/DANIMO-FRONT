@@ -9,6 +9,7 @@ import Modal from "react-native-modal";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
 import Input from "../../components/input";
+
 export default function DetailRegister() {
   const [userName, setUserName] = useState("");
   const [userLastName, setUserLastName] = useState("");

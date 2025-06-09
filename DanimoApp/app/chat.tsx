@@ -1,4 +1,4 @@
-import Sos from "@/app/tabs/sos";
+import Navbar from '@/app/navbar';
 import { ChatBubble } from '@/components/chatBubble';
 import HeaderGoBack from "@/components/headerGoBack";
 import { router } from 'expo-router';
@@ -27,20 +27,15 @@ export default function chat() {
           <ChatBubble type="sent" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit" />
         </ScrollView>
         
-        {/* TabBar manual (visual) */}
-        
-        <View className="flex-row justify-around items-center h-[50px]">
-          <Sos/>
-          {/* <FontAwesome name="home" size={24} color="#f4e1e6" onPress={() => router.push("/tabs/home")} />
-          <FontAwesome name="bar-chart" size={24} color="#f4e1e6" onPress={() => router.push("/tabs/stats")} /> */}
-          {/* <View className="justify-center items-center -mt-6">
-            <TouchableOpacity className="w-[70px] h-[70px] bg-[#f44336] rounded-full justify-center items-center border-2 border-[#f4e1e6]">
-              <Text className="text-[#f4e1e6] font-bold">SOS</Text>
-            </TouchableOpacity>
-          </View> */}
-          {/* <FontAwesome name="newspaper-o" size={24} color="#f4e1e6" onPress={() => router.push("/tabs/rutines")} />
-          <FontAwesome name="bars" size={24} color="#f4e1e6" onPress={() => router.push("/tabs/menu")} /> */}
-        </View>
+        <Navbar
+          tabs={[
+            { name: "home", icon: "home", label: "Inicio" },
+            { name: "stats", icon: "bar-chart", label: "Stats" },
+            { name: "sos", icon: "exclamation-triangle" },
+            { name: "rutines", icon: "newspaper-o", label: "Rutinas" },
+            { name: "menu", icon: "bars", label: "Menú" },
+          ]}
+        />
       </View>
     </LinearGradient>
   );

@@ -8,6 +8,10 @@ import SearchBar from "@/components/SearchBar";
 import LinearGradient from "react-native-linear-gradient";
 import MiniMetrics from "../../components/MiniMetrics";
 export default function Home() {
+  // const mail = useUserLogInStore((state) => state.mail);
+  // const token = useUserLogInStore((state) => state.token);
+  // console.log("HOME:", mail, token );
+  
   return (
     <LinearGradient
           colors={["#D2A8D6", "#F4E1E6"]}
