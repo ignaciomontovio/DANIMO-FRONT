@@ -3,7 +3,7 @@ import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Alert, ScrollView, TextInput, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";

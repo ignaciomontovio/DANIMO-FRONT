@@ -2,8 +2,10 @@ import Navbar from '@/app/navbar';
 import { ChatBubble } from '@/components/chatBubble';
 import HeaderGoBack from "@/components/headerGoBack";
 import { router } from 'expo-router';
+import React from "react";
 import { ScrollView, View } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
+
 export default function chat() {
   return (
     <LinearGradient

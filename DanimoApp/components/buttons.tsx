@@ -1,5 +1,5 @@
+import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-
 export type ButtonProps = {
   text?: string;
   onPress?: () => void;

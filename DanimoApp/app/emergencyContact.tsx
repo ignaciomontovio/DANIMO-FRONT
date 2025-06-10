@@ -3,7 +3,8 @@ import HeaderGoBack from "@/components/headerGoBack";
 import ShowInfo from "@/components/showInfo";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";

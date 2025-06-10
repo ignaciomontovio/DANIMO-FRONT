@@ -1,6 +1,6 @@
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { router } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";

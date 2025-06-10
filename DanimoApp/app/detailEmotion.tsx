@@ -2,7 +2,7 @@ import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 

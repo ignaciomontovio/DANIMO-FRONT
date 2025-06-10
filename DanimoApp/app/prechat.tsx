@@ -1,7 +1,7 @@
 import { ButtonDark } from '@/components/buttons';
 import { useRouter } from 'expo-router';
+import React from "react";
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-
 // import Alegria from "@/assets/Emojis/emojis/mios/alegria.svg";
 // import Ansiedad from "@/assets/Emojis/emojis/mios/ansiedad.svg";
 // import Enojo from "@/assets/Emojis/emojis/mios/enojo.svg";

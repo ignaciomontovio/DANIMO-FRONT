@@ -3,7 +3,7 @@
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { router } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useUserStore } from "../stores/userType";

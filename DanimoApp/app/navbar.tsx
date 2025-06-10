@@ -1,8 +1,8 @@
 import Sos from "@/app/tabs/sos";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import React from "react";
 import { Pressable, Text, View } from "react-native";
-
 // MANUAL para pantallas fuera de carpeta TAB
 
 type TabItem = {

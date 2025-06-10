@@ -1,7 +1,9 @@
 import { ButtonAccept } from "@/components/buttons";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
+import React from "react";
 import { Text, View } from "react-native";
+
 export default function profile() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
