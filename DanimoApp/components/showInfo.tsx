@@ -1,4 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
+import React from "react";
 import { Text, TextInput, View } from "react-native";
 export type ShowInfoProps = {
   text: string;
