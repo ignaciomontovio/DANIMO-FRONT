@@ -1,5 +1,5 @@
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -7,34 +7,30 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
 import Input from "../../components/input";
 
-interface NewPassProps {
-  token: string;
-}
-
-export default function NewPassword({token}:NewPassProps) {
+export default function NewPassword() {
 
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
+  const { token } = useLocalSearchParams<{ token: string }>();
 
   const validatePass = async () => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!passwordRegex.test(pass)) {
+      alert("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
+      return;
+    }
+
     if(pass!==pass2){
       alert("Las contraseñas deben ser iguales")
       return
     }
-    {/* 
-    password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\={};:"|,.<>?]).{8,}$'))
-    .required()
-    .messages({
-        'any.required': 'La contraseña es obligatoria.',
-        'string.empty': 'La contraseña es obligatoria.',
-        'string.pattern.base': 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo.',
-    }),
-    */}
     try {
       const response = await fetch(URL_BASE + URL_AUTH +"/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokenId:token, password: pass2 }),});
+        body: JSON.stringify({ tokenId:token, password: pass2 }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -42,16 +38,19 @@ export default function NewPassword({token}:NewPassProps) {
         throw new Error(errorText);
       // mejorar salida es json
       }
-
+      
+      
       const data = await response.json();
       console.log("RTA VALIDAR CODE: ", data);
-      router.push("/auth/NewPassword")
+      
+      router.push("/auth/LoginRegisterScreen")
 
     } catch (error) {
       console.error("Code error:", error);
       alert(error);
+      // router.push("/auth/NewPassword")
     }
-    router.push("/auth/LoginRegisterScreen")
+    // router.push("/auth/LoginRegisterScreen")
   }
 
   return (

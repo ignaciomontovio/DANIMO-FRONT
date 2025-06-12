@@ -11,7 +11,7 @@ export default function SearchBar({ placeholder = "Buscar...", onChangeText }: {
           }}> 
       <FontAwesome name="search" size={20} color="#999" />
       <TextInput
-        className="ml-2 flex-1 text-base "
+        className="ml-2 flex-1"
         placeholder={placeholder}
         placeholderTextColor="#aaa"
         onChangeText={onChangeText}

@@ -10,11 +10,11 @@ import s2 from "@/assets/Emojis/emojis sueño/mios/sueño2.svg";
 import s3 from "@/assets/Emojis/emojis sueño/mios/sueño3.svg";
 import s4 from "@/assets/Emojis/emojis sueño/mios/sueño4.svg";
 import s5 from "@/assets/Emojis/emojis sueño/mios/sueño5.svg";
+import { Animated, Text, TouchableWithoutFeedback, View } from "react-native";
 
 
 import { router } from "expo-router";
 import React, { useRef } from "react";
-import { Animated, Text, TouchableWithoutFeedback, View } from "react-native";
 
 
 type AllowedRoutes = "/detailSleep" | "/detailEmotion";

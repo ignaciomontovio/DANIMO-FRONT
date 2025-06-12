@@ -2,38 +2,37 @@
 
 
 
-import { useRef, useState } from "react";
-import { Alert, Text, TouchableHighlight } from "react-native";
+import { URL_BASE, URL_SOS } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
+import React, { useRef, useState } from "react";
 
-export default function sos() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+import { Alert, Text, TouchableHighlight } from "react-native";
+export default function Sos() {
+   
   const [, setPressing] = useState(false);
         
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const token = useUserLogInStore((state) => state.token);
 
   const onActivate = async () => {
     console.log("activado");
     
     try {
-      const response = await fetch("https://19ee-190-188-54-47.ngrok-free.app/send-sms", {
+      const response = await fetch(URL_BASE + URL_SOS, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: "+541139330921",
-          message: "¡Emergencia! Se ha activado el botón SOS.",
-        }),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          }
       });
-
-      const data = await response.json();
-      if (data.success) {
-        console.log("SMS enviado con SID:", data.sid);
-      } else {
-        console.error("Error al enviar SMS:", data.error);
-      }
+        
+        if (!response.ok) {
+          throw new Error("Error al enviar SMS");
+        }
       Alert.alert("SMS", "El mensaje de emergencia fue enviado correctamente.");
     } catch (error) {
-      console.error("Error de red:", error);
+      console.error("Error", error);
     }
   };
 

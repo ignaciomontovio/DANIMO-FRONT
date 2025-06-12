@@ -5,6 +5,7 @@ import { SafeAreaView, ScrollView, View } from "react-native";
 import { ButtonDark } from "@/components/buttons";
 import QuoteCard from "@/components/QuoteCard";
 import SearchBar from "@/components/SearchBar";
+import React from "react";
 import LinearGradient from "react-native-linear-gradient";
 import MiniMetrics from "../../components/MiniMetrics";
 export default function Home() {

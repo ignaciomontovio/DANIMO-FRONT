@@ -19,6 +19,8 @@ export default function LoginRegisterScreen() {
   const [tab, setTab] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [passw, setPassw] = useState("");
+  const [passw2, setPassw2] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const userType = useUserStore((state) => state.userType);
   const UserLogIn = useUserLogInStore((state) => state.userLogIn);
   const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
@@ -95,14 +97,27 @@ export default function LoginRegisterScreen() {
   }
   
   const handleRegister = async () => {
-  router.push({
-    pathname: "/auth/DetailRegister",
-    params: {
-      email: email,
-      password: passw
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!passwordRegex.test(passw)) {
+      alert("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
+      return;
     }
-  });
-};
+
+    if (passw !== passw2) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
+    router.push({
+      pathname: "/auth/DetailRegister",
+      params: {
+        email: email.trim(),
+        password: passw.trim(),
+      },
+    });
+  };
+
 
   // const handleGoogleSignIn = async () => {
   //     setEmail("ignaciomontovio@gmail.com")
@@ -131,24 +146,43 @@ export default function LoginRegisterScreen() {
               </View>
 
               <Input icon="envelope" placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
-              <Input icon="lock" placeholder="Contraseña" secureTextEntry value={passw} onChangeText={setPassw} />
+              {/* <Input icon="lock" placeholder="Contraseña" secureTextEntry value={passw} onChangeText={setPassw} /> */}
+              <View className="relative mb-4">
+                <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw} onChangeText={setPassw}/>
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={{ position: "absolute", right: 12, top: 12 }}
+                >
+                  <FontAwesome
+                    name={showPassword ? "eye" : "eye-slash"}
+                    size={20}
+                    color="gray"
+                  />
+                </TouchableOpacity>
+              </View>
 
               {tab === "signup" ? (
                 <>
                   {userType === "profesional" && (
                     <Input icon="info" placeholder="Matrícula profesional" />
                   )}
-                  <ButtonAccept text="Sign Up" onPress={handleRegister} />
+                  {/* <Input icon="lock" placeholder="Repita Contraseña" secureTextEntry value={passw2} onChangeText={setPassw2} /> */}
+                  <View className="relative mb-4">
+                    <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw2} onChangeText={setPassw2}/>
+                    <TouchableOpacity
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={{ position: "absolute", right: 12, top: 12 }}
+                    >
+                      <FontAwesome
+                        name={showPassword ? "eye" : "eye-slash"}
+                        size={20}
+                        color="gray"
+                      />
+                    </TouchableOpacity>
+                  </View>
                   {/* desabilitado si no cumple con password */}
-                  {/* 
-                  password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\={};:"|,.<>?]).{8,}$'))
-                  .required()
-                  .messages({
-                      'any.required': 'La contraseña es obligatoria.',
-                      'string.empty': 'La contraseña es obligatoria.',
-                      'string.pattern.base': 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo.',
-                  }),
-  */}
+                  <ButtonAccept text="Sign Up" onPress={handleRegister} />
+                  
                 </>
               ) : (
                 <>

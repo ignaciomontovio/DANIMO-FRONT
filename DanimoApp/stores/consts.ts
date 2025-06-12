@@ -1,2 +1,5 @@
-export const URL_BASE = "https://danimo.onrender.com"
+export const URL_BASE_old = "https://danimo.onrender.com"
+export const URL_BASE = "https://danimo-fre6fpbjezcyhxed.canadacentral-01.azurewebsites.net"
 export const URL_AUTH = "/auth"
+export const URL_SOS = "/contact/button"
+export const URL_CONTACT = "/contact"

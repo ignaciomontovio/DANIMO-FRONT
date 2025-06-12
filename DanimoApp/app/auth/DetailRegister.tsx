@@ -24,7 +24,6 @@ export default function DetailRegister() {
   function isAdult(date: Date): boolean {
     const today = new Date();
     const adultDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-    console.log("fecha en es adulto" + date);
     
     return date <= adultDate;
   }
@@ -54,7 +53,7 @@ export default function DetailRegister() {
           gender: userSex ? userSex.trim() : "",
         }),
       });
-
+            
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error:", errorText);
@@ -111,7 +110,6 @@ export default function DetailRegister() {
       const parsedDate = new Date(year, month - 1, day);
       if (isNaN(parsedDate.getTime())) throw new Error("Fecha inválida");
       setUserBirth(parsedDate);
-      console.log(userBirth);
     } catch (error) {
       console.error("Error al parsear fecha:", error);
       setUserBirth(undefined);

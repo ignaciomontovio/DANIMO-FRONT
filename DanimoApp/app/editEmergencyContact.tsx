@@ -1,6 +1,7 @@
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
+import { URL_BASE, URL_CONTACT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -11,17 +12,18 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 type Contact = {
   who: string;
   name: string;
-  phone: string;
+  phoneNumber: string;
 };
 
 export default function EditEmergencyContact() {
-  const params = useLocalSearchParams();
+  const { who = "Quien", name = "Nombre", phoneNumber = "Celular", editing } = useLocalSearchParams();
 
   const contact: Contact = {
-    who: params.who?.toString() || "Quien",
-    name: params.name?.toString() || "Nombre",
-    phone: params.phone?.toString() || "Celular",
+    who: who.toString(),
+    name: name.toString(),
+    phoneNumber: phoneNumber.toString(),
   };
+
   return (
   <SafeAreaProvider>
     <LinearGradient
@@ -32,7 +34,7 @@ export default function EditEmergencyContact() {
     >
       <HeaderGoBack text="Contactos" onPress={() => router.push("/tabs/home")} />
       <ScrollView className="flex-1 px-5 py-5">
-      <ContactCard contact={contact} />
+      <ContactCard contact={contact} editing={Array.isArray(editing) ? editing[0] : editing} />
 
     </ScrollView>
     </LinearGradient>
@@ -41,59 +43,63 @@ export default function EditEmergencyContact() {
 }
 
 type PropsContactCard = {
-  contact: Contact
+  contact: Contact,
+  editing?: string
 };
 
-export function ContactCard({ contact }: PropsContactCard) {
+export function ContactCard({ contact, editing }: PropsContactCard) {
   const [newContact, setNewContact] = useState<Contact>({
     who: contact.who,
     name: contact.name,
-    phone: contact.phone,
+    phoneNumber: contact.phoneNumber,
   });
   const token = useUserLogInStore((state) => state.token);
 
   const addNewContact = async () =>{
     try {
-      const response = await fetch("https://danimo.onrender.com/contact/create", {
+      const response = await fetch(URL_BASE + URL_CONTACT + "/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
         body: JSON.stringify({
+          who: newContact.who,
           name: newContact.name,
-          phoneNumber: newContact.phone,
+          phoneNumber: newContact.phoneNumber,
         }),
       });
       console.log(response);        
       if (!response.ok) {
-        throw new Error("Error al obtener contactos");
+        throw new Error("Error: " + response.text);
       }
     } catch (error) {
-      Alert.alert("Error", "No se pudieron cargar los contactos.");
+      Alert.alert("Error", error instanceof Error ? error.message : String(error));
       console.error(error);
     } 
   }
   const editContact = async () =>{
     try {
-      const response = await fetch("https://danimo.onrender.com/contact/update", {
-        method: "POST",
+      const response = await fetch(URL_BASE + URL_CONTACT + "/update", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
         body: JSON.stringify({
-          currentName:contact.name,
+          currentPhoneNumber: contact.phoneNumber,
+          who: newContact.who,
           name: newContact.name,
-          phoneNumber: newContact.phone,
+          phoneNumber: newContact.phoneNumber,
         }),
       });
-      console.log(response);        
+      
+      console.log(response);    
       if (!response.ok) {
-        throw new Error("Error al obtener contactos");
+        throw new Error("Error: " + response.text());
       }
     } catch (error) {
-      Alert.alert("Error", "No se pudieron cargar los contactos.");
+      Alert.alert("Error", "No se pudo actualizar el contacto");
       console.error(error);
     }
   }
@@ -101,12 +107,12 @@ export function ContactCard({ contact }: PropsContactCard) {
     console.log("save");
     console.log(contact.who);
     console.log(contact.name);
-    console.log(contact.phone);
-    if (contact.phone === "Celular"){
-      addNewContact()
+    console.log(contact.phoneNumber);
+    if (editing === "edit"){
+      editContact()
     }
     else{
-      editContact()
+      addNewContact() 
     }
     router.replace("/emergencyContact") // si pongo back no vuelve a cargar por ser un useefect vacio
   }
@@ -131,7 +137,7 @@ export function ContactCard({ contact }: PropsContactCard) {
 
     <View className="p-6 bg-fondo rounded-b-2xl">
     <ShowInfo_edit text={newContact.name} icon="id-card" onChangeText={(text) => setNewContact({ ...newContact, name: text })}/>
-    <ShowInfo_edit text={newContact.phone} icon="phone" onChangeText={(text) => setNewContact({ ...newContact, phone: text })}/>
+    <ShowInfo_edit text={newContact.phoneNumber} icon="phone" onChangeText={(text) => setNewContact({ ...newContact, phoneNumber: text })}/>
     <ButtonDark text="Guardar" onPress={save} />
     </View>
   </View>
