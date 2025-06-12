@@ -97,6 +97,7 @@ export default function NewPassword() {
               className="border-solid border-oscuro text-oscuro"
                 onChange={e => setPass2(e.nativeEvent.text)}
             />
+            {/* agregar ojo para ver como en las otras pantallas */}
             <ButtonAccept text="Login" onPress={validatePass} />
             {/* no habilitar hasta que pass cumpla regex y pass==pass2 */}
           </View>

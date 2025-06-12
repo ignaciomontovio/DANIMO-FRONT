@@ -3,3 +3,5 @@ export const URL_BASE = "https://danimo-fre6fpbjezcyhxed.canadacentral-01.azurew
 export const URL_AUTH = "/auth"
 export const URL_SOS = "/contact/button"
 export const URL_CONTACT = "/contact"
+export const URL_ACTIVITY = "/activity"
+export const ALL_EMOTIONS = ["Alegria", "Ansiedad", "Enojo", "Miedo", "Tristeza"];

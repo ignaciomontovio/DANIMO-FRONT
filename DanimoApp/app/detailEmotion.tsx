@@ -1,7 +1,9 @@
 import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
+import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -14,39 +16,58 @@ export default function DetailEmotionScreen() {
   const [activities, setActivities] = useState<Record<string, boolean>>({});
   const [hobbies, setHobbies] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const token = useUserLogInStore((state) => state.token);
+  const { value } = useLocalSearchParams<{ value: string }>();
 
   useEffect(() => {
-    // Simula una llamada al backend con 1 segundo de retraso
-    setTimeout(() => {
-      const fetchedActivities = ["Trabajo", "Gym", "Facultad", "Familia", "Amigos", "Pareja", "Mascota", "Estudio","Hogar", "Otro"];
-      const fetchedHobbies = ["Deporte", "Lectura", "Arte", "Videos", "Música", "Cine", "Juegos", "Viajes", "Otro"];
+    const fetchActivityTypes = async () => {
+      try {
+        const response = await fetch(URL_BASE + URL_ACTIVITY + "/types");
 
-      // Inicializamos todos como false
-      const activityState: Record<string, boolean> = {};
-      fetchedActivities.forEach((item) => (activityState[item] = false));
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error:", errorText);
+          throw new Error(errorText);
+        }
 
-      const hobbieState: Record<string, boolean> = {};
-      fetchedHobbies.forEach((item) => (hobbieState[item] = false));
+        const data = await response.json();
+        const activityState: Record<string, boolean> = {};
+        const hobbieState: Record<string, boolean> = {};
 
-      setActivities(activityState);
-      setHobbies(hobbieState);
-      setLoading(false);
-    }, 1000);
+        data.forEach((item: { name: string; category: string }) => {
+          if (item.category.toLowerCase() === "hobby") {
+            hobbieState[item.name] = false;
+          } else {
+            activityState[item.name] = false;
+          }
+        });
+
+        setActivities(activityState);
+        setHobbies(hobbieState);
+      } catch (error) {
+        console.error("Error al cargar tipos de actividad:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivityTypes();
   }, []);
 
   const toggle = (key: string, state: Record<string, boolean>, setState: (val: Record<string, boolean>) => void) => {
     setState({ ...state, [key]: !state[key] });
   };
-    type sqare_pills_container_props = {
+
+  const PillContainer = ({
+    title,
+    list,
+    setList,
+  }: {
     title: string;
     list: Record<string, boolean>;
     setList: (val: Record<string, boolean>) => void;
-  };
-  function sqare_pills_container({title,list,setList}:sqare_pills_container_props) {
-    return (
+  }) => (
     <View className="relative mb-10">
-      {/* console.log(); */}
-      
       <View
         className="absolute top-0 left-0 right-0 bottom-0 bg-fondo rounded-2xl"
         style={{
@@ -55,50 +76,120 @@ export default function DetailEmotionScreen() {
           elevation: 10,
         }}
       />
-        <View className="p-4 rounded-2xl">
-          <Text className="text-2xl font-bold text-center text-oscuro mb-4">{title}</Text>
-          <View className="flex-row flex-wrap justify-left">
-            {Object.entries(list).map(([key, selected]) => (
-              <TouchableOpacity
-                key={key}
-                className={`${PILL_STYLE} ${selected ? ACTIVE_PILL_STYLE : INACTIVE_PILL_STYLE}`}
-                onPress={() => toggle(key, list, setList)}
-              >
-                <FontAwesome name="tag" size={20} color="#595154" />
-                <Text>{key}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+      <View className="p-4 rounded-2xl">
+        <Text className="text-2xl font-bold text-center text-oscuro mb-4">{title}</Text>
+        <View className="flex-row flex-wrap justify-left">
+          {Object.entries(list).map(([key, selected]) => (
+            <TouchableOpacity
+              key={key}
+              className={`${PILL_STYLE} ${selected ? ACTIVE_PILL_STYLE : INACTIVE_PILL_STYLE}`}
+              onPress={() => toggle(key, list, setList)}
+            >
+              <FontAwesome name="tag" size={20} color="#595154" />
+              <Text>{key}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </View>
-    )
-  }
+  );
 
-  const handleRegister = () => {
-    // Pegarle al back
-    Alert.alert(
-      "Registro de emoción",
-      "Ya registraste una emoción hoy, ¿quieres marcar esta como la principal?",
-      [
-        {
-          text: "Cancelar",
-          onPress: () => {
-            console.log("El usuario canceló")
-            router.push("/prechat");
-          },
-          style: "cancel",
+  const submitEmotion = async (
+                                isPredominant: boolean,
+                                token: string | null,
+                                activitiesToSend: string[]
+                              ) => 
+  {                   
+    try {
+      const response = await fetch(URL_BASE + URL_ACTIVITY + "/entry", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
         },
-        {
-          text: "OK",
-          onPress: () => {
-            console.log("El usuario aceptó");
-            router.push("/prechat");
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+        body: JSON.stringify({
+          emotion: ALL_EMOTIONS[Number(value)], // <-- usamos el valor pasado desde SelectFive
+          isPredominant,
+          activities: activitiesToSend,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText);
+      }
+
+      console.log("Registro exitoso");
+      router.push("/prechat");
+    } catch (error) {
+      console.error("Error al registrar emoción:", error);
+      Alert.alert("Error al registrar la emoción");
+    }
   };
+
+  const handleRegister = async () => {
+    
+    const activitiesToSend = [
+      ...Object.entries(activities)
+      .filter(([_, selected]) => selected)
+      .map(([name]) => name),
+      ...Object.entries(hobbies)
+      .filter(([_, selected]) => selected)
+      .map(([name]) => name),
+    ];
+    console.log(activitiesToSend);
+    console.log(ALL_EMOTIONS[Number(value) - 1]);
+    
+
+    if (activitiesToSend.length === 0) {
+      Alert.alert("Selecciona al menos una actividad o hobbie");
+      return;
+    }
+    
+    
+    try {
+      const checkResponse = await fetch(URL_BASE + URL_ACTIVITY + "/predominant", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+      });
+      
+      if (!checkResponse.ok) {
+        const errorText = await checkResponse.text();
+        console.error("Error: ", errorText);
+        throw new Error(errorText);
+      }
+      
+      const alreadyRegistered = await checkResponse.json();
+
+      if (Object.keys(alreadyRegistered).length > 0) {
+        Alert.alert(
+          "Registro de emoción",
+          "Ya registraste una emoción hoy, ¿quieres marcar esta como la principal?",
+          [
+            {
+              text: "Cancelar",
+              onPress: () => submitEmotion(false, token, activitiesToSend),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () => submitEmotion(true, token, activitiesToSend),
+            },
+          ],
+          { cancelable: true }
+        );
+      } else {
+        submitEmotion(true, token, activitiesToSend);
+      }
+    } catch (error) {
+      console.error("Error al consultar emoción predominante:", error);
+      Alert.alert("Error al consultar emoción previa");
+    }
+  };
+
   return (
     <LinearGradient
       colors={["#D2A8D6", "#F4E1E6"]}
@@ -112,21 +203,18 @@ export default function DetailEmotionScreen() {
             <Text className="text-center text-lg text-oscuro">Cargando datos...</Text>
           ) : (
             <>
-                {/* Contenido de Actividades */}
-                {sqare_pills_container({
-                  title: "Actividades",
-                  list: activities,
-                  setList: setActivities
-                })}
+              {PillContainer({
+                title: "Actividades",
+                list: activities,
+                setList: setActivities,
+              })}
 
-                {/* Contenido de Hobbies */}
-                {sqare_pills_container({
-                  title: "Hobbies",
-                  list: hobbies,
-                  setList: setHobbies
-                })}
+              {PillContainer({
+                title: "Hobbies",
+                list: hobbies,
+                setList: setHobbies,
+              })}
 
-              {/* Botones */}
               <View className="mb-20">
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
                 <ButtonDark text="Registrar" onPress={handleRegister} />
@@ -137,5 +225,4 @@ export default function DetailEmotionScreen() {
       </SafeAreaView>
     </LinearGradient>
   );
-
 }
