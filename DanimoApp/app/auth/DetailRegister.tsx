@@ -53,21 +53,25 @@ export default function DetailRegister() {
           gender: userSex ? userSex.trim() : "",
         }),
       });
-            
+      
+      console.log("REGISTER");
+      console.log(response);
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error:", errorText);
-        throw new Error("Error al registrar");
+        throw new Error("Error:" + errorText);
       }
 
       const data = await response.json();
       console.log("Register:", data);
+      router.replace("/auth/LoginRegisterScreen");
+
     } catch (error) {
       console.error("Register error:", error);
-      alert("Register error: " + error);
+      alert(error);
     }
 
-    router.replace("/auth/LoginRegisterScreen");
   };
 
   function selectSex() {
