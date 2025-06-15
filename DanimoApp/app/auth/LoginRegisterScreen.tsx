@@ -46,17 +46,17 @@ export default function LoginRegisterScreen() {
   }
 
   useEffect(() => {
-  console.log(response);
-  
-  if (response?.type === 'success') {
-    console.log("Login Google exitoso:", response);
-    const token = response.authentication?.idToken || '';
-    sendTokenGoogle(token);
-    setUserLogIn(true);
-  } else if (response?.type === 'error') {
-    console.error("Error autenticación Google:", response);
-  }
-}, [response, setUserLogIn]);
+    console.log(response);
+    
+    if (response?.type === 'success') {
+      console.log("Login Google exitoso:", response);
+      const token = response.authentication?.idToken || '';
+      sendTokenGoogle(token);
+      setUserLogIn(true);
+    } else if (response?.type === 'error') {
+      console.error("Error autenticación Google:", response);
+    }
+  }, [response, setUserLogIn]);
 
 
   useEffect(() => {
@@ -160,7 +160,6 @@ export default function LoginRegisterScreen() {
                   />
                 </TouchableOpacity>
               </View>
-
               {tab === "signup" ? (
                 <>
                   {userType === "profesional" && (
@@ -180,7 +179,7 @@ export default function LoginRegisterScreen() {
                       />
                     </TouchableOpacity>
                   </View>
-                  {/* desabilitado si no cumple con password */}
+
                   <ButtonAccept text="Sign Up" onPress={handleRegister} />
                   
                 </>

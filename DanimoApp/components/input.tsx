@@ -1,8 +1,9 @@
 import { FontAwesome } from "@expo/vector-icons";
+import React from "react";
 import { TextInput, View } from "react-native";
 
 export type InputProps = {
-  icon: React.ComponentProps<typeof FontAwesome>['name'];
+  icon: React.ComponentProps<typeof FontAwesome>['name'];// hacerlo generico para todos
 } & React.ComponentProps<typeof TextInput>;
 
 export default function Input({ icon, ...props }: InputProps) {

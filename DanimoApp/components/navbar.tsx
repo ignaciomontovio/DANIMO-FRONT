@@ -20,7 +20,7 @@ export default function Navbar({ tabs }: NavbarProps) {
   const router = useRouter();
 
   return (
-    <View className="flex-row justify-center items-center bg-[#595154] h-[70px] px-2 space-x-7">
+    <View className="flex-row justify-center items-center bg-oscuro h-[70px] px-2 space-x-7">
       {tabs.map((tab, index) =>
         tab.name === "sos" ? (
                 // <Sos key={tab.name}/>
@@ -32,7 +32,7 @@ export default function Navbar({ tabs }: NavbarProps) {
             className="flex-1 items-center"
           >
             <FontAwesome name={tab.icon} size={24} color="#f4e1e6" />
-            <Text className="text-xs text-[#f4e1e6]">{tab.label ?? tab.name}</Text>
+            <Text className="text-xs text-fondo">{tab.label ?? tab.name}</Text>
           </Pressable>
         )
       )}

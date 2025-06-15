@@ -1,4 +1,3 @@
-import { ButtonAccept } from "@/components/buttons";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React from "react";
@@ -18,7 +17,6 @@ export default function profile() {
   return (
     <View className="flex-1 items-center justify-start pt-12 bg-white space-y-8">
       <Text> profile </Text>
-      <ButtonAccept onPress={handleLogoff} text="LogOff"/>
     </View>
   );
 }

@@ -1,6 +1,6 @@
-import Navbar from '@/app/navbar';
 import { ChatBubble } from '@/components/chatBubble';
 import HeaderGoBack from "@/components/headerGoBack";
+import Navbar from '@/components/navbar';
 import { router } from 'expo-router';
 import React from "react";
 import { ScrollView, View } from 'react-native';
