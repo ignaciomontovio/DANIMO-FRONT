@@ -1,3 +1,4 @@
+
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import ShowInfo from "@/components/showInfo";
@@ -22,6 +23,7 @@ export default function profile() {
 
 
   return (
+
     <SafeAreaProvider>
       <LinearGradient
         colors={["#D2A8D6", "#F4E1E6"]}

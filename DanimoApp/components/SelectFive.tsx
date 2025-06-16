@@ -63,18 +63,18 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
       </Text>
       <View className="flex-row justify-center space-x-10">
         {[1, 2, 3, 4, 5].map((num, idx) => {
-        const Icon = icons[idx];
-        return (
-          <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)}>
-            <Animated.View 
-              className="mr-2"
-              style={{ transform: [{ scale: scales[idx] },] }}
-              >
-              <Icon width={45} height={45} />
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        );
-      })}
+          const Icon = icons[idx];
+          return (
+            <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)}>
+              <Animated.View 
+                className="mr-2"
+                style={{ transform: [{ scale: scales[idx] },] }}
+                >
+                <Icon width={45} height={45} />
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          );
+        })}
       </View>
     </View>
   );

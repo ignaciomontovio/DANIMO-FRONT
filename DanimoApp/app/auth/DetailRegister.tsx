@@ -11,11 +11,11 @@ import Modal from "react-native-modal";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function DetailRegister() {
+  const { email, password } = useLocalSearchParams<{ email: string; password: string }>();
   const [userName, setUserName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userSex, setUserSex] = useState<"Masculino" | "Femenino" | "Otro" | undefined>(undefined);
   const [userBirth, setUserBirth] = useState<Date | undefined>(undefined);
-  const { email, password } = useLocalSearchParams<{ email: string; password: string }>();
   const [isModalVisible, setModalVisible] = useState(false);
   const genderOptions = ["Masculino", "Femenino", "Otro"];
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -136,24 +136,10 @@ export default function DetailRegister() {
 
               {selectSex()}
 
-              {/* <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                className="w-full pl-10 pr-4 py-3 border border-oscuro rounded-md text-oscuro"
-              >
-                <FontAwesome name="calendar" size={18} color="gray" style={{ position: "absolute", top: 16, left: 12 }} />
-                <Text className="ml-2 text-oscuro">
-                  {userBirth ? userBirth.toLocaleDateString() : "Fecha de nacimiento"}
-                </Text>
-              </TouchableOpacity> */}
-
               <DatePickerModal
                 onChange={onChageDate}
-                // mode='calendar'
-                // minimumDate=
-                // maximumDate={new Date()}
               />
               
-
               <ButtonAccept text="Sign Up" onPress={handleRegister} />
             </View>
           </View>

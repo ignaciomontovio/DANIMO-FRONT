@@ -1,4 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
+import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export type Props = {

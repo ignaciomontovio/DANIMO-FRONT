@@ -117,30 +117,30 @@ export function ContactCard({ contact, editing }: PropsContactCard) {
     router.replace("/emergencyContact") // si pongo back no vuelve a cargar por ser un useefect vacio
   }
   return (
-  <View className="w-full max-w-md rounded-2xl shadow-xl mb-4"
-    style={{
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 10,
-    }}
-  >
-    <View className="py-3 bg-color1 rounded-t-2xl">
-    <TextInput 
-      className="text-2xl font-bold text-white text-center"
-      value={newContact.who}
-      onChangeText={(text) => setNewContact({ ...newContact, who: text })}
-    />
+    <View className="w-full max-w-md rounded-2xl shadow-xl mb-4"
+      style={{
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 10,
+      }}
+    >
+      <View className="py-3 bg-color1 rounded-t-2xl">
+      <TextInput 
+        className="text-2xl font-bold text-white text-center"
+        value={newContact.who}
+        onChangeText={(text) => setNewContact({ ...newContact, who: text })}
+      />
 
-    </View>
+      </View>
 
-    <View className="p-6 bg-fondo rounded-b-2xl">
-    <ShowInfo_edit text={newContact.name} icon="id-card" onChangeText={(text) => setNewContact({ ...newContact, name: text })}/>
-    <ShowInfo_edit text={newContact.phoneNumber} icon="phone" onChangeText={(text) => setNewContact({ ...newContact, phoneNumber: text })}/>
-    <ButtonDark text="Guardar" onPress={save} />
+      <View className="p-6 bg-fondo rounded-b-2xl">
+      <ShowInfo_edit text={newContact.name} icon="id-card" onChangeText={(text) => setNewContact({ ...newContact, name: text })}/>
+      <ShowInfo_edit text={newContact.phoneNumber} icon="phone" onChangeText={(text) => setNewContact({ ...newContact, phoneNumber: text })}/>
+      <ButtonDark text="Guardar" onPress={save} />
+      </View>
     </View>
-  </View>
   );
 }
 
