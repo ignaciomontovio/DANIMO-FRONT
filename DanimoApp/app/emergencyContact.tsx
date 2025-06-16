@@ -37,7 +37,7 @@ export default function EmergencyContact() {
   }
   return (
     <SafeAreaProvider>
-      <CardsList<Contact>  endpoint={URL_BASE + URL_CONTACT} name={"Contacto"} goto={"/editEmergencyContact"} deleteFunct={deleteContact}/>
+      <CardsList<Contact> endpoint={URL_BASE + URL_CONTACT} name={"Contacto"} goto={"/editEmergencyContact"} deleteFunct={deleteContact}/>
     </SafeAreaProvider>
   );
 }

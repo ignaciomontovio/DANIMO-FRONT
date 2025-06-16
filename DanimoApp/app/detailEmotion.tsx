@@ -101,14 +101,14 @@ export default function DetailEmotionScreen() {
                               ) => 
   {                   
     try {
-      const response = await fetch(URL_BASE + URL_ACTIVITY + "/entry", {
+      const response = await fetch(URL_BASE + URL_EMOTION + "/entry", {
         method: "POST",
         headers: {
           Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          emotion: ALL_EMOTIONS[Number(value)], // <-- usamos el valor pasado desde SelectFive
+          emotion: value, 
           isPredominant,
           activities: activitiesToSend,
         }),
@@ -120,7 +120,7 @@ export default function DetailEmotionScreen() {
       }
 
       console.log("Registro exitoso");
-      router.push("/prechat");
+      router.push({ pathname: "/prechat", params: { emotionNum: value, detailType: "Emotion"} });
     } catch (error) {
       console.error("Error al registrar emoción:", error);
       Alert.alert("Error al registrar la emoción");
@@ -164,10 +164,19 @@ export default function DetailEmotionScreen() {
       
       const alreadyRegistered = await checkResponse.json();
 
-      if (Object.keys(alreadyRegistered).length > 0) {
+      if (alreadyRegistered.emotion !== null) {        
+        if(alreadyRegistered.emotion.emotionName === ALL_EMOTIONS[Number(value) - 1]) {
+          console.log("Ya registraste la misma emoción hoy");
+          submitEmotion(true, token, activitiesToSend);
+          return;
+        }
+       
+        // si ya regitro preguntar si es la misma
         Alert.alert(
           "Registro de emoción",
-          "Ya registraste una emoción hoy, ¿quieres marcar esta como la principal?",
+          "Ya registraste la emocion " + 
+          alreadyRegistered.emotion.emotionName + 
+          " hoy como principal, ¿quieres cambiarla por esta?",
           [
             {
               text: "Cancelar",
