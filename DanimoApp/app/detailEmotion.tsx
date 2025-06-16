@@ -1,6 +1,6 @@
 import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
-import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE } from "@/stores/consts";
+import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -148,7 +148,7 @@ export default function DetailEmotionScreen() {
     
     
     try {
-      const checkResponse = await fetch(URL_BASE + URL_ACTIVITY + "/predominant", {
+      const checkResponse = await fetch(URL_BASE + URL_EMOTION + "/predominant", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
