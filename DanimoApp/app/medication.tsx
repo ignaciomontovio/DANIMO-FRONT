@@ -1,4 +1,3 @@
-
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import ShowInfo from "@/components/showInfo";
@@ -11,7 +10,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navbar from "./navbar";
 
-export default function profile() {
+export default function medication() {
   const setUserLogIn = useUserLogInStore(
     (state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn
   );
@@ -23,7 +22,6 @@ export default function profile() {
 
 
   return (
-
     <SafeAreaProvider>
       <LinearGradient
         colors={["#D2A8D6", "#F4E1E6"]}
@@ -31,19 +29,15 @@ export default function profile() {
         end={{ x: 0, y: 1 }}
         className="w-full h-full"
       >
-        <HeaderGoBack text="Perfil" onPress={() => router.replace("/tabs/home")} />
+        <HeaderGoBack text="Medicación" onPress={() => router.replace("/tabs/home")} />
         <ScrollView className="flex-1 px-5 py-5">
           <View className="mb-8">
-            <ProfileCard
-              profile={{
-                name: "Juan",
-                email: "juan.perez@email.com",
-                d_birth: new Date("1990-01-01"),
-                codigo: "PSI-12345"
+            <MedicationCard
+              medication={{
+                drug: "Clonazepam",
+                grams: "0.5",
+                frecuency: "2",
               }}
-            //onEdit={() => router.push("/editProfile")}
-            //onIconPress={handleLogoff} // Agregado para completar props
-            //icon="sign-out" // Agregado para logout
             />
           </View>
         </ScrollView>
@@ -58,26 +52,24 @@ export default function profile() {
             ]}
           />
         </View>
-
       </LinearGradient>
     </SafeAreaProvider>
   );
 }
 
-type UserProfile = {
-  email: string;
-  name: string;
-  d_birth: Date;
-  codigo: string;
+type UserMedication = {
+  drug:string;
+  grams: number;
+  frecuency: number;
 };
 
-type PropsProfileCard = {
-  profile: UserProfile;
+type PropsMedicationCard = {
+  medication: UserMedication;
   onEdit: () => void;
-  icon: keyof typeof FontAwesome.glyphMap;
+ icon: keyof typeof FontAwesome.glyphMap;
 };
 
-export function ProfileCard({ profile, onEdit, icon = "user" }: PropsProfileCard) {
+export function MedicationCard({ medication, icon }: PropsMedicationCard) {
   return (
     <View
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -90,20 +82,14 @@ export function ProfileCard({ profile, onEdit, icon = "user" }: PropsProfileCard
       }}
     >
       <View className="py-3 bg-color1 rounded-t-2xl relative">
-        <Text className="text-2xl font-bold text-white text-center">Perfil</Text>
+        <Text className="text-2xl font-bold text-white text-center">{medication.drug}</Text>
       </View>
-
       <View className="p-6 bg-fondo rounded-b-2xl">
-        <ShowInfo text={profile.name} icon="user" />
-
-        <ShowInfo text={profile.email} icon="envelope" />
-
-        <ShowInfo text={profile.d_birth.toLocaleDateString()} icon="calendar" />
-
-        <ShowInfo text={profile.codigo} icon="share" />
+        <ShowInfo text={`${medication.grams} gramo/s`} icon="medkit" />
+        <ShowInfo text={`${medication.frecuency} veces al día`} icon="clock-o" />
+        
         <ButtonDark
           text="Editar"
-          onPress={onEdit}
         />
       </View>
     </View>
