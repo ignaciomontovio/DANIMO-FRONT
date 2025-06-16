@@ -1,7 +1,9 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
  
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
-import LoaderDanimo from "@/components/LoaderDanimo";
+import { LoaderDanimo } from "@/components/LoaderDanimo";
+import { URL_BASE, URL_EMOTION } from "@/stores/consts";
+import { useEmotionStore } from "@/stores/emotions";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
@@ -11,8 +13,28 @@ import { useUserStore } from "../stores/userType";
 export default function Index() {
   const setUserType = useUserStore((state) => state.setUserType);
   const [showLoader, setShowLoader] = useState(true);
+
+  const fetchEmotions = async () => {
+    try {
+      const response = await fetch(URL_BASE + URL_EMOTION + "/types");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error:", errorText);
+        throw new Error(errorText);
+      }
+
+      const data = await response.json();
+      console.log("Emociones recibidas:", data);
+
+      useEmotionStore.getState().setEmotions(data);
+
+    } catch (error) {
+      console.error("Error al obtener emociones:", error);
+    }
+  };
   
   const handleUsuario = () => {
+    fetchEmotions()
     setUserType("usuario");
     router.replace("/auth/LoginRegisterScreen");
   };
@@ -20,6 +42,7 @@ export default function Index() {
     setUserType("profesional");
     router.replace("/auth/LoginRegisterScreen");
   };
+
   if (showLoader) {
     setTimeout(() => {
       setShowLoader(false);

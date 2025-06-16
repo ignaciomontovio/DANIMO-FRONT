@@ -13,6 +13,7 @@ type Contact = {
 export default function EditEmergencyContact() {
   const token = useUserLogInStore((state) => state.token);
   const { editing } = useLocalSearchParams();
+  
   const createContact = async (data: Contact) => {
     console.log("Creating contact with data:", data);
     const response = await fetch(URL_BASE + URL_CONTACT + "/create", {

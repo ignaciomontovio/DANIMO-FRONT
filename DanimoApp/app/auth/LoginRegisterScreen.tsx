@@ -6,6 +6,7 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 
 // import { GoogleSignin, statusCodes } from "react-native-google-signin";}
 // import { makeRedirectUri } from "expo-auth-session";
+import LoaderDanimo from "@/components/LoaderDanimo";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
@@ -25,10 +26,13 @@ export default function LoginRegisterScreen() {
   const UserLogIn = useUserLogInStore((state) => state.userLogIn);
   const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
   const setUserSession= useUserLogInStore((state) => state.setUserSession);
+  const token = useUserLogInStore((state) => state.token);
+  const mail = useUserLogInStore((state) => state.mail);
 
   const redirectUri = makeRedirectUri({
     scheme: 'com.danimo.app',
   });
+
   // useEffect(() => {
   //   console.log("Redirect URI:", redirectUri);
   // }, []);
@@ -60,14 +64,67 @@ export default function LoginRegisterScreen() {
 
 
   useEffect(() => {
-    if (UserLogIn) {
-      if (userType === "profesional") {
-        router.push("/profesional/home");
-      } else {
-        router.push("/tabs/home");
+    const validateToken = async (token: string | null, email: string | null) => {
+      try {
+        const response = await fetch(URL_BASE + URL_AUTH + "/token-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify({ email: (email ?? "").trim().toLowerCase() }),
+        });
+
+        if (response.status === 401) {
+          const errorText = await response.text();
+          console.error("Error:", errorText);
+          throw new Error("Registrese Nuevamente por error del backend");
+        }
+        if (response.status === 403) {
+          const errorText = await response.text();
+          console.error("Error:", errorText);
+          throw new Error("Inicie sesion Nuevamente");
+        }
+        if (response.status === 404) {
+          const errorText = await response.text();
+          console.error("Error:", errorText);
+          throw new Error("Registrese Nuevamente por falla de token");
+        }
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error:", errorText); 
+          throw new Error("Error: " + errorText);
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Error al validar el token: " + error);
+        setUserLogIn(false);
+        setUserSession("", "");
+        return false;
       }
-    }
-  }, [UserLogIn, userType]);
+    };
+
+    const checkLogin = async () => {
+      console.log("UserLogIn:", UserLogIn);
+      if (UserLogIn) {
+        const valid = await validateToken(token, mail);
+        if (valid) {
+          if (userType === "profesional") {
+            router.push("/profesional/home");
+          } else {
+            router.push("/tabs/home");
+          }
+        }
+      }
+    };
+
+    checkLogin();
+
+
+  }, [UserLogIn, mail, setUserLogIn, setUserSession, token, userType]);
+
 
   const handleLogin = async () => {
     try {
@@ -125,6 +182,9 @@ export default function LoginRegisterScreen() {
   //     handleLogin()
   // }
 
+  if (UserLogIn) {
+      return <LoaderDanimo />;
+  }
   return (
     <SafeAreaProvider>
       <LinearGradient colors={["#D2A8D6", "#F4E1E6"]} className="w-full h-full">

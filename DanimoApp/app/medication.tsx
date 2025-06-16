@@ -1,26 +1,15 @@
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
+import Navbar from "@/components/navbar";
 import ShowInfo from "@/components/showInfo";
-import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import Navbar from "./navbar";
 
-export default function medication() {
-  const setUserLogIn = useUserLogInStore(
-    (state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn
-  );
-
-  const handleLogoff = () => {
-    setUserLogIn(false);
-    router.replace("../auth/LoginRegisterScreen");
-  };
-
-
+export default function Medication() {
   return (
     <SafeAreaProvider>
       <LinearGradient
@@ -35,10 +24,12 @@ export default function medication() {
             <MedicationCard
               medication={{
                 drug: "Clonazepam",
-                grams: "0.5",
-                frecuency: "2",
-              }}
-            />
+                grams: 0.5,
+                frecuency: 2,
+              }} 
+              onEdit={()=>("")} 
+              icon={"sort"}            
+              />
           </View>
         </ScrollView>
         <View className="absolute bottom-0 left-0 right-0">

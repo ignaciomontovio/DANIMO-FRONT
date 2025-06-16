@@ -36,8 +36,7 @@ export default function profile() {
                 d_birth: new Date("1990-01-01"),
                 codigo: "PSI-12345",
               }}
-              onEdit={() => {}} // Provide a valid function or your edit handler here
-              //onIconPress={handleLogoff} // Agregado para completar props
+              onEdit={() => {}} 
               icon="sign-out" // Agregado para logout
             />
           </View>
