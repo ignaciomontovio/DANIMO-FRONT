@@ -1,15 +1,17 @@
 
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
+import Navbar from "@/components/navbar";
 import ShowInfo from "@/components/showInfo";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import * as React from "react";
+import { useState } from "react";
+import { Alert, ScrollView, Text, TextInput, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import Navbar from "./navbar";
+
 
 export default function profile() {
   const setUserLogIn = useUserLogInStore(
@@ -21,9 +23,7 @@ export default function profile() {
     router.replace("../auth/LoginRegisterScreen");
   };
 
-
   return (
-
     <SafeAreaProvider>
       <LinearGradient
         colors={["#D2A8D6", "#F4E1E6"]}
@@ -41,9 +41,6 @@ export default function profile() {
                 d_birth: new Date("1990-01-01"),
                 codigo: "PSI-12345"
               }}
-            //onEdit={() => router.push("/editProfile")}
-            //onIconPress={handleLogoff} // Agregado para completar props
-            //icon="sign-out" // Agregado para logout
             />
           </View>
         </ScrollView>
@@ -58,7 +55,6 @@ export default function profile() {
             ]}
           />
         </View>
-
       </LinearGradient>
     </SafeAreaProvider>
   );
@@ -73,11 +69,86 @@ type UserProfile = {
 
 type PropsProfileCard = {
   profile: UserProfile;
-  onEdit: () => void;
-  icon: keyof typeof FontAwesome.glyphMap;
 };
 
-export function ProfileCard({ profile, onEdit, icon = "user" }: PropsProfileCard) {
+function ShowInfo_edit({ 
+  icon, 
+  text, 
+  onChangeText 
+}: {
+  icon: keyof typeof FontAwesome.glyphMap;
+  text: string;
+  onChangeText: (text: string) => void;
+}) {
+  return (
+    <View className="flex-row items-center mb-3 p-3 bg-gray-50 rounded-lg">
+      <FontAwesome name={icon} size={16} color="#666" />
+      <TextInput
+        value={text}
+        onChangeText={onChangeText}
+        className="flex-1 text-base text-gray-800 ml-3"
+        placeholder="Ingresa valor..."
+        placeholderTextColor="#999"
+        style={{
+          minHeight: 24,
+          borderBottomWidth: 1,
+          borderBottomColor: '#ddd',
+          paddingBottom: 2,
+        }}
+      />
+    </View>
+  );
+}
+
+export function ProfileCard({ profile }: PropsProfileCard) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProfile, setEditedProfile] = useState({
+    name: profile.name,
+    email: profile.email,
+    d_birth: profile.d_birth.toISOString().split('T')[0],
+  });
+
+  const handleFieldChange = (field: string, value: string) => {
+    setEditedProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      console.log("Guardando perfil:", editedProfile);
+      // Simulación de guardado (reemplazar con llamada a backend)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // TODO:
+      // const response = await fetch(URL_BASE + "/profile/update", {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": "Bearer " + token,
+      //   },
+      //   body: JSON.stringify(editedProfile),
+      // });
+      
+      Alert.alert("Éxito", "Perfil actualizado correctamente");
+      setIsEditing(false);
+      
+    } catch (error) {
+      console.error("Error guardando perfil:", error);
+      Alert.alert("Error", "No se pudo guardar el perfil");
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedProfile({
+      name: profile.name,
+      email: profile.email,
+      d_birth: profile.d_birth.toISOString().split('T')[0],
+    });
+    setIsEditing(false);
+  };
+
   return (
     <View
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -94,17 +165,58 @@ export function ProfileCard({ profile, onEdit, icon = "user" }: PropsProfileCard
       </View>
 
       <View className="p-6 bg-fondo rounded-b-2xl">
-        <ShowInfo text={profile.name} icon="user" />
+        {isEditing ? (
+          <ShowInfo_edit
+            icon="user"
+            text={editedProfile.name}
+            onChangeText={(text) => handleFieldChange('name', text)}
+          />
+        ) : (
+          <ShowInfo text={profile.name} icon="user" />
+        )}
 
-        <ShowInfo text={profile.email} icon="envelope" />
+        {isEditing ? (
+          <ShowInfo_edit
+            icon="envelope"
+            text={editedProfile.email}
+            onChangeText={(text) => handleFieldChange('email', text)}
+          />
+        ) : (
+          <ShowInfo text={profile.email} icon="envelope" />
+        )}
 
-        <ShowInfo text={profile.d_birth.toLocaleDateString()} icon="calendar" />
+        {isEditing ? (
+          <ShowInfo_edit
+            icon="calendar"
+            text={editedProfile.d_birth}
+            onChangeText={(text) => handleFieldChange('d_birth', text)}
+          />
+        ) : (
+          <ShowInfo text={profile.d_birth.toLocaleDateString()} icon="calendar" />
+        )}
 
         <ShowInfo text={profile.codigo} icon="share" />
-        <ButtonDark
-          text="Editar"
-          onPress={onEdit}
-        />
+        {isEditing ? (
+          <View className="flex-row gap-2 mt-4">
+            <View className="flex-1">
+              <ButtonDark
+                text="Guardar"
+                onPress={handleSave}
+              />
+            </View>
+            <View className="flex-1">
+              <ButtonDark
+                text="Cancelar"
+                onPress={handleCancel}
+              />
+            </View>
+          </View>
+        ) : (
+          <ButtonDark
+            text="Editar"
+            onPress={() => setIsEditing(true)}
+          />
+        )}
       </View>
     </View>
   );
