@@ -1,29 +1,24 @@
 
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
+import Navbar from "@/components/navbar";
 import ShowInfo from "@/components/showInfo";
-import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import Navbar from "./navbar";
+
+type UserProfile = {
+  email: string;
+  name: string;
+  d_birth: Date;
+  codigo: string;
+};
 
 export default function profile() {
-  const setUserLogIn = useUserLogInStore(
-    (state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn
-  );
-
-  const handleLogoff = () => {
-    setUserLogIn(false);
-    router.replace("../auth/LoginRegisterScreen");
-  };
-
-
   return (
-
     <SafeAreaProvider>
       <LinearGradient
         colors={["#D2A8D6", "#F4E1E6"]}
@@ -39,11 +34,11 @@ export default function profile() {
                 name: "Juan",
                 email: "juan.perez@email.com",
                 d_birth: new Date("1990-01-01"),
-                codigo: "PSI-12345"
+                codigo: "PSI-12345",
               }}
-            //onEdit={() => router.push("/editProfile")}
-            //onIconPress={handleLogoff} // Agregado para completar props
-            //icon="sign-out" // Agregado para logout
+              onEdit={() => {}} // Provide a valid function or your edit handler here
+              //onIconPress={handleLogoff} // Agregado para completar props
+              icon="sign-out" // Agregado para logout
             />
           </View>
         </ScrollView>
@@ -64,12 +59,7 @@ export default function profile() {
   );
 }
 
-type UserProfile = {
-  email: string;
-  name: string;
-  d_birth: Date;
-  codigo: string;
-};
+
 
 type PropsProfileCard = {
   profile: UserProfile;
