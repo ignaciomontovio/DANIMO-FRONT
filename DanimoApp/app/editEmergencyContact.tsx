@@ -1,4 +1,3 @@
-// EditEmergencyContact.tsx - Refactorizado usando componente genérico
 import { URL_BASE, URL_CONTACT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { useLocalSearchParams } from "expo-router";

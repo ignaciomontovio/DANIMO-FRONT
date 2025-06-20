@@ -1,4 +1,3 @@
-// EmergencyContact.tsx - Refactorizado usando componente genérico
 import { URL_BASE, URL_CONTACT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import React from "react";
@@ -35,7 +34,7 @@ export default function EmergencyContact() {
     } catch (error) {
       console.error("Error al eliminar contacto:", error);
       Alert.alert("Error", "No se pudo eliminar el contacto.");
-      throw error; // Re-lanzar para que CardsList maneje el error
+      throw error;
     }
   };
 

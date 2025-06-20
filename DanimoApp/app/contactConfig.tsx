@@ -1,10 +1,7 @@
-// contactConfig.ts
 import ShowInfo from "@/components/showInfo";
 import React from 'react';
 
-// ===============================
 // TIPOS GENÉRICOS PARA CONFIGURACIÓN
-// ===============================
 export interface FieldConfig {
   key: string;
   label: string;
@@ -33,18 +30,14 @@ export interface EditConfig {
   titleField: string;
 }
 
-// ===============================
 // TIPOS ESPECÍFICOS DE CONTACTO
-// ===============================
 export interface Contact extends Record<string, string | undefined> {
   who: string;
   name: string;
   phoneNumber: string;
 }
 
-// ===============================
 // ESTRATEGIA DE FETCH PARA CONTACTOS (GENÉRICA)
-// ===============================
 export const contactFetchStrategy = async (endpoint: string, token: string): Promise<Contact[]> => {
   const response = await fetch(endpoint + "/obtain", {
     method: "GET",
@@ -60,9 +53,7 @@ export const contactFetchStrategy = async (endpoint: string, token: string): Pro
   return Array.isArray(data) ? data : (data.data || []);
 };
 
-// ===============================
 // CONFIGURACIÓN DE NAVEGACIÓN PARA CONTACTOS
-// ===============================
 export const contactNavigationConfig: NavigationConfig<Contact> = {
   goto: "/editEmergencyContact",
   getEditParams: (item: Contact) => ({
@@ -77,9 +68,7 @@ export const contactNavigationConfig: NavigationConfig<Contact> = {
   }),
 };
 
-// ===============================
 // CONFIGURACIÓN DE CARD PARA CONTACTOS
-// ===============================
 export const contactCardConfig: CardConfig<Contact> = {
   getTitle: (item: Contact) => item.who,
   renderContent: (item: Contact) => (
@@ -90,9 +79,7 @@ export const contactCardConfig: CardConfig<Contact> = {
   ),
 };
 
-// ===============================
 // CONFIGURACIÓN DE EDICIÓN PARA CONTACTOS
-// ===============================
 export const contactEditConfig: EditConfig = {
   titleField: "who",
   fields: [
