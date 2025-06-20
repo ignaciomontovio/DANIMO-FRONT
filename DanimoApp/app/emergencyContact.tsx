@@ -1,20 +1,22 @@
-import React from "react";
-
+// EmergencyContact.tsx - Refactorizado usando componente genérico
 import { URL_BASE, URL_CONTACT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import React from "react";
 import { Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import CardsList from "./cardsList";
-
-
-type Contact = {
-  who: string;
-  name: string;
-  phoneNumber: string;
-};
+import {
+  Contact,
+  contactCardConfig,
+  contactFetchStrategy,
+  contactNavigationConfig,
+  FetchConfig
+} from "./contactConfig";
 
 export default function EmergencyContact() {
   const token = useUserLogInStore((state) => state.token);
+  
+  // Función específica de eliminación de contacto
   const deleteContact = async (contactToDelete: Contact) => {
     try {
       const response = await fetch(URL_BASE + URL_CONTACT + "/delete", {
@@ -23,7 +25,7 @@ export default function EmergencyContact() {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
-        body: JSON.stringify({phoneNumber: contactToDelete.phoneNumber}),
+        body: JSON.stringify({ phoneNumber: contactToDelete.phoneNumber }),
       });
 
       if (!response.ok) {
@@ -33,11 +35,25 @@ export default function EmergencyContact() {
     } catch (error) {
       console.error("Error al eliminar contacto:", error);
       Alert.alert("Error", "No se pudo eliminar el contacto.");
+      throw error; // Re-lanzar para que CardsList maneje el error
     }
-  }
+  };
+
+  // Configuración de fetch específica para contactos
+  const fetchConfig: FetchConfig<Contact> = {
+    endpoint: URL_BASE + URL_CONTACT,
+    fetchStrategy: contactFetchStrategy,
+  };
+
   return (
     <SafeAreaProvider>
-      <CardsList<Contact>  endpoint={URL_BASE + URL_CONTACT} name={"Contacto"} goto={"/editEmergencyContact"} deleteFunct={deleteContact}/>
+      <CardsList<Contact>  
+        name="Contacto"
+        fetchConfig={fetchConfig}
+        navigationConfig={contactNavigationConfig}
+        cardConfig={contactCardConfig}
+        deleteFunct={deleteContact}
+      />
     </SafeAreaProvider>
   );
 }
