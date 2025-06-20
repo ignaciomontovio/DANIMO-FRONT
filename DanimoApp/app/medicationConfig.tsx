@@ -156,7 +156,7 @@ export const medicationCardConfig: CardConfig<Medication> = {
         <View style={{ opacity: isInactive ? 0.5 : 1 }}>
           <ShowInfo 
             text={item.dosage || "Sin dosis registrada"} 
-            icon="tint" 
+            icon="medkit" 
           />
           {item.startDate && (
             <ShowInfo 
@@ -181,7 +181,7 @@ export const medicationEditConfig: EditConfig = {
   titleField: "name",
   fields: [
     { key: "name", icon: "pills", placeholder: "Nombre del medicamento" },
-    { key: "dosage", icon: "tint", placeholder: "Dosis del medicamento" },
+    { key: "dosage", icon: "medkit", placeholder: "Dosis del medicamento" },
     { key: "startDate", icon: "calendar", placeholder: "Fecha de inicio" },
     { key: "endDate", icon: "calendar", placeholder: "Fecha de fin" },
   ],
