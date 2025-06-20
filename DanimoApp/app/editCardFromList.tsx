@@ -7,7 +7,19 @@ import React, { useState } from "react";
 import { Alert, ScrollView, TextInput, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { EditConfig } from './medicationConfig';
+
+// TIPOS GENÉRICOS LOCALES (para evitar conflictos)
+interface FieldConfig {
+  key: string;
+  label: string;
+  icon: string;
+  placeholder?: string;
+}
+
+interface EditConfig {
+  fields: FieldConfig[];
+  titleField: string;
+}
 
 // TIPOS GENÉRICOS
 type Props<T extends Record<string, string | undefined>> = {
@@ -15,7 +27,7 @@ type Props<T extends Record<string, string | undefined>> = {
   goBackTo: string;
   createFunct: (data: T) => Promise<void>;
   updateFunct: (data: T, originalData: T) => Promise<void>;
-  editConfig: EditConfig;
+  editConfig: any; // Cambiar a any temporalmente para evitar conflictos
   editing?: string;
 };
 
@@ -45,6 +57,17 @@ export default function EditCardFromList<T extends Record<string, string | undef
     }, {} as Record<string, string>) as T;
   
   const [formData, setFormData] = useState<T>(initialData);
+
+  // Función para obtener el placeholder del campo título
+  const getTitlePlaceholder = () => {
+    for (let i = 0; i < editConfig.fields.length; i++) {
+      const field = editConfig.fields[i];
+      if (field.key === editConfig.titleField) {
+        return field.placeholder || "Ingrese nombre...";
+      }
+    }
+    return "Ingrese nombre...";
+  };
 
   const handleChange = (key: keyof T, value: string) => {
     setFormData({ ...formData, [key]: value });
@@ -89,19 +112,21 @@ export default function EditCardFromList<T extends Record<string, string | undef
                 className="text-2xl font-bold text-white text-center"
                 value={formData[editConfig.titleField as keyof T] || ""}
                 onChangeText={(text) => handleChange(editConfig.titleField as keyof T, text)}
-                placeholder="Ingrese nombre..."
+                placeholder={getTitlePlaceholder()}
                 placeholderTextColor="rgba(255,255,255,0.7)"
               />
             </View>
             <View className="p-6 bg-fondo rounded-b-2xl">
               {editConfig.fields
-                .filter(field => field.key !== editConfig.titleField)
-                .map((field) => (
+                .filter((field: { key: any; }) => field.key !== editConfig.titleField)
+                .map((field: { key: keyof T | React.Key | null | undefined; icon: any; placeholder: string | undefined; label: string | undefined; }) => (
                   <ShowInfo_edit
-                    key={field.key}
+                    key={String(field.key)}
                     icon={field.icon as any}
                     text={formData[field.key as keyof T] || ""}
                     onChangeText={(text) => handleChange(field.key as keyof T, text)}
+                    placeholder={field.placeholder}
+                    label={field.label}
                   />
                 ))}
               <ButtonDark text="Guardar" onPress={save} />

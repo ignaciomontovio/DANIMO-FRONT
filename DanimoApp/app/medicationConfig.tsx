@@ -12,7 +12,6 @@ export interface Medication extends Record<string, string> {
 // TIPOS GENÉRICOS PARA CONFIGURACIÓN
 export interface FieldConfig {
   key: string;
-  label: string;
   icon: string;
   placeholder?: string;
 }
@@ -48,7 +47,6 @@ const formatDate = (dateString: string) => {
   }
 };
 
-// ESTRATEGIA DE FETCH PARA MEDICACIÓN
 export const medicationFetchStrategy = async (endpoint: string, token: string): Promise<Medication[]> => {
   // Obtener lista de medicaciones
   const listResponse = await fetch(endpoint + "/obtain", {
@@ -115,16 +113,16 @@ export const medicationCardConfig: CardConfig<Medication> = {
   getTitle: (item: Medication) => item.name,
   renderContent: (item: Medication) => (
     <>
-      <ShowInfo text={item.dosage} icon="tint" />
+      <ShowInfo text={item.dosage || "Sin dosis registrada"} icon="tint" />
       {item.startDate && (
         <ShowInfo 
-          text={"Inicio: " + formatDate(item.startDate)} 
+          text={`Inicio: ${formatDate(item.startDate)}`} 
           icon="calendar" 
         />
       )}
       {item.endDate && (
         <ShowInfo 
-          text={"Fin: " + formatDate(item.endDate)} 
+          text={`Fin: ${formatDate(item.endDate)}`} 
           icon="calendar" 
         />
       )}
@@ -136,14 +134,14 @@ export const medicationCardConfig: CardConfig<Medication> = {
 export const medicationEditConfig: EditConfig = {
   titleField: "name",
   fields: [
-    { key: "name", label: "Nombre", icon: "pills", placeholder: "Nombre del medicamento" },
-    { key: "dosage", label: "Dosis", icon: "tint", placeholder: "Dosis del medicamento" },
-    { key: "startDate", label: "Fecha inicio", icon: "calendar", placeholder: "Fecha de inicio" },
-    { key: "endDate", label: "Fecha fin", icon: "calendar", placeholder: "Fecha de fin" },
+    { key: "name", icon: "pills", placeholder: "Nombre del medicamento" },
+    { key: "dosage", icon: "tint", placeholder: "Dosis del medicamento" },
+    { key: "startDate", icon: "calendar", placeholder: "Fecha de inicio" },
+    { key: "endDate", icon: "calendar", placeholder: "Fecha de fin" },
   ],
 };
 
-//esto se agrega para evitar el warning
+//evitar warning
 export default function MedicationConfigDummy() {
   return null;
 }

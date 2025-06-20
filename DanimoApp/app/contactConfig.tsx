@@ -4,7 +4,6 @@ import React from 'react';
 // TIPOS GENÉRICOS PARA CONFIGURACIÓN
 export interface FieldConfig {
   key: string;
-  label: string;
   icon: string;
   placeholder?: string;
 }
@@ -83,8 +82,13 @@ export const contactCardConfig: CardConfig<Contact> = {
 export const contactEditConfig: EditConfig = {
   titleField: "who",
   fields: [
-    { key: "who", label: "¿Quién es?", icon: "user", placeholder: "Ej: Hermana, Doctor, etc." },
-    { key: "name", label: "Nombre completo", icon: "id-card", placeholder: "Nombre y apellido" },
-    { key: "phoneNumber", label: "Teléfono", icon: "phone", placeholder: "Número de teléfono" },
+    { key: "who", icon: "user", placeholder: "¿Quién es?" },
+    { key: "name", icon: "id-card", placeholder: "Nombre" },
+    { key: "phoneNumber", icon: "phone", placeholder: "Número de teléfono" },
   ],
 };
+
+//evitar warning
+export default function ContactConfigDummy() {
+  return null;
+}
