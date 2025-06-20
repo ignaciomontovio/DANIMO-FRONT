@@ -38,7 +38,7 @@ export default function profile() {
               profile={{
                 name: "Juan",
                 email: "juan.perez@email.com",
-                d_birth: new Date("1990-01-01"),
+                d_birth: new Date("01-01-1990"),
                 codigo: "PSI-12345"
               }}
             />

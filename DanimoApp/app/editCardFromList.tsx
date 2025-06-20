@@ -99,6 +99,14 @@ export default function EditCardFromList<T extends Record<string, string>>({
                   text={formData[keys[2]]}
                   onChangeText={(text) => handleChange(keys[2], text)}
                 />
+
+                 {keys[3] && (
+                <ShowInfo_edit
+                  icon="pencil"
+                  text={formData[keys[3]]}
+                  onChangeText={(text) => handleChange(keys[3], text)}
+                />
+              )}
               <ButtonDark text="Guardar" onPress={save} />
             </View>
           </View>

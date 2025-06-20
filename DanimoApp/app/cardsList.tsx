@@ -4,11 +4,22 @@ import ShowInfo from "@/components/showInfo";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import * as React from "react";
+import { useEffect, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+// Función para formatear fecha
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  try {
+    return new Date(dateString).toLocaleDateString('es-ES');
+  } catch {
+    return dateString;
+  }
+};
 
 type Props<T> = {
   endpoint: string;
@@ -32,29 +43,68 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
   const fetchData = async () => {
     try {
       setLoading(true);
-      console.log("Fetching from:", endpoint + "/obtain"); // Debug
       
-      const response = await fetch(endpoint + "/obtain", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token,
-        },
-      });
+      // Detectar si es medicación
+      const isMedicationEndpoint = endpoint.includes('/medication');
+      
+      if (isMedicationEndpoint) {
+        const listResponse = await fetch(endpoint + "/obtain", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
 
-      console.log("Response status:", response.status); // Debug
-      
-      if (!response.ok) throw new Error(await response.text());
+        if (!listResponse.ok) throw new Error(await listResponse.text());
 
-      const data = await response.json();
-      console.log("Data received:", data); // Debug
-      console.log("Is array:", Array.isArray(data)); // Debug
-      
-      const arrayData = Array.isArray(data) ? data : [];
-      setElement(arrayData);
+        const listData = await listResponse.json();
+        const medicationNames = listData.data || listData;
+        console.log("Got", medicationNames.length, "medications to detail");
+        // Obtener detalles de cada medicación
+        const detailedMedications = [];
+        for (let i = 0; i < medicationNames.length; i++) {
+          const med = medicationNames[i];
+          try {
+            const detailResponse = await fetch(endpoint + "/detail", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token,
+              },
+              body: JSON.stringify({ name: med.name }),
+            });
+
+            if (detailResponse.ok) {
+              const detailData = await detailResponse.json();
+              const details = detailData.data || detailData;
+              detailedMedications.push(details);
+            } else {
+              detailedMedications.push(med);
+            }
+          } catch (error) {
+            detailedMedications.push(med);
+          }
+        }
+        setElement(detailedMedications);
+        
+      } else {
+        const response = await fetch(endpoint + "/obtain", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        const arrayData = Array.isArray(data) ? data : (data.data || []);
+        setElement(arrayData);
+      }
       
     } catch (error) {
-      console.error("🔍 Fetch error:", error);
       Alert.alert("Error", (error as Error).message);
       setElement([]);
     } finally {
@@ -85,12 +135,11 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
     ]);
   };
 
-
   const gotoEdit = (item: any) => {
     // Detectar si es contacto o medicación
-    const isContact = 'who' in item && 'name' in item && 'phoneNumber' in item;
-    const isMedication = 'drug' in item && 'grams' in item && 'frecuency' in item;
-    
+    const isContact = 'who' in item && 'phoneNumber' in item;
+    const isMedication = 'name' in item && !('who' in item);
+
     if (isContact) {
       router.push({
         pathname: goto as any,
@@ -102,18 +151,19 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
         },
       });
     } else if (isMedication) {
+      // Ya tenemos todos los datos, navegar directamente
       router.push({
         pathname: goto as any,
         params: {
-          drug: item.drug,
-          grams: item.grams,
-          frecuency: item.frecuency,
+          name: item.name,
+          dosage: item.dosage || "",
+          startDate: item.startDate ? formatDate(item.startDate) : "",
+          endDate: item.endDate ? formatDate(item.endDate) : "",
           editing: "edit",
         },
       });
     }
   };
-
 
   const gotoNew = () => {
     // Detectar tipo basado en la ruta
@@ -123,9 +173,10 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
       router.push({
         pathname: goto as any,
         params: {
-          drug: "",
-          grams: "",
-          frecuency: "",
+          name: "",
+          dosage: "",
+          startDate: "",
+          endDate: "",
         },
       });
     } else {
@@ -155,19 +206,18 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
             {loading ? (
               <ActivityIndicator size="large" color="#000" />
             ) : element && element.length > 0 ? (
-              element.map((el, index) => (
-                <Card
-                  key={index}
-                  element={el}
-                  onButton={() => gotoEdit(el)}
-                  onIcon={() => handleDelete(el)}
-                  icon="trash"
-                />
-              ))
-            ) : (
-              <Text className="text-gray-600 text-center">
-              </Text>
-            )}
+              <>
+                {element.map((el, index) => (
+                  <Card
+                    key={index}
+                    element={el}
+                    onButton={() => gotoEdit(el)}
+                    onIcon={() => handleDelete(el)}
+                    icon="trash"
+                  />
+                ))}
+              </>
+            ) : null}
             <ButtonDark_add onPress={() => gotoNew()} />
           </View>
         </ScrollView>
@@ -176,12 +226,11 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
   );
 }
 
-
 function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
   const e = element as any;
   
-  const isContact = 'who' in e && 'name' in e && 'phoneNumber' in e;
-  const isMedication = 'drug' in e && 'grams' in e && 'frecuency' in e;
+  const isContact = 'who' in e && 'phoneNumber' in e;
+  const isMedication = 'name' in e && !('who' in e);
   
   return (
     <View 
@@ -196,7 +245,7 @@ function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
     >
       <View className="py-3 bg-color1 rounded-t-2xl relative">
         <Text className="text-2xl font-bold text-white text-center">
-          {isContact ? e.who : isMedication ? e.drug : 'Item'}
+          {isContact ? e.who : isMedication ? e.name : 'Item'}
         </Text>
         <TouchableOpacity 
           onPress={() => onIcon(element)} 
@@ -213,18 +262,27 @@ function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
       
       <View className="p-6 bg-fondo rounded-b-2xl">
         {isContact ? (
-
           <>
             <ShowInfo text={e.name} icon="id-card" />
             <ShowInfo text={e.phoneNumber} icon="phone" />
           </>
         ) : isMedication ? (
           <>
-            <ShowInfo text={"e.grams" + " gramo/s"} icon="medkit" />
-            <ShowInfo text={"e.frecuency" + " veces al día"} icon="clock-o" />
+            <ShowInfo text={e.dosage || "Sin dosis registrada"} icon="tint" />
+            {e.startDate && (
+              <ShowInfo 
+                text={`Inicio: ${formatDate(e.startDate)}`} 
+                icon="calendar" 
+              />
+            )}
+            {e.endDate && (
+              <ShowInfo 
+                text={`Fin: ${formatDate(e.endDate)}`} 
+                icon="calendar" 
+              />
+            )}
           </>
         ) : (
-
           <Text>Elemento desconocido</Text>
         )}
         
