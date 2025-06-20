@@ -1,6 +1,7 @@
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
+import { colors } from "@/stores/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, ScrollView, TextInput, View } from "react-native";
@@ -63,7 +64,7 @@ export default function EditCardFromList<T extends Record<string, string>>({
   return (
     <SafeAreaProvider>
       <LinearGradient
-        colors={["#D2A8D6", "#F4E1E6"]}
+        colors={[colors.color5, colors.fondo]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="w-full h-full"

@@ -1,5 +1,6 @@
 import { ButtonAccept } from "@/components/buttons";
 import Input from "@/components/input";
+import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { FontAwesome } from "@expo/vector-icons";
 import DatePickerModal from "expo-datepicker";
@@ -122,7 +123,7 @@ export default function DetailRegister() {
 
   return (
     <SafeAreaProvider>
-      <LinearGradient colors={["#D2A8D6", "#F4E1E6"]} className="w-full h-full">
+      <LinearGradient colors={[colors.color5, colors.fondo]} className="w-full h-full">
         <StatusBar />
         <View className="flex-1 justify-center items-center px-4">
           <View className="w-full max-w-md rounded-2xl shadow-xl">

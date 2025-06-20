@@ -1,3 +1,4 @@
+import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -56,7 +57,7 @@ export default function NewPassword() {
   return (
     <SafeAreaProvider>
       <LinearGradient
-        colors={["#D2A8D6", "#F4E1E6"]}
+        colors={[colors.color5, colors.fondo]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="w-full h-full"

@@ -3,6 +3,7 @@ import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import Navbar from "@/components/navbar";
 import ShowInfo from "@/components/showInfo";
+import { colors } from "@/stores/colors";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -26,7 +27,7 @@ export default function profile() {
   return (
     <SafeAreaProvider>
       <LinearGradient
-        colors={["#D2A8D6", "#F4E1E6"]}
+        colors={[colors.color5, colors.fondo]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="w-full h-full"

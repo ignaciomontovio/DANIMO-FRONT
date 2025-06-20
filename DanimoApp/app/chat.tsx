@@ -1,6 +1,7 @@
 import { ChatBubble } from '@/components/chatBubble';
 import HeaderGoBack from "@/components/headerGoBack";
 import Navbar from '@/components/navbar';
+import { colors } from '@/stores/colors';
 import { router } from 'expo-router';
 import React from "react";
 import { ScrollView, View } from 'react-native';
@@ -9,7 +10,7 @@ import LinearGradient from "react-native-linear-gradient";
 export default function chat() {
   return (
     <LinearGradient
-              colors={["#D2A8D6", "#F4E1E6"]}
+              colors={[colors.color5, colors.fondo]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               className="w-full h-full"

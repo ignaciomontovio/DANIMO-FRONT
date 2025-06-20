@@ -1,5 +1,6 @@
 import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
+import { colors } from "@/stores/colors";
 import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
@@ -85,7 +86,7 @@ export default function DetailEmotionScreen() {
               className={`${PILL_STYLE} ${selected ? ACTIVE_PILL_STYLE : INACTIVE_PILL_STYLE}`}
               onPress={() => toggle(key, list, setList)}
             >
-              <FontAwesome name="tag" size={20} color="#595154" />
+              <FontAwesome name="tag" size={20} color={colors.oscuro} />
               <Text>{key}</Text>
             </TouchableOpacity>
           ))}
@@ -192,7 +193,7 @@ export default function DetailEmotionScreen() {
 
   return (
     <LinearGradient
-      colors={["#D2A8D6", "#F4E1E6"]}
+      colors={[colors.color5, colors.fondo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="w-full h-full"

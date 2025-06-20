@@ -2,6 +2,7 @@
  
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
+import { colors } from "@/stores/colors";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
@@ -28,7 +29,7 @@ export default function Index() {
   }
   return (
     <LinearGradient
-      colors={["#D2A8D6", "#F4E1E6"]}
+      colors={[colors.color5, colors.fondo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
