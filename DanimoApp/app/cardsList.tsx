@@ -1,31 +1,22 @@
 import { ButtonDark, ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
-import ShowInfo from "@/components/showInfo";
 import { colors } from "@/stores/colors";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as React from "react";
 import { useEffect, useState } from "react";
-
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { CardConfig, FetchConfig, NavigationConfig } from './medicationConfig';
 
-// Función para formatear fecha
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    return new Date(dateString).toLocaleDateString('es-ES');
-  } catch {
-    return dateString;
-  }
-};
-
+// TIPOS GENÉRICOS
 type Props<T> = {
-  endpoint: string;
   name: string;
-  goto: string;
+  fetchConfig: FetchConfig<T>;
+  navigationConfig: NavigationConfig<T>;
+  cardConfig: CardConfig<T>;
   deleteFunct: (item: T) => Promise<void>;
 };
 
@@ -34,9 +25,17 @@ type PropsCard<T> = {
   onIcon: (item: T) => void;
   onButton: () => void;
   icon: React.ComponentProps<typeof FontAwesome>['name'];
+  cardConfig: CardConfig<T>;
 };
 
-export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props<T>) {
+// COMPONENTE PRINCIPAL GENÉRICO
+export default function CardsList<T>({
+  name,
+  fetchConfig,
+  navigationConfig,
+  cardConfig,
+  deleteFunct
+}: Props<T>) {
   const [element, setElement] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useUserLogInStore((state) => state.token);
@@ -44,67 +43,8 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // Detectar si es medicación
-      const isMedicationEndpoint = endpoint.includes('/medication');
-      
-      if (isMedicationEndpoint) {
-        const listResponse = await fetch(endpoint + "/obtain", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-          },
-        });
-
-        if (!listResponse.ok) throw new Error(await listResponse.text());
-
-        const listData = await listResponse.json();
-        const medicationNames = listData.data || listData;
-        console.log("Got", medicationNames.length, "medications to detail");
-        // Obtener detalles de cada medicación
-        const detailedMedications = [];
-        for (let i = 0; i < medicationNames.length; i++) {
-          const med = medicationNames[i];
-          try {
-            const detailResponse = await fetch(endpoint + "/detail", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token,
-              },
-              body: JSON.stringify({ name: med.name }),
-            });
-
-            if (detailResponse.ok) {
-              const detailData = await detailResponse.json();
-              const details = detailData.data || detailData;
-              detailedMedications.push(details);
-            } else {
-              detailedMedications.push(med);
-            }
-          } catch (error) {
-            detailedMedications.push(med);
-          }
-        }
-        setElement(detailedMedications);
-        
-      } else {
-        const response = await fetch(endpoint + "/obtain", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-          },
-        });
-
-        if (!response.ok) throw new Error(await response.text());
-
-        const data = await response.json();
-        const arrayData = Array.isArray(data) ? data : (data.data || []);
-        setElement(arrayData);
-      }
-      
+      const data = await fetchConfig.fetchStrategy(fetchConfig.endpoint, token ?? "");
+      setElement(data);
     } catch (error) {
       Alert.alert("Error", (error as Error).message);
       setElement([]);
@@ -136,61 +76,20 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
     ]);
   };
 
-  const gotoEdit = (item: any) => {
-    // Detectar si es contacto o medicación
-    const isContact = 'who' in item && 'phoneNumber' in item;
-    const isMedication = 'name' in item && !('who' in item);
-
-    if (isContact) {
-      router.push({
-        pathname: goto as any,
-        params: {
-          who: item.who,
-          name: item.name,
-          phoneNumber: item.phoneNumber,
-          editing: "edit",
-        },
-      });
-    } else if (isMedication) {
-      // Ya tenemos todos los datos, navegar directamente
-      router.push({
-        pathname: goto as any,
-        params: {
-          name: item.name,
-          dosage: item.dosage || "",
-          startDate: item.startDate ? formatDate(item.startDate) : "",
-          endDate: item.endDate ? formatDate(item.endDate) : "",
-          editing: "edit",
-        },
-      });
-    }
+  const gotoEdit = (item: T) => {
+    const params = navigationConfig.getEditParams(item);
+    router.push({
+      pathname: navigationConfig.goto as any,
+      params: { ...params, editing: "edit" },
+    });
   };
 
   const gotoNew = () => {
-    // Detectar tipo basado en la ruta
-    const isMedicationRoute = goto.includes('Medication') || goto.includes('medication');
-    
-    if (isMedicationRoute) {
-      router.push({
-        pathname: goto as any,
-        params: {
-          name: "",
-          dosage: "",
-          startDate: "",
-          endDate: "",
-        },
-      });
-    } else {
-      // Default para contactos
-      router.push({
-        pathname: goto as any,
-        params: {
-          who: "",
-          name: "",
-          phoneNumber: "",
-        },
-      });
-    }
+    const params = navigationConfig.getNewParams();
+    router.push({
+      pathname: navigationConfig.goto as any,
+      params,
+    });
   };
 
   return (
@@ -215,6 +114,7 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
                     onButton={() => gotoEdit(el)}
                     onIcon={() => handleDelete(el)}
                     icon="trash"
+                    cardConfig={cardConfig}
                   />
                 ))}
               </>
@@ -227,12 +127,8 @@ export default function CardsList<T>({endpoint, name, goto, deleteFunct }: Props
   );
 }
 
-function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
-  const e = element as any;
-  
-  const isContact = 'who' in e && 'phoneNumber' in e;
-  const isMedication = 'name' in e && !('who' in e);
-  
+// COMPONENTE CARD GENÉRICO
+function Card<T>({ element, onIcon, onButton, icon, cardConfig }: PropsCard<T>) {
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -246,7 +142,7 @@ function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
     >
       <View className="py-3 bg-color1 rounded-t-2xl relative">
         <Text className="text-2xl font-bold text-white text-center">
-          {isContact ? e.who : isMedication ? e.name : 'Item'}
+          {cardConfig.getTitle(element)}
         </Text>
         <TouchableOpacity 
           onPress={() => onIcon(element)} 
@@ -262,31 +158,7 @@ function Card<T>({ element, onIcon, onButton, icon }: PropsCard<T>) {
       </View>
       
       <View className="p-6 bg-fondo rounded-b-2xl">
-        {isContact ? (
-          <>
-            <ShowInfo text={e.name} icon="id-card" />
-            <ShowInfo text={e.phoneNumber} icon="phone" />
-          </>
-        ) : isMedication ? (
-          <>
-            <ShowInfo text={e.dosage || "Sin dosis registrada"} icon="tint" />
-            {e.startDate && (
-              <ShowInfo 
-                text={`Inicio: ${formatDate(e.startDate)}`} 
-                icon="calendar" 
-              />
-            )}
-            {e.endDate && (
-              <ShowInfo 
-                text={`Fin: ${formatDate(e.endDate)}`} 
-                icon="calendar" 
-              />
-            )}
-          </>
-        ) : (
-          <Text>Elemento desconocido</Text>
-        )}
-        
+        {cardConfig.renderContent(element)}
         <ButtonDark text="Editar" onPress={onButton} />
       </View>
     </View>

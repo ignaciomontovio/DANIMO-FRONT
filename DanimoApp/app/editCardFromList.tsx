@@ -7,35 +7,42 @@ import React, { useState } from "react";
 import { Alert, ScrollView, TextInput, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { EditConfig } from './medicationConfig';
 
-type Props<T extends Record<string, string>> = {
+// TIPOS GENÉRICOS
+type Props<T extends Record<string, string | undefined>> = {
   screenTitle: string;
   goBackTo: string;
   createFunct: (data: T) => Promise<void>;
   updateFunct: (data: T, originalData: T) => Promise<void>;
+  editConfig: EditConfig;
   editing?: string;
 };
 
-export default function EditCardFromList<T extends Record<string, string>>({
-        screenTitle,
-        goBackTo,
-        createFunct,
-        updateFunct,
-        editing,
-        }: Props<T>) {
+// COMPONENTE PRINCIPAL GENÉRICO
+export default function EditCardFromList<T extends Record<string, string | undefined>>({
+  screenTitle,
+  goBackTo,
+  createFunct,
+  updateFunct,
+  editConfig,
+  editing,
+}: Props<T>) {
   const params = useLocalSearchParams();
   const isEditing = editing === "edit";
   
-  // ver de hacer mas lindo / legible
-  const initialData = Object.keys(params).filter((key) => key !== "editing").reduce((acc, key) => {
-    const value = params[key];
-    if (typeof value === "string") {
-      acc[key] = value;
-    } else if (Array.isArray(value)) {
-      acc[key] = value[0];
-    }
-    return acc;
-  }, {} as Record<string, string>) as T;
+  // Extraer datos iniciales de los parámetros
+  const initialData = Object.keys(params)
+    .filter((key) => key !== "editing")
+    .reduce((acc, key) => {
+      const value = params[key];
+      if (typeof value === "string") {
+        acc[key] = value;
+      } else if (Array.isArray(value)) {
+        acc[key] = value[0];
+      }
+      return acc;
+    }, {} as Record<string, string>) as T;
   
   const [formData, setFormData] = useState<T>(initialData);
 
@@ -48,8 +55,6 @@ export default function EditCardFromList<T extends Record<string, string>>({
       if (isEditing) {
         await updateFunct(formData, initialData);
       } else {
-        console.log("initialData: ",initialData);
-        
         await createFunct(formData);
       }
       router.replace(goBackTo as any);
@@ -58,8 +63,6 @@ export default function EditCardFromList<T extends Record<string, string>>({
       Alert.alert("Error", error instanceof Error ? error.message : String(error));
     }
   };
-
-  const keys = Object.keys(formData) as (keyof T)[];
 
   return (
     <SafeAreaProvider>
@@ -84,30 +87,23 @@ export default function EditCardFromList<T extends Record<string, string>>({
             <View className="py-3 bg-color1 rounded-t-2xl">
               <TextInput
                 className="text-2xl font-bold text-white text-center"
-                value={formData[keys[0]]}
-                onChangeText={(text) => handleChange(keys[0], text)}
+                value={formData[editConfig.titleField as keyof T] || ""}
+                onChangeText={(text) => handleChange(editConfig.titleField as keyof T, text)}
+                placeholder="Ingrese nombre..."
+                placeholderTextColor="rgba(255,255,255,0.7)"
               />
             </View>
-
             <View className="p-6 bg-fondo rounded-b-2xl">
-              <ShowInfo_edit
-                  icon="pencil"
-                  text={formData[keys[1]]}
-                  onChangeText={(text) => handleChange(keys[1], text)}
-                />
-                <ShowInfo_edit
-                  icon="pencil"
-                  text={formData[keys[2]]}
-                  onChangeText={(text) => handleChange(keys[2], text)}
-                />
-
-                 {keys[3] && (
-                <ShowInfo_edit
-                  icon="pencil"
-                  text={formData[keys[3]]}
-                  onChangeText={(text) => handleChange(keys[3], text)}
-                />
-              )}
+              {editConfig.fields
+                .filter(field => field.key !== editConfig.titleField)
+                .map((field) => (
+                  <ShowInfo_edit
+                    key={field.key}
+                    icon={field.icon as any}
+                    text={formData[field.key as keyof T] || ""}
+                    onChangeText={(text) => handleChange(field.key as keyof T, text)}
+                  />
+                ))}
               <ButtonDark text="Guardar" onPress={save} />
             </View>
           </View>

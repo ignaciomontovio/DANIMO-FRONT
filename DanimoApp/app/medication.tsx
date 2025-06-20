@@ -4,17 +4,18 @@ import * as React from "react";
 import { Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import CardsList from "./cardsList";
+import {
+  FetchConfig,
+  Medication,
+  medicationCardConfig,
+  medicationFetchStrategy,
+  medicationNavigationConfig
+} from "./medicationConfig";
 
-type Medication = {
-  name: string;
-  dosage: string;
-  startDate: string;
-  endDate: string;
-};
-
-export default function MedicationList() {
+export default function medicationList() {
   const token = useUserLogInStore((state) => state.token);
   
+  // Función específica de eliminación de medicación
   const deleteMedication = async (medicationToDelete: Medication) => {
     try {
       const response = await fetch(URL_BASE + URL_MEDICATION + "/delete", {
@@ -23,7 +24,7 @@ export default function MedicationList() {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
-        body: JSON.stringify({name: medicationToDelete.name}),
+        body: JSON.stringify({ name: medicationToDelete.name }),
       });
 
       if (!response.ok) {
@@ -33,15 +34,23 @@ export default function MedicationList() {
     } catch (error) {
       console.error("Error al eliminar medicación:", error);
       Alert.alert("Error", "No se pudo eliminar la medicación.");
+      throw error;
     }
+  };
+
+  // Configuración de fetch específica para medicación
+  const fetchConfig: FetchConfig<Medication> = {
+    endpoint: URL_BASE + URL_MEDICATION,
+    fetchStrategy: medicationFetchStrategy,
   };
 
   return (
     <SafeAreaProvider>
       <CardsList<Medication>  
-        endpoint={URL_BASE + URL_MEDICATION} 
-        name={"Medicaciones"} 
-        goto={"/editMedication"} 
+        name="Medicaciones"
+        fetchConfig={fetchConfig}
+        navigationConfig={medicationNavigationConfig}
+        cardConfig={medicationCardConfig}
         deleteFunct={deleteMedication}
       />
     </SafeAreaProvider>
