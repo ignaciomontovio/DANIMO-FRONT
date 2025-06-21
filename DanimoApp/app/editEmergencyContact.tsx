@@ -2,8 +2,8 @@ import { URL_BASE, URL_CONTACT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Contact, contactEditConfig } from "./contactConfig";
-import EditCardFromList from "./editCardFromList";
+import { Contact, contactEditConfig } from "../components/config/contactConfig";
+import EditCardFromList from "./cards/editCardFromList";
 
 export default function EditEmergencyContact() {
   const token = useUserLogInStore((state) => state.token);
@@ -50,7 +50,7 @@ export default function EditEmergencyContact() {
   return (
     <EditCardFromList<Contact>
       screenTitle="Editar contacto"
-      goBackTo="/emergencyContact"
+      goBackTo="/emergencyContacts"
       createFunct={createContact}
       updateFunct={updateContact}
       editConfig={contactEditConfig}

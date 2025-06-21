@@ -60,13 +60,7 @@ export default function EditCardFromList<T extends Record<string, string | undef
 
   // Función para obtener el placeholder del campo título
   const getTitlePlaceholder = () => {
-    for (let i = 0; i < editConfig.fields.length; i++) {
-      const field = editConfig.fields[i];
-      if (field.key === editConfig.titleField) {
-        return field.placeholder || "Ingrese nombre...";
-      }
-    }
-    return "Ingrese nombre...";
+    return editConfig.fields.find((field: { key: any; }) => field.key === editConfig.titleField)?.placeholder || "Ingrese nombre...";
   };
 
   const handleChange = (key: keyof T, value: string) => {
@@ -74,6 +68,11 @@ export default function EditCardFromList<T extends Record<string, string | undef
   };
 
   const save = async () => {
+    console.log("-------------");
+    console.log("formData: ", formData);
+    console.log("initialData: ", initialData);
+    console.log("-------------");
+    
     try {
       if (isEditing) {
         await updateFunct(formData, initialData);
@@ -119,7 +118,7 @@ export default function EditCardFromList<T extends Record<string, string | undef
             <View className="p-6 bg-fondo rounded-b-2xl">
               {editConfig.fields
                 .filter((field: { key: any; }) => field.key !== editConfig.titleField)
-                .map((field: { key: keyof T | React.Key | null | undefined; icon: any; placeholder: string | undefined; label: string | undefined; }) => (
+                .map((field: { key: keyof T | React.Key | null | undefined; icon: any; placeholder: string | undefined; label: string | undefined; type: "text" | "phone" | "date"; }) => (
                   <ShowInfo_edit
                     key={String(field.key)}
                     icon={field.icon as any}
@@ -127,6 +126,7 @@ export default function EditCardFromList<T extends Record<string, string | undef
                     onChangeText={(text) => handleChange(field.key as keyof T, text)}
                     placeholder={field.placeholder}
                     label={field.label}
+                    type={field.type || "text"} // Asignar tipo por defecto
                   />
                 ))}
               <ButtonDark text="Guardar" onPress={save} />

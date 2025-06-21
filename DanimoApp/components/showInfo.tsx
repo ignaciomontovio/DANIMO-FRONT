@@ -2,6 +2,7 @@ import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { Text, TextInput, View } from "react-native";
+import { Input_date_big } from "./input";
 
 export type ShowInfoProps = {
   text: string;
@@ -15,6 +16,7 @@ export type ShowInfoEditProps = {
   onChangeText: (text: string) => void;
   placeholder?: string;
   label?: string;
+  type?: "text" | "phone" | "date";
 };
 
 export default function ShowInfo({ text, icon }: ShowInfoProps) {
@@ -31,8 +33,11 @@ export function ShowInfo_edit({
   icon, 
   onChangeText, 
   placeholder, 
-  label 
+  label, 
+  type
 }: ShowInfoEditProps) {
+  console.log("ShowInfo_edit: ",text);
+  
   return (
     <View className="mb-3">
       {label && (
@@ -45,17 +50,50 @@ export function ShowInfo_edit({
           {label}
         </Text>
       )}
-      
-      <View className="w-full py-3 px-5 rounded-md mt-2 shadow-2xl border border-oscuro flex-row items-center justify-start">
-        <FontAwesome name={icon} size={30} color={colors.oscuro} />
-        <TextInput
-          className="text-oscuro px-5 font-bold text-lg flex-1"
-          value={text}
-          onChangeText={onChangeText}
-          placeholder={placeholder || "Ingresa valor..."}
-          placeholderTextColor={colors.oscuro + "80"}
+      {type === "date" && (        
+        <Input_date_big
+          setDate={(newDate: Date | undefined) => {
+            if (!newDate) return;
+            const dateString = newDate.toISOString().split('T')[0];
+            onChangeText(dateString);
+          }}
+          date={
+            !text || text === ""
+              ? new Date()
+              : (() => {
+                  const [day, month, year] = text.split("/").map(Number); 
+                  return new Date(year, month - 1, day);
+                })()
+          }
         />
-      </View>
+      )}
+
+      {type === "text" && (
+        <View className="w-full py-3 px-5 rounded-md mt-2 shadow-2xl border border-oscuro flex-row items-center justify-start">
+          <FontAwesome name={icon} size={30} color={colors.oscuro} />
+          <TextInput
+            className="text-oscuro px-5 font-bold text-lg flex-1"
+            value={text}
+            onChangeText={onChangeText}
+            placeholder={placeholder || "Ingresa valor..."}
+            placeholderTextColor={colors.oscuro + "80"}
+          />
+        </View>
+      )}
+      {type === "phone" && (
+        // validar que sea numero de telefono poner un +54 al principio
+        <View className="w-full py-3 px-5 rounded-md mt-2 shadow-2xl border border-oscuro flex-row items-center justify-start">
+          <FontAwesome name={icon} size={30} color={colors.oscuro} />
+          <TextInput
+            className="text-oscuro px-5 font-bold text-lg flex-1"
+            value={text}
+            onChangeText={onChangeText}
+            placeholder={placeholder || "Ingresa valor..."}
+            placeholderTextColor={colors.oscuro + "80"}
+          />
+        </View>
+      )}
+
     </View>
   );
 }

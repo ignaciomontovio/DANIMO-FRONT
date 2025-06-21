@@ -3,8 +3,6 @@ import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import Navbar from "@/components/navbar";
-import ShowInfo from "@/components/showInfo";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as React from "react";
@@ -12,14 +10,14 @@ import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } fr
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
-  Medication,
+  MedicationType,
   medicationCardConfig,
   medicationFetchStrategy,
   medicationNavigationConfig
-} from "./medicationConfig";
+} from "../components/config/medicationConfig";
 
-export default function MedicationList() {
-  const [element, setElement] = React.useState<Medication[]>([]);
+export default function Medications() {
+  const [element, setElement] = React.useState<MedicationType[]>([]);
   const [loading, setLoading] = React.useState(true);
   const token = useUserLogInStore((state) => state.token);
 
@@ -41,7 +39,7 @@ export default function MedicationList() {
   }, []);
 
   // Función específica de eliminación de medicación
-  const deleteMedication = async (medicationToDelete: Medication) => {
+  const deleteMedication = async (medicationToDelete: MedicationType) => {
     // No eliminar si ya está inactiva
     if ((medicationToDelete as any).active === false) {
       Alert.alert("Información", "Esta medicación ya está eliminada");
@@ -84,7 +82,7 @@ export default function MedicationList() {
     ]);
   };
 
-  const gotoEdit = (item: Medication) => {
+  const gotoEdit = (item: MedicationType) => {
     const params = medicationNavigationConfig.getEditParams(item);
     router.push({
       pathname: medicationNavigationConfig.goto as any,
@@ -100,7 +98,6 @@ export default function MedicationList() {
     });
   };
 
-export default function Medication() {
   return (
     <SafeAreaProvider>
       <LinearGradient 
@@ -140,7 +137,7 @@ function MedicationCard({
   onIcon, 
   onButton 
 }: {
-  element: Medication;
+  element: MedicationType;
   onIcon: () => void;
   onButton: () => void;
 }) {

@@ -1,7 +1,6 @@
 import { ButtonDark, ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
-import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as React from "react";
@@ -9,12 +8,12 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { CardConfig, FetchConfig, NavigationConfig } from './medicationConfig';
+import { CardConfig, NavigationConfig } from '../../components/config/configGeneric';
 
 // TIPOS GENÉRICOS
 type Props<T> = {
   name: string;
-  fetchConfig: FetchConfig<T>;
+  fetchConfig: () => Promise<T[]>;
   navigationConfig: NavigationConfig<T>;
   cardConfig: CardConfig<T>;
   deleteFunct: (item: T) => Promise<void>;
@@ -38,12 +37,11 @@ export default function CardsList<T>({
 }: Props<T>) {
   const [element, setElement] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
-  const token = useUserLogInStore((state) => state.token);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const data = await fetchConfig.fetchStrategy(fetchConfig.endpoint, token ?? "");
+      const data = await fetchConfig();
       setElement(data);
     } catch (error) {
       Alert.alert("Error", (error as Error).message);

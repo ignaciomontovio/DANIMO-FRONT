@@ -3,7 +3,6 @@
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
-import { LoaderDanimo } from "@/components/LoaderDanimo";
 import { URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useEmotionStore } from "@/stores/emotions";
 import { router } from "expo-router";

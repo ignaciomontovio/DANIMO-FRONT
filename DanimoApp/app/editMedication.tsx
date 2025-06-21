@@ -2,8 +2,8 @@ import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import EditCardFromList from "./editCardFromList";
-import { Medication, medicationEditConfig } from "./medicationConfig";
+import { MedicationType, medicationEditConfig } from "../components/config/medicationConfig";
+import EditCardFromList from "./cards/editCardFromList";
 
 export default function EditMedication() {
   const token = useUserLogInStore((state) => state.token);
@@ -28,14 +28,12 @@ export default function EditMedication() {
       // Si está en formato DD/MM/YYYY, convertir a YYYY-MM-DD
       if (dateStr.includes("/")) {
         const parts = dateStr.split("/");
-        console.log("Parts from split:", parts);
         
         if (parts.length === 3) {
           const day = parts[0].padStart(2, "0");
           const month = parts[1].padStart(2, "0");
           const year = parts[2];
           const isoDate = `${year}-${month}-${day}`;
-          console.log("Converted to ISO:", isoDate);
           return isoDate;
         }
       }
@@ -49,7 +47,7 @@ export default function EditMedication() {
   };
 
   // Función específica para crear medicación
-  const createMedication = async (data: Medication) => {
+  const createMedication = async (data: MedicationType) => {
     console.log("Creating medication:", data);
     
     // Crear objeto sin endDate si está vacío
@@ -81,7 +79,7 @@ export default function EditMedication() {
   };
 
   // Función específica para actualizar medicación
-  const updateMedication = async (data: Medication, original: Medication) => {
+  const updateMedication = async (data: MedicationType, original: MedicationType) => {
     console.log("Updating medication:", data, "Original:", original);
     
     // Crear objeto sin endDate si está vacío
@@ -114,9 +112,9 @@ export default function EditMedication() {
   };
 
   return (
-    <EditCardFromList<Medication>
+    <EditCardFromList<MedicationType>
       screenTitle="Medicación"
-      goBackTo="/medication"
+      goBackTo="/medications"
       createFunct={createMedication}
       updateFunct={updateMedication}
       editConfig={medicationEditConfig}

@@ -3,14 +3,12 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import React from "react";
 import { Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import CardsList from "./cardsList";
 import {
   Contact,
   contactCardConfig,
-  contactFetchStrategy,
-  contactNavigationConfig,
-  FetchConfig
-} from "./contactConfig";
+  contactNavigationConfig
+} from "../components/config/contactConfig";
+import CardsList from "./cards/cardsList";
 
 export default function EmergencyContact() {
   const token = useUserLogInStore((state) => state.token);
@@ -38,17 +36,26 @@ export default function EmergencyContact() {
     }
   };
 
-  // Configuración de fetch específica para contactos
-  const fetchConfig: FetchConfig<Contact> = {
-    endpoint: URL_BASE + URL_CONTACT,
-    fetchStrategy: contactFetchStrategy,
+  const getContact = async (): Promise<Contact[]> => {
+    const response = await fetch(URL_BASE + URL_CONTACT + "/obtain", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    });
+
+    if (!response.ok) throw new Error(await response.text());
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : (data.data || []);
   };
 
   return (
     <SafeAreaProvider>
       <CardsList<Contact>  
         name="Contacto"
-        fetchConfig={fetchConfig}
+        fetchConfig={getContact}
         navigationConfig={contactNavigationConfig}
         cardConfig={contactCardConfig}
         deleteFunct={deleteContact}

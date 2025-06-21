@@ -49,9 +49,9 @@ export default function profile() {
         <ButtonLight_small onPress={() => ("")} text="Rutinas" />
         <ButtonLight_small onPress={() => ("")} text="Estadísticas" />
         <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
-        <ButtonLight_small onPress={() => (router.replace("/emergencyContact"))} text="Contactos de Emergencia" />
+        <ButtonLight_small onPress={() => (router.replace("/emergencyContacts"))} text="Contactos de Emergencia" />
         <ButtonLight_small onPress={() => ("")} text="Profesionales Ascociados" />
-        <ButtonLight_small onPress={() => (router.replace("/medication"))} text="Medicación" />
+        <ButtonLight_small onPress={() => (router.replace("/medications"))} text="Medicación" />
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
     </LinearGradient>

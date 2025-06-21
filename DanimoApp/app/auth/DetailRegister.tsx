@@ -1,9 +1,8 @@
 import { ButtonAccept } from "@/components/buttons";
-import Input from "@/components/input";
+import Input, { Input_date } from "@/components/input";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { FontAwesome } from "@expo/vector-icons";
-import DatePickerModal from "expo-datepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { StatusBar, Text, TouchableOpacity, View } from "react-native";
@@ -109,18 +108,6 @@ export default function DetailRegister() {
     );
   }
 
-  const onChageDate = (date: string) => {
-    try {
-      const [year, month, day] = date.split(/[-/]/).map(Number); // acepta / o -
-      const parsedDate = new Date(year, month - 1, day);
-      if (isNaN(parsedDate.getTime())) throw new Error("Fecha inválida");
-      setUserBirth(parsedDate);
-    } catch (error) {
-      console.error("Error al parsear fecha:", error);
-      setUserBirth(undefined);
-    }
-  };
-
   return (
     <SafeAreaProvider>
       <LinearGradient colors={[colors.color5, colors.fondo]} className="w-full h-full">
@@ -137,9 +124,7 @@ export default function DetailRegister() {
 
               {selectSex()}
 
-              <DatePickerModal
-                onChange={onChageDate}
-              />
+              <Input_date setDate={setUserBirth} date={new Date}/>
               
               <ButtonAccept text="Sign Up" onPress={handleRegister} />
             </View>
