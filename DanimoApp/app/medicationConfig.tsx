@@ -181,7 +181,7 @@ export const medicationEditConfig: EditConfig = {
   titleField: "name",
   fields: [
     { key: "name", icon: "pills", placeholder: "Nombre del medicamento" },
-    { key: "dosage", icon: "medkit", placeholder: "Dosis del medicamento" },
+    { key: "dosage", icon: "medkit", placeholder: "Dosis"},
     { key: "startDate", icon: "calendar", placeholder: "Fecha de inicio" },
     { key: "endDate", icon: "calendar", placeholder: "Fecha de fin" },
   ],
