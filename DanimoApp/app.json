@@ -35,6 +35,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "DanimoApp necesita acceso a tus fotos para permitirte elegir una imagen de perfil.",
+          "cameraPermission": "DanimoApp necesita acceso a tu cámara para permitirte tomar una foto de perfil."
+        }
       ]
     ],
     "experiments": {

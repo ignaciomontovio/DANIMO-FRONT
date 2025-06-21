@@ -1,3 +1,4 @@
+import { colors } from "@/stores/colors";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -8,7 +9,7 @@ type Props = {
 
 export const ChatBubble = ({ type, text }: Props) => {
   const isSent = type === 'sent';
-  const bubbleColor = isSent ? '#f7a1b2' : '#d2a8d6';
+  const bubbleColor = isSent ? colors.color1 : colors.color5;
 
   return (
     <View

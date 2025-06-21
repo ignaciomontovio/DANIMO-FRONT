@@ -1,3 +1,4 @@
+import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -12,7 +13,7 @@ export default function HeaderGoBack({ text, onPress, img }: Props) {
   return (
     <View className="flex-row items-center justify-between px-5 py-2 bg-oscuro">
       <TouchableOpacity onPress={onPress}>
-        <FontAwesome name="arrow-left" size={24} color="#f7a1b2" />
+        <FontAwesome name="arrow-left" size={24} color={colors.color1} />
       </TouchableOpacity>
       <Text className="text-xl font-bold text-white">{text}</Text>
       {img != null ? (

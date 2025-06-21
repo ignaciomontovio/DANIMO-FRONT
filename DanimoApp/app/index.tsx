@@ -1,6 +1,8 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
  
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
+import LoaderDanimo from "@/components/LoaderDanimo";
+import { colors } from "@/stores/colors";
 import { LoaderDanimo } from "@/components/LoaderDanimo";
 import { URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useEmotionStore } from "@/stores/emotions";
@@ -51,7 +53,7 @@ export default function Index() {
   }
   return (
     <LinearGradient
-      colors={["#D2A8D6", "#F4E1E6"]}
+      colors={[colors.color5, colors.fondo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="w-full h-full"

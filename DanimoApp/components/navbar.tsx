@@ -1,4 +1,5 @@
 import Sos from "@/app/tabs/sos";
+import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -31,7 +32,7 @@ export default function Navbar({ tabs }: NavbarProps) {
             onPress={() => router.push(`tabs/${tab.name}`as any)}
             className="flex-1 items-center"
           >
-            <FontAwesome name={tab.icon} size={24} color="#f4e1e6" />
+            <FontAwesome name={tab.icon} size={24} color={colors.fondo} />
             <Text className="text-xs text-fondo">{tab.label ?? tab.name}</Text>
           </Pressable>
         )

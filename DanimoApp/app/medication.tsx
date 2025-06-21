@@ -1,68 +1,153 @@
-import { ButtonDark } from "@/components/buttons";
+import { ButtonDark, ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
+import { colors } from "@/stores/colors";
+import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import Navbar from "@/components/navbar";
 import ShowInfo from "@/components/showInfo";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import * as React from "react";
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  Medication,
+  medicationCardConfig,
+  medicationFetchStrategy,
+  medicationNavigationConfig
+} from "./medicationConfig";
+
+export default function MedicationList() {
+  const [element, setElement] = React.useState<Medication[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const token = useUserLogInStore((state) => state.token);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await medicationFetchStrategy(URL_BASE + URL_MEDICATION, token ?? "");
+      setElement(data);
+    } catch (error) {
+      Alert.alert("Error", (error as Error).message);
+      setElement([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Función específica de eliminación de medicación
+  const deleteMedication = async (medicationToDelete: Medication) => {
+    // No eliminar si ya está inactiva
+    if ((medicationToDelete as any).active === false) {
+      Alert.alert("Información", "Esta medicación ya está eliminada");
+      return;
+    }
+
+    Alert.alert("Eliminar", "¿Estás seguro que quieres eliminar?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            console.log("Deleting medication:", medicationToDelete);
+            
+            const deleteData = { name: medicationToDelete.name };
+            
+            const response = await fetch(URL_BASE + URL_MEDICATION + "/delete", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token,
+              },
+              body: JSON.stringify(deleteData),
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(errorText);
+            }
+
+            console.log("Medication deleted successfully");
+            await fetchData(); // Refrescar lista
+          } catch (error) {
+            console.error("Error al eliminar medicación:", error);
+            Alert.alert("Error", "No se pudo eliminar la medicación.");
+          }
+        },
+      },
+    ]);
+  };
+
+  const gotoEdit = (item: Medication) => {
+    const params = medicationNavigationConfig.getEditParams(item);
+    router.push({
+      pathname: medicationNavigationConfig.goto as any,
+      params: { ...params, editing: "edit" },
+    });
+  };
+
+  const gotoNew = () => {
+    const params = medicationNavigationConfig.getNewParams();
+    router.push({
+      pathname: medicationNavigationConfig.goto as any,
+      params,
+    });
+  };
 
 export default function Medication() {
   return (
     <SafeAreaProvider>
-      <LinearGradient
-        colors={["#D2A8D6", "#F4E1E6"]}
+      <LinearGradient 
+        colors={[colors.color5, colors.fondo]} 
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="w-full h-full"
       >
-        <HeaderGoBack text="Medicación" onPress={() => router.replace("/tabs/home")} />
+        <HeaderGoBack text="Medicaciones" onPress={() => router.replace("/tabs/home")} />
         <ScrollView className="flex-1 px-5 py-5">
-          <View className="mb-8">
-            <MedicationCard
-              medication={{
-                drug: "Clonazepam",
-                grams: 0.5,
-                frecuency: 2,
-              }} 
-              onEdit={()=>("")} 
-              icon={"sort"}            
-              />
+          <View className="flex-1 justify-center items-center">
+            {loading ? (
+              <ActivityIndicator size="large" color="#000" />
+            ) : element && element.length > 0 ? (
+              <>
+                {element.map((el, index) => (
+                  <MedicationCard
+                    key={index}
+                    element={el}
+                    onButton={() => gotoEdit(el)}
+                    onIcon={() => deleteMedication(el)}
+                  />
+                ))}
+              </>
+            ) : null}
+            <ButtonDark_add onPress={() => gotoNew()} />
           </View>
         </ScrollView>
-        <View className="absolute bottom-0 left-0 right-0">
-          <Navbar
-            tabs={[
-              { name: "home", icon: "home", label: "Inicio" },
-              { name: "stats", icon: "bar-chart", label: "Stats" },
-              { name: "sos", icon: "exclamation-triangle" },
-              { name: "rutines", icon: "newspaper-o", label: "Rutinas" },
-              { name: "menu", icon: "bars", label: "Menú" },
-            ]}
-          />
-        </View>
       </LinearGradient>
     </SafeAreaProvider>
   );
 }
 
-type UserMedication = {
-  drug:string;
-  grams: number;
-  frecuency: number;
-};
+// Card específica para medicación que maneja el estado inactivo
+function MedicationCard({ 
+  element, 
+  onIcon, 
+  onButton 
+}: {
+  element: Medication;
+  onIcon: () => void;
+  onButton: () => void;
+}) {
+  const isInactive = (element as any).active === false;
 
-type PropsMedicationCard = {
-  medication: UserMedication;
-  onEdit: () => void;
- icon: keyof typeof FontAwesome.glyphMap;
-};
-
-export function MedicationCard({ medication, icon }: PropsMedicationCard) {
   return (
-    <View
+    <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
       style={{
         shadowColor: "#000",
@@ -73,15 +158,29 @@ export function MedicationCard({ medication, icon }: PropsMedicationCard) {
       }}
     >
       <View className="py-3 bg-color1 rounded-t-2xl relative">
-        <Text className="text-2xl font-bold text-white text-center">{medication.drug}</Text>
-      </View>
-      <View className="p-6 bg-fondo rounded-b-2xl">
-        <ShowInfo text={`${medication.grams} gramo/s`} icon="medkit" />
-        <ShowInfo text={`${medication.frecuency} veces al día`} icon="clock-o" />
+        <Text className="text-2xl font-bold text-white text-center">
+          {element.name}
+        </Text>
         
-        <ButtonDark
-          text="Editar"
-        />
+        {/* Solo mostrar tacho si NO está inactiva */}
+        {!isInactive && (
+          <TouchableOpacity 
+            onPress={onIcon} 
+            style={{ 
+              position: "absolute", 
+              top: 10, 
+              right: 16,
+              padding: 4,
+            }}
+          >
+            <FontAwesome name="trash" size={20} color="white" />
+          </TouchableOpacity>
+        )}
+      </View>
+      
+      <View className="p-6 bg-fondo rounded-b-2xl">
+        {medicationCardConfig.renderContent(element)}
+        <ButtonDark text="Editar" onPress={onButton} />
       </View>
     </View>
   );
