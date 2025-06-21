@@ -22,7 +22,7 @@ export const ChatBubble = ({ type, text }: Props) => {
         borderColor: '#fff',
       }}
     >
-      <Text className="text-s font-bold text-white" >{text}</Text>
+      <Text className="text-lg font-bold text-white" >{text}</Text>
     </View>
   );
 };

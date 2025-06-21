@@ -3,6 +3,8 @@ import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import Navbar from "@/components/navbar";
+import ShowInfo from "@/components/showInfo";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as React from "react";
@@ -98,6 +100,7 @@ export default function MedicationList() {
     });
   };
 
+export default function Medication() {
   return (
     <SafeAreaProvider>
       <LinearGradient 

@@ -10,10 +10,6 @@ import React from "react";
 import LinearGradient from "react-native-linear-gradient";
 import MiniMetrics from "../../components/MiniMetrics";
 export default function Home() {
-  // const mail = useUserLogInStore((state) => state.mail);
-  // const token = useUserLogInStore((state) => state.token);
-  // console.log("HOME:", mail, token );
-  
   return (
     <LinearGradient
           colors={[colors.color5, colors.fondo]}
@@ -26,7 +22,7 @@ export default function Home() {
           <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
-            <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
+            <SelectFive goto="/DetailSleep" message="¿Cómo dormiste?" type="Sueño" />
             <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
             <View className="flex-row justify-center items-center">
               <QuoteCard onPress={() => router.push("../detailQuote")}/>   

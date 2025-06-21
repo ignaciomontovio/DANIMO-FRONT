@@ -468,7 +468,6 @@ export default function profile() {
     </SafeAreaProvider>
   );
 }
-
 // Componente de foto de perfil integrado con backend
 function ProfilePhoto() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
