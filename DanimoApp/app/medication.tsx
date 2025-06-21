@@ -1,4 +1,3 @@
-// medicationList.tsx - Con componente específico que oculta tacho en inactivas
 import { ButtonDark, ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
