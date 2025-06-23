@@ -22,7 +22,7 @@ export default function Home() {
           <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
-            <SelectFive goto="/DetailSleep" message="¿Cómo dormiste?" type="Sueño" />
+            <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
             <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
             <View className="flex-row justify-center items-center">
               <QuoteCard onPress={() => router.push("../detailQuote")}/>   

@@ -3,15 +3,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+
 export type InputProps = {
   icon: React.ComponentProps<typeof FontAwesome>['name'];// hacerlo generico para todos
 } & React.ComponentProps<typeof TextInput>;
-
-export type InputDateProps = {
-  setDate?: (date: Date | undefined) => void;
-  date: Date | string;
-  handleFieldChange?: (field: string, value: any) => void;
-};
 
 export default function Input({ icon, ...props }: InputProps) {
   return (
@@ -25,6 +20,12 @@ export default function Input({ icon, ...props }: InputProps) {
     </View>
   );
 }
+
+export type InputDateProps = {
+  setDate?: (date: Date | undefined) => void;
+  date: Date | string;
+  handleFieldChange?: (field: string, value: any) => void;
+};
 
 export function Input_date({ setDate, date, handleFieldChange }: InputDateProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -125,6 +126,76 @@ export function Input_date_big({ setDate, date, handleFieldChange }: InputDatePr
 }
 
 
+export type InputTimeProps = {
+  setTime?: (time: Date) => void;
+  time: Date | string;
+  handleFieldChange?: (field: string, value: any) => void;
+};
 
+export function Input_time({ setTime, time, handleFieldChange }: InputTimeProps) {
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [myTime, setMyTime] = useState<Date>(
+    typeof time === 'string' ? parseTimeStringToDate(time) : time || new Date()
+  );
 
-// input phone number
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(false);
+
+    if (selectedTime) {
+      const now = new Date();
+      const selected = new Date(now);
+      selected.setHours(selectedTime.getHours());
+      selected.setMinutes(selectedTime.getMinutes());
+      selected.setSeconds(0);
+      selected.setMilliseconds(0);
+
+      // Si la hora seleccionada es mayor a la actual, asumimos que fue ayer
+      if (selected > now) {
+        selected.setDate(selected.getDate() - 1);
+      }
+
+      handleFieldChange?.("time", selected.toISOString());
+      setTime?.(selected);
+      setMyTime(selected);
+    }
+  };
+
+  const formatTimeForDisplay = (value: Date) => {
+    return value.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  return (
+    <>
+      <TouchableOpacity onPress={() => setShowTimePicker(true)}>
+        <View className="relative mb-4">
+          <FontAwesome name="clock-o" size={18} color="gray" style={{ position: "absolute", top: 16, left: 12 }} />
+          <Text className="w-full pl-10 pr-4 py-3 border border-oscuro rounded-md text-oscuro">
+            {formatTimeForDisplay(myTime)}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={myTime}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={handleTimeChange}
+        />
+      )}
+    </>
+  );
+}
+
+// Función auxiliar para convertir "HH:mm" → Date con hoy
+function parseTimeStringToDate(timeStr: string): Date {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  const now = new Date();
+  now.setHours(hours, minutes, 0, 0);
+  return now;
+}

@@ -17,7 +17,7 @@ import { router } from "expo-router";
 import React, { useRef } from "react";
 
 
-type AllowedRoutes = "/DetailSleep" | "/detailEmotion";
+type AllowedRoutes = "/detailSleep" | "/detailEmotion";
 
 type SelectFiveProps = {
   message: string;

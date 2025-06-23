@@ -33,7 +33,7 @@ export default function EditMedication() {
           const day = parts[0].padStart(2, "0");
           const month = parts[1].padStart(2, "0");
           const year = parts[2];
-          const isoDate = `${year}-${month}-${day}`;
+          const isoDate = year + "-" + month + "-" + day;
           return isoDate;
         }
       }

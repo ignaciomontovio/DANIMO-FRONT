@@ -1,8 +1,11 @@
 import { profileCardConfig, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
+import HeaderGoBack from "@/components/headerGoBack";
+import ProfilePhoto from "@/components/profilePhoto";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import { router } from "expo-router";
 import React from "react";
-import { Alert } from "react-native";
+import { Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import CardsList from "./cards/cardsList";
 
@@ -37,7 +40,9 @@ export default function Profile() {
               userData.userEmail ||
               userData.emailAddress ||
               "Sin email",
-            d_birth: userData.birthDate ? new Date(userData.birthDate) : new Date(),
+            d_birth: userData.birthDate
+              ? new Date(userData.birthDate).toISOString()
+              : new Date().toISOString(),
             occupation: userData.occupation || "Sin ocupación",
             livesWith: userData.livesWith || "Sin especificar",
             code:
@@ -63,6 +68,23 @@ export default function Profile() {
 
   return(
     <SafeAreaProvider>
+      {/* Header original con foto agregada */}
+      <View className="relative">
+        <HeaderGoBack text="Perfil" onPress={() => router.replace("/tabs/home")} />
+        
+        {/* Foto de perfil posicionada absolutamente */}
+        <View 
+          style={{ 
+            position: 'absolute', 
+            right: 16, 
+            top: 4,
+            zIndex: 10, 
+            elevation: 10 
+          }}
+        >
+          <ProfilePhoto />
+        </View>
+      </View>
       <CardsList<UserProfile>  
         name="Contacto"
         fetchConfig={getProfile}
@@ -71,6 +93,7 @@ export default function Profile() {
         deleteFunct={async () => {}}
         showDeleteIcon={false}
         keepAdding={false}
+        showHeader={false}
       />
     </SafeAreaProvider>
   );

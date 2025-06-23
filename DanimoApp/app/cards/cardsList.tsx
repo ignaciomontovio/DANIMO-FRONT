@@ -19,6 +19,7 @@ type Props<T> = {
   deleteFunct: (item: T) => Promise<void>;
   showDeleteIcon?:boolean;
   keepAdding?: boolean;
+  showHeader?: boolean;
 };
 
 type PropsCard<T> = {
@@ -38,12 +39,14 @@ export default function CardsList<T>({
   cardConfig,
   deleteFunct,
   showDeleteIcon,
-  keepAdding
+  keepAdding,
+  showHeader
 }: Props<T>) {
   const [element, setElement] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   showDeleteIcon = showDeleteIcon ?? true;
   keepAdding = keepAdding ?? true;
+  showHeader = showHeader ?? true;
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -104,7 +107,7 @@ export default function CardsList<T>({
         end={{ x: 0, y: 1 }}
         className="w-full h-full"
       >
-        <HeaderGoBack text={name} onPress={() => router.replace("/tabs/home")} />
+        {showHeader && <HeaderGoBack text={name} onPress={() => router.replace("/tabs/home")} />}
         <ScrollView className="flex-1 px-5 py-5">
           <View className="flex-1 justify-center items-center">
             {loading ? (
