@@ -1,7 +1,7 @@
 import ShowInfo from "@/components/showInfo";
 import React from 'react';
 import { Text, View } from 'react-native';
-import { CardConfig, EditConfig, NavigationConfig } from "./configGeneric";
+import { CardConfig, EditConfig, formatDate, NavigationConfig } from "./configGeneric";
 
 // TIPOS ESPECÍFICOS DE MEDICACIÓN
 export interface MedicationType extends Record<string, string | undefined> {
@@ -18,15 +18,6 @@ export interface FetchConfig<T> {
 }
 
 
-// sacar
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    return new Date(dateString).toLocaleDateString('es-ES');
-  } catch {
-    return dateString;
-  }
-};
 
 // CONFIGURACIÓN DE NAVEGACIÓN PARA MEDICACIÓN
 export const medicationNavigationConfig: NavigationConfig<MedicationType> = {

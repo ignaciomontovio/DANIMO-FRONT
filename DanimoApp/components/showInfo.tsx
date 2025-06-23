@@ -36,7 +36,8 @@ export function ShowInfo_edit({
   label, 
   type
 }: ShowInfoEditProps) {
-  console.log("ShowInfo_edit: ",text);
+  console.log("ShowInfo_edit: " + text + " type " + type);
+
   
   return (
     <View className="mb-3">

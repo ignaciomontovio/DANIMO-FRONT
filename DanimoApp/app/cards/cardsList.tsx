@@ -17,6 +17,8 @@ type Props<T> = {
   navigationConfig: NavigationConfig<T>;
   cardConfig: CardConfig<T>;
   deleteFunct: (item: T) => Promise<void>;
+  showDeleteIcon?:boolean;
+  keepAdding?: boolean;
 };
 
 type PropsCard<T> = {
@@ -25,6 +27,7 @@ type PropsCard<T> = {
   onButton: () => void;
   icon: React.ComponentProps<typeof FontAwesome>['name'];
   cardConfig: CardConfig<T>;
+  showDeleteIcon: boolean;
 };
 
 // COMPONENTE PRINCIPAL GENÉRICO
@@ -33,11 +36,14 @@ export default function CardsList<T>({
   fetchConfig,
   navigationConfig,
   cardConfig,
-  deleteFunct
+  deleteFunct,
+  showDeleteIcon,
+  keepAdding
 }: Props<T>) {
   const [element, setElement] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
-
+  showDeleteIcon = showDeleteIcon ?? true;
+  keepAdding = keepAdding ?? true;
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -113,11 +119,16 @@ export default function CardsList<T>({
                     onIcon={() => handleDelete(el)}
                     icon="trash"
                     cardConfig={cardConfig}
+                    showDeleteIcon = {showDeleteIcon}
                   />
                 ))}
               </>
             ) : null}
-            <ButtonDark_add onPress={() => gotoNew()} />
+            {keepAdding ? 
+              <ButtonDark_add onPress={() => gotoNew()} /> 
+              : 
+              <View className="w-16 h-16 mt-4 mb-20"></View>}
+           
           </View>
         </ScrollView>
       </LinearGradient>
@@ -126,7 +137,7 @@ export default function CardsList<T>({
 }
 
 // COMPONENTE CARD GENÉRICO
-function Card<T>({ element, onIcon, onButton, icon, cardConfig }: PropsCard<T>) {
+function Card<T>({ element, onIcon, onButton, icon, cardConfig, showDeleteIcon }: PropsCard<T>) {
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -142,17 +153,19 @@ function Card<T>({ element, onIcon, onButton, icon, cardConfig }: PropsCard<T>) 
         <Text className="text-2xl font-bold text-white text-center">
           {cardConfig.getTitle(element)}
         </Text>
-        <TouchableOpacity 
-          onPress={() => onIcon(element)} 
-          style={{ 
-            position: "absolute", 
-            top: 10, 
-            right: 16,
-            padding: 4,
-          }}
-        >
-          <FontAwesome name={icon} size={20} color="white" />
-        </TouchableOpacity>
+        {showDeleteIcon && 
+            <TouchableOpacity 
+              onPress={() => onIcon(element)} 
+              style={{ 
+                position: "absolute", 
+                top: 10, 
+                right: 16,
+                padding: 4,
+              }}
+            >
+              <FontAwesome name={icon} size={20} color="white" />
+            </TouchableOpacity>
+        }
       </View>
       
       <View className="p-6 bg-fondo rounded-b-2xl">

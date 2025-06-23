@@ -19,3 +19,11 @@ export interface EditConfig {
   fields: FieldConfig[];
   titleField: string;
 }
+export const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  try {
+    return new Date(dateString).toLocaleDateString('es-ES');
+  } catch {
+    return dateString;
+  }
+};
