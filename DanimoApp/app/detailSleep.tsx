@@ -3,7 +3,7 @@ import { Input_time } from "@/components/input";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_SLEEP } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, SafeAreaView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -13,6 +13,7 @@ export default function DetailSleepScreen() {
   const [sleepTime, setSleepTime] = useState<Date>(new Date());
   const [wakeTime, setWakeTime] = useState<Date>(new Date());
   const token = useUserLogInStore((state) => state.token);
+  const { value } = useLocalSearchParams<{ value: string }>();
   
   const submitSleep = async (sleepHours: number) => 
   {                   
@@ -26,7 +27,7 @@ export default function DetailSleepScreen() {
         body: JSON.stringify({
           bedtime: sleepTime, 
           wake: wakeTime,
-          sleep: sleepHours,
+          sleep: value,
         }),
       });
 
