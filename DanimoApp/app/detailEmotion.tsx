@@ -121,7 +121,7 @@ export default function DetailEmotionScreen() {
       }
 
       console.log("Registro exitoso");
-      router.push({ pathname: "/prechat", params: { emotionNum: value, detailType: "Emotion"} });
+      router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Emotion"} });
     } catch (error) {
       console.error("Error al registrar emoción:", error);
       Alert.alert("Error al registrar la emoción");

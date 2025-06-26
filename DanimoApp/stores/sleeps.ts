@@ -9,12 +9,12 @@ type Sleep = {
 type SleepStore = {
   emotions: Sleep[];
   setEmotions: (emotions: Sleep[]) => void;
-  getEmotionByNumber: (num: number) => Sleep | undefined;
+  getSleepByNumber: (num: number) => Sleep | undefined;
 };
 
 export const useSleepStore = create<SleepStore>((set, get) => ({
   emotions: [],
   setEmotions: (emotions) => set({ emotions }),
-  getEmotionByNumber: (num) =>
+  getSleepByNumber: (num) =>
     get().emotions.find((e) => e.number === num),
 }));

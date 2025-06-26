@@ -25,8 +25,7 @@ export default function DetailSleepScreen() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          bedtime: sleepTime, 
-          wake: wakeTime,
+          hoursOfSleep: sleepHours, 
           sleep: value,
         }),
       });
@@ -37,7 +36,7 @@ export default function DetailSleepScreen() {
       }
 
       console.log("Registro exitoso");
-      router.push({ pathname: "/prechat", params: { detailType: "Sleep"} });
+      router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Sleep"} });
 
     } catch (error) {
       console.error("Error al registrar sueño:", error);

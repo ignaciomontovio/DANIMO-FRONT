@@ -117,7 +117,6 @@ export function Input_date_big({ setDate, date, handleFieldChange }: InputDatePr
         mode="date"
         display="default"
         onChange={handleDateChange}
-        maximumDate={new Date()}
         minimumDate={new Date(1900, 0, 1)}
       />
     )}
