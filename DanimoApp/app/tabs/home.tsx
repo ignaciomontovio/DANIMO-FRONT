@@ -5,13 +5,14 @@ import { SafeAreaView, ScrollView, View } from "react-native";
 import { ButtonDark } from "@/components/buttons";
 import QuoteCard from "@/components/QuoteCard";
 import SearchBar from "@/components/SearchBar";
+import { colors } from "@/stores/colors";
 import React from "react";
 import LinearGradient from "react-native-linear-gradient";
 import MiniMetrics from "../../components/MiniMetrics";
 export default function Home() {
   return (
     <LinearGradient
-          colors={["#D2A8D6", "#F4E1E6"]}
+          colors={[colors.color5, colors.fondo]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           className="w-full h-full"
@@ -21,7 +22,7 @@ export default function Home() {
           <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
-            <SelectFive goto="/DetailSleep" message="¿Cómo dormiste?" type="Sueño" />
+            <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
             <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
             <View className="flex-row justify-center items-center">
               <QuoteCard onPress={() => router.push("../detailQuote")}/>   

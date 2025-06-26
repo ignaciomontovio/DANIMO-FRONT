@@ -5,6 +5,7 @@ import e4 from "@/assets/Emojis/emojis/mios/miedo.svg";
 import e5 from "@/assets/Emojis/emojis/mios/tristeza.svg";
 import { ButtonDark } from '@/components/buttons';
 import { useEmotionStore } from "@/stores/emotions";
+import { useSleepStore } from "@/stores/sleeps";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -18,9 +19,15 @@ import LinearGradient from "react-native-linear-gradient";
 
 export default function Prechat() {
   const router = useRouter();
-  const { emotionNum, detailType } = useLocalSearchParams<{ emotionNum: string; detailType: string }>();
-  const emotion = useEmotionStore((state) => state.getEmotionByNumber(parseInt(emotionNum)));
-  
+  const { sleepEmotionNum: sleepEmotionNum, detailType } = useLocalSearchParams<{ sleepEmotionNum: string; detailType: string }>();
+  const emotion = useEmotionStore((state) => state.getEmotionByNumber(parseInt(sleepEmotionNum)));
+  const sleep = useSleepStore((state) => state.getSleepByNumber(parseInt(sleepEmotionNum)));
+  const emotionSleep = detailType === "Emotion" ? emotion : sleep
+
+  const msjEmotion = "Que fue lo que te hizo sentirte con " + emotion?.name + " ?"
+  const msjSleep = "Tuviste algún sueño que me quieras contar?"
+  const msj = detailType === "Emotion" ? msjEmotion : msjSleep
+
   const emotionIcons: Record<number, React.FC<{ width?: number; height?: number }>> = {
     1: e1, 2: e2, 3: e3, 4: e4, 5: e5,
   };
@@ -29,7 +36,7 @@ export default function Prechat() {
   };
 
   const genericIcons = detailType === "Emotion" ? emotionIcons : sleepIcons;
-  const Icon = emotion ? genericIcons[emotion.number] : null;
+  const Icon = emotionSleep ? genericIcons[emotionSleep.number] : null;
 
   return (
      <LinearGradient
@@ -47,7 +54,7 @@ export default function Prechat() {
             }}>
           <View className="flex-row items-center mb-2 space-x-10">
             {Icon && <Icon width={80} height={80} />}
-            <Text className="text-4xl font-bold text-oscuro shadow-lg">{emotion?.name}</Text>
+            <Text className="text-4xl font-bold text-oscuro shadow-lg">{emotionSleep?.name}</Text>
           </View>
         </View>
         <View className="bg-fondo rounded-lg p-3 shadow-xl ml-5 mr-5" 
@@ -57,7 +64,7 @@ export default function Prechat() {
               elevation: 10,
             }}>
             <Text className="text-oscuro text-base font-bold leading-relaxed text-left text-lg">
-              {emotion?.description || "No hay descripción disponible para esta emoción."}
+              {emotionSleep?.description || "No hay descripción disponible para esta emoción."}
             </Text>
           </View>
       </View>
@@ -66,7 +73,7 @@ export default function Prechat() {
           {/* Burbuja de charla */}
           <View className="w-[70%] self-end bg-color5 rounded-xl px-5 py-4 mb-3 shadow mt-7">
             <Text className="text-white font-medium text-base">
-              ¿Tuviste algún sueño que me quieras contar?
+              {msj}
             </Text>
             <TouchableOpacity className="items-left" onPress={() => router.push('/chat')}>
               <Text className="text-white font-bold text-right mt-2 underline text-base">

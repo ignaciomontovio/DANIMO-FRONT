@@ -11,7 +11,7 @@ export default function Layout() {
   
   return (
     // <LinearGradient
-    //       colors={["#D2A8D6", "#F4E1E6"]}
+    //       colors={[colors.color5, colors.fondo]}
     //       start={{ x: 0, y: -1 }}
     //       end={{ x: 0, y: 1 }}
     //       className="w-full h-full"

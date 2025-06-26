@@ -1,4 +1,5 @@
 import { ButtonDark_small, ButtonLight_small, } from "@/components/buttons";
+import { colors } from "@/stores/colors";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -19,7 +20,7 @@ export default function profile() {
   };
   return (
     <LinearGradient
-      colors={["#D2A8D6", "#F4E1E6"]}
+      colors={[colors.color5, colors.fondo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
@@ -28,7 +29,7 @@ export default function profile() {
         <View className="w-full flex-row items-center justify-center gap-2 px-2 py-6">
           {/* Ícono de usuario */}
           <View className="rounded-full p-4 border-2 border-oscuro bg-colo2 shadow-md">
-            <FontAwesome name="user" size={60} color="#595154" />
+            <FontAwesome name="user" size={60} color={colors.oscuro} />
           </View>
 
           {/* Info del usuario */}
@@ -48,9 +49,9 @@ export default function profile() {
         <ButtonLight_small onPress={() => ("")} text="Rutinas" />
         <ButtonLight_small onPress={() => ("")} text="Estadísticas" />
         <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
-        <ButtonLight_small onPress={() => (router.replace("/emergencyContact"))} text="Contactos de Emergencia" />
+        <ButtonLight_small onPress={() => (router.replace("/emergencyContacts"))} text="Contactos de Emergencia" />
         <ButtonLight_small onPress={() => ("")} text="Profesionales Ascociados" />
-        <ButtonLight_small onPress={() => (router.replace("/medication"))} text="Medicación" />
+        <ButtonLight_small onPress={() => (router.replace("/medications"))} text="Medicación" />
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
     </LinearGradient>

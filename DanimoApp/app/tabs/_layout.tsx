@@ -1,4 +1,5 @@
 import Sos from "@/app/tabs/sos";
+import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
@@ -18,10 +19,10 @@ export default function TabsLayout() {
 
             return <FontAwesome name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: "#d2a8d6",
-          tabBarInactiveTintColor: "#f4e1e6",
+          tabBarActiveTintColor: colors.color5,
+          tabBarInactiveTintColor: colors.fondo,
           tabBarStyle: {
-            backgroundColor: "#595154",
+            backgroundColor: colors.oscuro,
             height: 70,
             paddingBottom: 10,
           },

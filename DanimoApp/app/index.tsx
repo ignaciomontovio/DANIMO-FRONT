@@ -1,9 +1,11 @@
 // import { useUserLogInStore } from "@/stores/userLogIn";
  
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
-import { LoaderDanimo } from "@/components/LoaderDanimo";
-import { URL_BASE, URL_EMOTION } from "@/stores/consts";
+import LoaderDanimo from "@/components/LoaderDanimo";
+import { colors } from "@/stores/colors";
+import { URL_BASE, URL_EMOTION, URL_SLEEP } from "@/stores/consts";
 import { useEmotionStore } from "@/stores/emotions";
+import { useSleepStore } from "@/stores/sleeps";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
@@ -32,9 +34,27 @@ export default function Index() {
       console.error("Error al obtener emociones:", error);
     }
   };
-  
+  const fetchSleeps = async () => {
+    try {
+      const response = await fetch(URL_BASE + URL_SLEEP + "/types");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error:", errorText);
+        throw new Error(errorText);
+      }
+
+      const data = await response.json();
+      console.log("Sueños recibidos:", data);
+
+      useSleepStore.getState().setEmotions(data);
+
+    } catch (error) {
+      console.error("Error al obtener Sueños:", error);
+    }
+  };
   const handleUsuario = () => {
     fetchEmotions()
+    fetchSleeps()
     setUserType("usuario");
     router.replace("/auth/LoginRegisterScreen");
   };
@@ -51,7 +71,7 @@ export default function Index() {
   }
   return (
     <LinearGradient
-      colors={["#D2A8D6", "#F4E1E6"]}
+      colors={[colors.color5, colors.fondo]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="w-full h-full"

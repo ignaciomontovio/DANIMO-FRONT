@@ -5,5 +5,6 @@ export const URL_SOS = "/contact/button"
 export const URL_CONTACT = "/contact"
 export const URL_ACTIVITY = "/activity"
 export const URL_EMOTION = "/emotion"
-export const ALL_EMOTIONS = ["Alegria", "Ansiedad", "Enojo", "Miedo", "Tristeza"]; // traer de curl -X GET http://localhost:3000/emotion/types
-
+export const ALL_EMOTIONS = ["Alegria", "Ansiedad", "Enojo", "Miedo", "Tristeza"];
+export const URL_MEDICATION = "/medication"
+export const URL_SLEEP = "/sleep"

@@ -6,6 +6,7 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 
 // import { GoogleSignin, statusCodes } from "react-native-google-signin";}
 // import { makeRedirectUri } from "expo-auth-session";
+import { colors } from "@/stores/colors";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { makeRedirectUri } from "expo-auth-session";
@@ -187,7 +188,7 @@ export default function LoginRegisterScreen() {
   }
   return (
     <SafeAreaProvider>
-      <LinearGradient colors={["#D2A8D6", "#F4E1E6"]} className="w-full h-full">
+      <LinearGradient colors={[colors.color5, colors.fondo]} className="w-full h-full">
         <StatusBar />
         <View className="flex-1 justify-center items-center px-4">
           <View className="w-full max-w-md rounded-2xl shadow-xl">
