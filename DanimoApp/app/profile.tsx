@@ -77,7 +77,7 @@ export default function Profile() {
           style={{ 
             position: 'absolute', 
             right: 16, 
-            top: 4,
+            top: 30,
             zIndex: 10, 
             elevation: 10 
           }}

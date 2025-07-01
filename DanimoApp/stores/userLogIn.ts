@@ -6,8 +6,10 @@ type UserLogIn = {
   userLogIn: boolean | null;
   mail: string | null;
   token: string | null;
+  expoPushToken: string | null; // 🆕
   setUserLogIn: (userLogIn: boolean | null) => void;
   setUserSession: (mail: string, token: string) => void;
+  setPushToken: (token: string) => void; // 🆕
   clearUserSession: () => void;
 };
 
@@ -17,9 +19,12 @@ export const useUserLogInStore = create<UserLogIn>()(
       userLogIn: false,
       mail: null,
       token: null,
+      expoPushToken: null, // 🆕
       setUserLogIn: (userLogIn) => set({ userLogIn }),
       setUserSession: (mail, token) => set({ mail, token }),
-      clearUserSession: () => set({ userLogIn: false, mail: null, token: null }),
+      setPushToken: (expoPushToken) => set({ expoPushToken }), // 🆕
+      clearUserSession: () =>
+        set({ userLogIn: false, mail: null, token: null, expoPushToken: null }), // 🆕
     }),
     {
       name: "user-login-storage",
@@ -35,12 +40,12 @@ export const useUserLogInStore = create<UserLogIn>()(
           await AsyncStorage.removeItem(name);
         },
       },
-      // 👇 importante para que persista todas las propiedades
       partialize: (state) =>
         ({
           userLogIn: state.userLogIn,
           mail: state.mail,
           token: state.token,
+          expoPushToken: state.expoPushToken, // 🆕
         } as UserLogIn),
     }
   )

@@ -1,12 +1,12 @@
 import { colors } from "@/stores/colors";
-import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
-export default function detailQuoteCard() {
-  const longText ="No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba";
+
+export default function DetailQuoteCard() {
+  const { quote, author } = useLocalSearchParams<{ quote: string, author: string }>();
   return (
     <View className="flex-1 bg-oscuro justify-center items-center">
       <TouchableOpacity
@@ -34,16 +34,14 @@ export default function detailQuoteCard() {
         
 
         <Text className="text-[35px] font-extrabold text-oscuro mt-5 absolute top-[30px] left-5 right-4">
-          {longText.length > 200 ? longText.substring(0, 200) + "..." : longText}
+          {quote.length > 200 ? quote.substring(0, 200) + "..." : quote}
         </Text>
 
         {/* Autor */}
         <View className="absolute bottom-3 left-5 flex-row items-center space-x-2">
           <Text className="font-bold text-fondo text-xl">
-            - Por Seneca{"\n"}
-            <Text className="text-xl text-fondo">(Filosofo)</Text>
+            - Por {author}{"\n"}
           </Text>
-          <FontAwesome name="heart" size={18} color={colors.fondo} />
         </View>
       </TouchableOpacity>
     </View>

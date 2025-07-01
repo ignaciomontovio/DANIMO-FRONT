@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "937795702946",
+    "project_id": "danimo-11ebc",
+    "storage_bucket": "danimo-11ebc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937795702946:android:fe971ff723b32450e907fb",
+        "android_client_info": {
+          "package_name": "com.danimo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvmpqxcMK3iWPdrHM4gNJ8RZyvY7eQMHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
