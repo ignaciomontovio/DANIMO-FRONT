@@ -9,12 +9,6 @@ import { Alert, Pressable, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 
-
-
-
-
-
-
 export default function Profile() {
    
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
@@ -81,13 +75,8 @@ export default function Profile() {
           </View>
         </View>
 
-        <ButtonLight_small onPress={() => ("")} text="Recomendación" />
         <ButtonLight_small onPress={() => ("")} text="Rutinas" />
-        <ButtonLight_small onPress={() => ("")} text="Estadísticas" />
-        <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
-        <ButtonLight_small onPress={() => (router.replace("/emergencyContacts"))} text="Contactos de Emergencia" />
-        <ButtonLight_small onPress={() => ("")} text="Profesionales Ascociados" />
-        <ButtonLight_small onPress={() => (router.replace("/medications"))} text="Medicación" />
+        <ButtonLight_small onPress={() => ("")} text="Pacientes Ascociados" />
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
     </LinearGradient>

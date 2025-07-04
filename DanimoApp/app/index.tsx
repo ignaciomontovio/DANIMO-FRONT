@@ -13,7 +13,6 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, SafeAreaView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { useUserStore } from "../stores/userType";
 
 
 Notifications.setNotificationHandler({
@@ -28,15 +27,10 @@ Notifications.setNotificationHandler({
 
 
 export default function Index() {
-  const setUserType = useUserStore((state) => state.setUserType);
+  const setUserType = useUserLogInStore((state) => state.setUserType);
   const [showLoader, setShowLoader] = useState(true);
   
   const token = useUserLogInStore((state) => state.token);
-  // const { expoPushToken, setPushToken } = useUserLogInStore((state) => ({
-  //   expoPushToken: state.expoPushToken,
-  //   setPushToken: state.setPushToken,
-  // }));
-
 
   useEffect(() => {
     const registerForPushNotificationsAsync = async () => {

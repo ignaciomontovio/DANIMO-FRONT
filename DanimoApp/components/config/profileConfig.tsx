@@ -1,8 +1,9 @@
+import { useUserStore } from "@/stores/userType";
 import React from "react";
 import ShowInfo from "../showInfo";
 import { CardConfig, EditConfig, formatDate, NavigationConfig } from "./configGeneric";
 
-
+// Interfaces
 export interface UserProfile extends Record<string, string | undefined> {
   email: string;
   name: string;
@@ -13,6 +14,14 @@ export interface UserProfile extends Record<string, string | undefined> {
   code: string;
 }
 
+export interface ProfProfile extends Record<string, string | undefined> {
+  email: string;
+  name: string;
+  lastName: string;
+  d_birth: string;
+}
+
+// Navegación
 export const profileNavigationConfig: NavigationConfig<UserProfile> = {
   goto: "/editProfile",
   getEditParams: (item: UserProfile) => ({
@@ -25,7 +34,7 @@ export const profileNavigationConfig: NavigationConfig<UserProfile> = {
   }),
   getNewParams: () => ({
     email: "",
-    name:"",
+    name: "",
     lastName: "",
     d_birth: "",
     occupation: "",
@@ -33,9 +42,10 @@ export const profileNavigationConfig: NavigationConfig<UserProfile> = {
   }),
 };
 
-export const profileCardConfig: CardConfig<UserProfile> = {
-  getTitle: (item: UserProfile) => "Perfil",
-  renderContent: (item: UserProfile) => (
+// CardConfig para usuarios
+export const profileCardConfigUsuario: CardConfig<UserProfile> = {
+  getTitle: () => "Perfil de Usuario",
+  renderContent: (item) => (
     <>
       <ShowInfo text={item.name} icon="user" />
       <ShowInfo text={item.lastName} icon="user" />
@@ -48,24 +58,51 @@ export const profileCardConfig: CardConfig<UserProfile> = {
   ),
 };
 
-export const profileEditConfig: EditConfig = {
-  titleField: "Perfil",
-  fields: [
-    { key: "Perfil",                        placeholder: "Perfil",              type: "text" },
-    { key: "name",       icon: "user",      placeholder:"Nombre",               type: "text"},
-    { key: "lastName",   icon: "user",      placeholder:"Apellido",             type: "text"},
-    // { key: "email",      icon: "envelope",  placeholder:"Email",                type: "text"},
-    { key: "d_birth",    icon: "calendar",  placeholder:"Fecha de nacimiento",  type: "date"},
-    { key: "livesWith",  icon: "home",      placeholder:"Vive con",             type: "text"},
-    { key: "occupation", icon: "briefcase", placeholder:"Ocupacion",            type: "text"},
-  ],
+// CardConfig para profesionales
+export const profileCardConfigProfesional: CardConfig<ProfProfile> = {
+  getTitle: () => "Perfil Profesional",
+  renderContent: (item) => (
+    <>
+      <ShowInfo text={item.name} icon="user" />
+      <ShowInfo text={item.lastName} icon="user" />
+      <ShowInfo text={item.email} icon="envelope" />
+      <ShowInfo text={formatDate(item.d_birth)} icon="calendar" />
+    </>
+  ),
 };
 
+// Configuración editable según tipo
+export const getProfileEditConfig = (userType: string): EditConfig => {
+  if (userType === "profesional") {
+    return {
+      titleField: "Perfil Profesional",
+      fields: [
+        { key: "name", icon: "user", placeholder: "Nombre", type: "text" },
+        { key: "lastName", icon: "user", placeholder: "Apellido", type: "text" },
+        { key: "d_birth", icon: "calendar", placeholder: "Fecha de nacimiento", type: "date" },
+      ],
+    };
+  } else {
+    return {
+      titleField: "Perfil de Usuario",
+      fields: [
+        { key: "name", icon: "user", placeholder: "Nombre", type: "text" },
+        { key: "lastName", icon: "user", placeholder: "Apellido", type: "text" },
+        { key: "d_birth", icon: "calendar", placeholder: "Fecha de nacimiento", type: "date" },
+        { key: "livesWith", icon: "home", placeholder: "Vive con", type: "text" },
+        { key: "occupation", icon: "briefcase", placeholder: "Ocupación", type: "text" },
+      ],
+    };
+  }
+};
 
-//evitar warning
+// Acceso unificado desde el componente
+export const useProfileCardConfig = (): CardConfig<any> => {
+  const userType = useUserStore((state) => state.userType);
+  return userType === "profesional" ? profileCardConfigProfesional : profileCardConfigUsuario;
+};
+
+// Dummy para evitar warning de export default
 export default function profileConfigDummy() {
-  return (
-    <>
-    </>
-  );
+  return <></>;
 }

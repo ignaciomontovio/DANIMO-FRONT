@@ -6,8 +6,8 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 
 // import { GoogleSignin, statusCodes } from "react-native-google-signin";}
 // import { makeRedirectUri } from "expo-auth-session";
+import { LoaderDanimo } from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
-import LoaderDanimo from "@/components/LoaderDanimo";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
@@ -186,6 +186,29 @@ export default function LoginRegisterScreen() {
   if (UserLogIn) {
       return <LoaderDanimo />;
   }
+  function renderPasswordInput(value: string, onChange: (text: string) => void, showPassword: boolean, setShowPassword: (v: boolean) => void) {
+    return (
+      <View className="relative">
+        <Input
+          icon="lock"
+          placeholder="Contraseña"
+          secureTextEntry={!showPassword}
+          value={value}
+          onChangeText={onChange}
+        />
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: "absolute", right: 12, top: 12 }}
+        >
+          <FontAwesome
+            name={showPassword ? "eye" : "eye-slash"}
+            size={20}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
   return (
     <SafeAreaProvider>
       <LinearGradient colors={[colors.color5, colors.fondo]} className="w-full h-full">
@@ -205,29 +228,14 @@ export default function LoginRegisterScreen() {
                   <Text className="font-semibold">Sign Up</Text>
                 </TouchableOpacity>
               </View>
-
+              
               <Input icon="envelope" placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
-              {/* <Input icon="lock" placeholder="Contraseña" secureTextEntry value={passw} onChangeText={setPassw} /> */}
-              <View className="relative mb-4">
-                <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw} onChangeText={setPassw}/>
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={{ position: "absolute", right: 12, top: 12 }}
-                >
-                  <FontAwesome
-                    name={showPassword ? "eye" : "eye-slash"}
-                    size={20}
-                    color="gray"
-                  />
-                </TouchableOpacity>
-              </View>
+              {renderPasswordInput(passw, setPassw, showPassword, setShowPassword)}
+              
               {tab === "signup" ? (
                 <>
-                  {userType === "profesional" && (
-                    <Input icon="info" placeholder="Matrícula profesional" />
-                  )}
-                  {/* <Input icon="lock" placeholder="Repita Contraseña" secureTextEntry value={passw2} onChangeText={setPassw2} /> */}
-                  <View className="relative mb-4">
+                  {renderPasswordInput(passw2, setPassw2, showPassword, setShowPassword)}
+                  {/* <View className="relative mb-4">
                     <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw2} onChangeText={setPassw2}/>
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -239,8 +247,13 @@ export default function LoginRegisterScreen() {
                         color="gray"
                       />
                     </TouchableOpacity>
-                  </View>
-
+                  </View> */}
+                  {userType === "profesional" && (
+                    <View className="relative mb-4">
+                      <Input icon="id-card" placeholder="DNI" keyboardType="decimal-pad"/>
+                      <Input icon="id-card" placeholder="Matrícula profesional" />
+                    </View>
+                  )}
                   <ButtonAccept text="Sign Up" onPress={handleRegister} />
                   
                 </>
@@ -253,7 +266,7 @@ export default function LoginRegisterScreen() {
                 </>
               )}
 
-              <Text className="text-center mt-6 mb-4">Continuar con</Text>
+              {/* <Text className="text-center mt-6 mb-4">Continuar con</Text>
               <View className="flex-row justify-center space-x-4">
                 <SocialButton 
                   bg="bg-red-600" 
@@ -262,7 +275,7 @@ export default function LoginRegisterScreen() {
                   // onPress={() => promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);} )} 
                   onPress={handleLoginGoogle} 
                 />
-              </View>
+              </View> */}
             </View>
           </View>
         </View>
