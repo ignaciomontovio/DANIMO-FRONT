@@ -1,71 +1,49 @@
+import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
-import { URL_BASE, URL_EMOTION, URL_SLEEP } from "@/stores/consts";
-import { useUserLogInStore } from "@/stores/userLogIn";
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { router } from "expo-router";
+import React from "react";
+import { Dimensions, ScrollView, Text, View } from "react-native";
+import { BarChart } from "react-native-chart-kit";
 import LinearGradient from "react-native-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Stats() {
-  const token = useUserLogInStore((state) => state.token);
-  const [loading, setLoading] = useState(true);
-  const [sleep, setSleep] = useState<string>("");
-  const [emotion, setEmotion] = useState<string>("");
-  
-  useEffect(() => {
-      const fetchSleep = async () => {
-        try {
-          const response = await fetch(URL_BASE + URL_SLEEP + "/obtain", {
-            method: "GET",
-            headers: {
-              Authorization: "Bearer " + token,
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error:", errorText);
-            throw new Error(errorText);
-          }
-  
-          const data = await response.json();
-          setSleep(data)
-        } catch (error) {
-          console.error("Error al cargar sleep:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      const fetchEmotion= async () => {
-        try {
-          const response = await fetch(URL_BASE + URL_EMOTION + "/obtain", {
-            method: "GET",
-            headers: {
-              Authorization: "Bearer " + token,
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error:", errorText);
-            throw new Error(errorText);
-          }
-  
-          const data = await response.json();
-          setEmotion(data)
-        } catch (error) {
-          console.error("Error al cargar emotion:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchSleep();
-      fetchEmotion()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+const screenWidth = Dimensions.get("window").width;
 
+const chartConfig = {
+  backgroundGradientFrom: "#ffffff",
+  backgroundGradientTo: "#ffffff",
+  color: (opacity = 1) => "rgba(0, 0, 0, " + opacity + ")" ,
+  labelColor: () => "#333",
+  barPercentage: 0.5,
+  decimalPlaces: 0,
+};
+
+const monthlyData = {
+  tristeza: 15,
+  felicidad: 30,
+  enojo: 5,
+  miedo: 4,
+  ansiedad: 10,
+};
+
+const calendarData = [
+  ["felicidad", "tristeza", "enojo", "felicidad", "miedo", "felicidad", "ansiedad"],
+  ["ansiedad", "felicidad", "tristeza", "felicidad", "miedo", "felicidad", "felicidad"],
+  ["felicidad", "felicidad", "enojo", "miedo", "felicidad", "felicidad", "tristeza"],
+  ["tristeza", "felicidad", "felicidad", "ansiedad", "felicidad", "miedo", "felicidad"],
+];
+
+const emotionColors: Record<string, string> = {
+  felicidad: "#FFD700",
+  tristeza: "#87CEFA",
+  enojo: "#FF6347",
+  miedo: "#9370DB",
+  ansiedad: "#FFB6C1",
+};
+
+export default function EmotionStatsScreen() {
+  const emociones = Object.keys(monthlyData);
+  const valores = Object.values(monthlyData);
 
   return (
     <LinearGradient
@@ -74,18 +52,50 @@ export default function Stats() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
+      <HeaderGoBack
+        text="Estadisticas"
+        onPress={() => router.push("/tabs/home")}
+      />
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6 pt-10 pb-20">
-          {loading ? (
-            <Text className="text-center text-lg text-oscuro">Cargando datos...</Text>
-          ) : (
-            <View>
-              <Text className="text-3xl font-bold"> SUEÑO </Text>
-              <Text> {JSON.stringify(sleep, null, 2)} </Text>
-               <Text className="text-3xl font-bold"> EMOCIONES </Text>
-              <Text> {JSON.stringify(emotion, null, 2)} </Text>
+        <ScrollView className="px-4 pt-6 pb-24 space-y-8">
+          {/* Gráfico mensual */}
+          <View className="bg-white rounded-2xl p-4 shadow-md" style={{ elevation: 5 }}>
+            <Text className="text-xl font-bold text-center mb-2 text-oscuro">Este Mes</Text>
+            <BarChart
+              data={{
+                labels: emociones,
+                datasets: [{ data: valores }],
+              }}
+              width={screenWidth - 60}
+              height={220}
+              chartConfig={chartConfig}
+              withVerticalLabels
+              showBarTops={false}
+              fromZero yAxisLabel={""} yAxisSuffix={""}/>
+          </View>
+
+          {/* Calendario de emociones */}
+          <View className="bg-white rounded-2xl p-4 shadow-md" style={{ elevation: 5 }}>
+            <Text className="text-xl font-bold text-center mb-4 text-oscuro">Calendario de emociones</Text>
+            <Text className="text-center text-color1 font-semibold mb-2">Julio</Text>
+            <View className="flex flex-col space-y-1">
+              {calendarData.map((week, i) => (
+                <View key={i} className="flex flex-row justify-center space-x-1">
+                  {week.map((emotion, j) => (
+                    <View
+                      key={j}
+                      style={{
+                        width: 30,
+                        height: 30,
+                        backgroundColor: emotionColors[emotion] || "#ccc",
+                        borderRadius: 4,
+                      }}
+                    />
+                  ))}
+                </View>
+              ))}
             </View>
-          )}
+          </View>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

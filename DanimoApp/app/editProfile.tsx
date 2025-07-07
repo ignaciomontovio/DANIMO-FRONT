@@ -32,7 +32,7 @@ export default function EditProfile() {
           const day = parts[0].padStart(2, "0");
           const month = parts[1].padStart(2, "0");
           const year = parts[2];
-          const isoDate = `${year}-${month}-${day}`;
+          const isoDate = year + "-" + month + "-" + day;
           return isoDate;
         }
       }
@@ -65,7 +65,9 @@ export default function EditProfile() {
     });
 
     if (!response.ok) {
-      throw new Error(await response.text());
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
     }
   };
 

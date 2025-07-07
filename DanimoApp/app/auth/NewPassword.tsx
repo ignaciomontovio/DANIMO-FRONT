@@ -34,10 +34,9 @@ export default function NewPassword() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
-      // mejorar salida es json
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
       
       
@@ -47,11 +46,9 @@ export default function NewPassword() {
       router.push("/auth/LoginRegisterScreen")
 
     } catch (error) {
-      console.error("Code error:", error);
+      console.error("Error:", error);
       alert(error);
-      // router.push("/auth/NewPassword")
     }
-    // router.push("/auth/LoginRegisterScreen")
   }
 
   return (

@@ -107,7 +107,9 @@ export default function EditMedication() {
     });
 
     if (!response.ok) {
-      throw new Error(await response.text());
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
     }
   };
 

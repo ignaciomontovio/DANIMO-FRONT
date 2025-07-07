@@ -90,9 +90,9 @@ export default function Index() {
     try {
       const response = await fetch(URL_BASE + URL_EMOTION + "/types");
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();
@@ -108,9 +108,9 @@ export default function Index() {
     try {
       const response = await fetch(URL_BASE + URL_SLEEP + "/types");
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();

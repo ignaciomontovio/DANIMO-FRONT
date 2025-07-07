@@ -23,8 +23,9 @@ export default function QuoteCard( ) {
         });
 
         if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(errText);
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
         }
         const data = await response.json();
         setQuote(data.quote)

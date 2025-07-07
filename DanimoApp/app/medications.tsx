@@ -24,8 +24,9 @@ export default function Medication() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
     } catch (error) {
       console.error("Error al eliminar contacto:", error);
@@ -46,7 +47,11 @@ export default function Medication() {
       },
     });
   
-    if (!response.ok) throw new Error(await response.text());
+    if (!response.ok) {
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
+    }
   
     const data = await response.json();
     return Array.isArray(data) ? data : (data.data || [])

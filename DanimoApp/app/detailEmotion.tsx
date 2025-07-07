@@ -26,9 +26,9 @@ export default function DetailEmotionScreen() {
         const response = await fetch(URL_BASE + URL_ACTIVITY + "/types");
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error:", errorText);
-          throw new Error(errorText);
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
         }
 
         const data = await response.json();
@@ -116,9 +116,10 @@ export default function DetailEmotionScreen() {
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText);
-      }
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
+        }
 
       console.log("Registro exitoso");
       router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Emotion"} });

@@ -15,7 +15,6 @@ import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
 import Input from "../../components/input";
-import { useUserStore } from "../../stores/userType";
 
 export default function LoginRegisterScreen() {
   const [tab, setTab] = useState<"login" | "signup">("login");
@@ -23,7 +22,7 @@ export default function LoginRegisterScreen() {
   const [passw, setPassw] = useState("");
   const [passw2, setPassw2] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const userType = useUserStore((state) => state.userType);
+  const userType = useUserLogInStore((state) => state.userType);
   const UserLogIn = useUserLogInStore((state) => state.userLogIn);
   const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
   const setUserSession= useUserLogInStore((state) => state.setUserSession);
@@ -92,9 +91,9 @@ export default function LoginRegisterScreen() {
           throw new Error("Registrese Nuevamente por falla de token");
         }
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error:", errorText); 
-          throw new Error("Error: " + errorText);
+          const errorText = await response.json();
+          console.error("Error:", errorText.error); 
+          throw new Error("Error: " + errorText.error);
         }
 
         return true;
@@ -109,6 +108,7 @@ export default function LoginRegisterScreen() {
 
     const checkLogin = async () => {
       console.log("UserLogIn:", UserLogIn);
+      console.log("userType:", userType);
       if (UserLogIn) {
         const valid = await validateToken(token, mail);
         if (valid) {
@@ -135,9 +135,9 @@ export default function LoginRegisterScreen() {
         body: JSON.stringify({ email: email.trim().toLowerCase(), password: passw.trim() }),});
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error("Error al iniciar sesión");
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();

@@ -32,9 +32,10 @@ export default function DetailSleepScreen() {
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText);
-      }
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
+        }
 
       console.log("Registro exitoso");
       router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Sleep"} });
