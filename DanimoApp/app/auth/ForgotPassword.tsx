@@ -23,10 +23,9 @@ export default function ForgotPassword() {
         body: JSON.stringify({ email: email.trim().toLowerCase()}),});
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
-      // mejorar salida es json
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();
@@ -44,12 +43,11 @@ export default function ForgotPassword() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tokenId:code.trim().toUpperCase(), email: email.trim().toLowerCase()}),});
 
+       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        alert(errorText);
-        throw new Error(errorText);
-      // mejorar salida es json
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();

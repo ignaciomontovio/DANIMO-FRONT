@@ -10,11 +10,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-import s1 from "@/assets/Emojis/emojis sueño/mios/sueño1.svg";
-import s2 from "@/assets/Emojis/emojis sueño/mios/sueño2.svg";
+import s5 from "@/assets/Emojis/emojis sueño/mios/sueño1.svg";
+import s4 from "@/assets/Emojis/emojis sueño/mios/sueño2.svg";
 import s3 from "@/assets/Emojis/emojis sueño/mios/sueño3.svg";
-import s4 from "@/assets/Emojis/emojis sueño/mios/sueño4.svg";
-import s5 from "@/assets/Emojis/emojis sueño/mios/sueño5.svg";
+import s2 from "@/assets/Emojis/emojis sueño/mios/sueño4.svg";
+import s1 from "@/assets/Emojis/emojis sueño/mios/sueño5.svg";
 import LinearGradient from "react-native-linear-gradient";
 
 export default function Prechat() {
@@ -45,7 +45,7 @@ export default function Prechat() {
           end={{ x: 0, y: 1 }}
           className="w-full h-full"
         >
-      <View className="flex-1 px-6 pt-12 items-center">
+      <View className="flex-1 px-6 pt-20 items-center">
         {/* Tarjeta principal */}
         <View className="w-full bg-fondo rounded-xl p-4 shadow-lg"
           style={{

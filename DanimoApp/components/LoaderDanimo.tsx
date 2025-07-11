@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
 
-export const LoaderDanimo = () => {
+// export const LoaderDanimo = () => {
+export default function LoaderDanimo(){
   const letters = 'Danimo'.split('');
   const animations = useRef(letters.map(() => new Animated.Value(0))).current;
 
@@ -24,7 +25,7 @@ export const LoaderDanimo = () => {
       )
     );
     Animated.stagger(100, animationsSequence).start();
-  }, []);
+  }, [animations, letters]);
 
   return (
     <View className="flex-1 justify-center items-center bg-white">
@@ -57,4 +58,4 @@ export const LoaderDanimo = () => {
   );
 };
 
-export default LoaderDanimo;
+// export default LoaderDanimo;

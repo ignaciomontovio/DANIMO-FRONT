@@ -58,9 +58,9 @@ export default function DetailRegister() {
       console.log(response);
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error("Error:" + errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();

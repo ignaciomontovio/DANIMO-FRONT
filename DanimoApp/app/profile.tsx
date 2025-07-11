@@ -1,4 +1,4 @@
-import { profileCardConfig, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
+import { profileCardConfigProfesional, profileCardConfigUsuario, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
 import HeaderGoBack from "@/components/headerGoBack";
 import ProfilePhoto from "@/components/profilePhoto";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
@@ -14,6 +14,9 @@ import CardsList from "./cards/cardsList";
 export default function Profile() {
     const token = useUserLogInStore((state) => state.token);
     const userEmail = useUserLogInStore((state) => state.mail); 
+    const userType = useUserLogInStore((state) => state.userType); 
+    const homePath = userType === "profesional"? "/profesional/home" : "/tabs/home"
+    const profileCardConfig = userType === "profesional"? profileCardConfigProfesional : profileCardConfigUsuario
 
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
@@ -70,14 +73,14 @@ export default function Profile() {
     <SafeAreaProvider>
       {/* Header original con foto agregada */}
       <View className="relative">
-        <HeaderGoBack text="Perfil" onPress={() => router.replace("/tabs/home")} />
+        <HeaderGoBack text="Perfil" onPress={() => router.replace(homePath)} />
         
         {/* Foto de perfil posicionada absolutamente */}
         <View 
           style={{ 
             position: 'absolute', 
             right: 16, 
-            top: 4,
+            top: 30,
             zIndex: 10, 
             elevation: 10 
           }}

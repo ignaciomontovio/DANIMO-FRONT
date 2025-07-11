@@ -6,14 +6,14 @@ import { colors } from "@/stores/colors";
 import { URL_BASE, URL_EMOTION, URL_SLEEP } from "@/stores/consts";
 import { useEmotionStore } from "@/stores/emotions";
 import { useSleepStore } from "@/stores/sleeps";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, SafeAreaView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { useUserStore } from "../stores/userType";
 
 export default function Index() {
-  const setUserType = useUserStore((state) => state.setUserType);
+  const setUserType = useUserLogInStore((state) => state.setUserType);
   const [showLoader, setShowLoader] = useState(true);
 
   const fetchEmotions = async () => {
@@ -70,22 +70,24 @@ export default function Index() {
     return <LoaderDanimo />;
   }
   return (
-    <LinearGradient
-      colors={[colors.color5, colors.fondo]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      className="w-full h-full"
-    >
-      <View className="flex-1 justify-top items-center px-6 mt-10">
-        <Text className="text-oscuro text-4xl font-bold mb-6 text-center">Bienvenido a Danimo</Text>       
-        <Image 
-          source={require('../assets/images/logo.png')} 
-          className="w-[250px] h-[250px] mb-5"
-        />
-        <ButtonAccept text={"Usuario"} onPress={() => handleUsuario()}></ButtonAccept>
-        <ButtonDark text={"Profesional"} onPress={() => handleProfesional()}></ButtonDark>
-      </View>
-    </LinearGradient>
+  <SafeAreaView>
+      <LinearGradient
+        colors={[colors.color5, colors.fondo]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="w-full h-full"
+      >
+        <View className="flex-1 justify-top items-center px-6 mt-10 py-20">
+          <Text className="text-oscuro text-4xl font-bold mb-6 text-center">Bienvenido a Danimo</Text>       
+          <Image 
+            source={require('../assets/images/logo.png')} 
+            className="w-[250px] h-[250px] mb-5"
+          />
+          <ButtonAccept text={"Usuario"} onPress={() => handleUsuario()}></ButtonAccept>
+          <ButtonDark text={"Profesional"} onPress={() => handleProfesional()}></ButtonDark>
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

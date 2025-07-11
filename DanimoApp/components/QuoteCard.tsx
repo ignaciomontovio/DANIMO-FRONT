@@ -1,15 +1,47 @@
 import { colors } from "@/stores/colors";
-import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
-import { Text, View } from "react-native";
+import { URL_BASE, URL_QUOTE } from "@/stores/consts";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+
+import { Alert, Text, View } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
-type QuoteCardProps = {
-  onPress?: () => void;
-};
 
-export default function QuoteCard( { onPress }: QuoteCardProps ) {
-  const longText ="No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba";
+export default function QuoteCard( ) {
+
+  const [quote, setQuote] = useState("No hay nadie menos afortunado que el hombre a quien la adversidad olvida, pues no tiene oportunidad de ponerse a prueba"); 
+  const [author, setAuthor] = useState("Seneca"); 
+
+  useEffect(() => {
+    const getQuote = async () => {                   
+      try {
+        const response = await fetch(URL_BASE + URL_QUOTE , {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
+        }
+        const data = await response.json();
+        setQuote(data.quote)
+        setAuthor(data.author)
+      } catch (error) {
+        console.error("Error al registrar sueño:", error);
+        Alert.alert("Error al registrar la emoción: " + error);
+      }
+    };
+    getQuote();
+  }, []);
+
+  const gotoDetail = () => {
+    router.push({ pathname: "../detailQuote", params: { quote: quote, author: author } });
+  };
+
   return (
     <View
         className="w-[160px] h-[264px] bg-color1 rounded-lg p-5 relative m-2 ml-10"
@@ -20,7 +52,7 @@ export default function QuoteCard( { onPress }: QuoteCardProps ) {
             shadowRadius: 10,
             elevation: 10, // para Android
         }}
-        onTouchEnd={onPress} 
+        onTouchEnd={gotoDetail} 
     >
       {/* Título */}
       <Text className="uppercase font-bold text-fondo leading-[23px]">Una cita para ti </Text>
@@ -34,16 +66,14 @@ export default function QuoteCard( { onPress }: QuoteCardProps ) {
 
       {/* Cuerpo del texto */}
       <Text className="text-[20px] font-extrabold text-oscuro leading-[23px] mt-5 absolute top-[30px] left-4">
-        {longText.length > 60 ? longText.substring(0, 60) + "..." : longText}
+        {quote.length > 60 ? quote.substring(0, 60) + "..." : quote}
       </Text>
 
       {/* Autor */}
       <View className="absolute bottom-3 left-5 flex-row items-center space-x-2">
         <Text className="font-bold text-fondo">
-          - Por Seneca{"\n"}
-          <Text className="text-xs text-fondo">(Filosofo)</Text>
+          - Por {author}{"\n"}
         </Text>
-        <FontAwesome name="heart" size={18} color={colors.fondo} />
       </View>
     </View>
   );

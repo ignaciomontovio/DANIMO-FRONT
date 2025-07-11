@@ -48,7 +48,7 @@ export default function ProfilePhoto() {
       
       // Determinar el tipo MIME basado en la extensión
       const mimeType = uri.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg';
-      return `data:${mimeType};base64,${base64}`;
+      return "data:" + mimeType + ";base64," + base64;
     } catch (error) {
       console.error('Error converting to base64:', error);
       throw error;
@@ -72,8 +72,9 @@ export default function ProfilePhoto() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       console.log("Image uploaded successfully");
@@ -169,12 +170,12 @@ export default function ProfilePhoto() {
       
       const base64Image = await convertToBase64(uri);
       const base64Size = base64Image.length * 0.75;
-      console.log("Base64 size:", `${Math.round(base64Size / 1024)}KB`);
+      console.log("Base64 size: " + Math.round(base64Size / 1024) + "KB");
       
       if (base64Size > 100000) {
         Alert.alert(
           "Imagen muy grande", 
-          `La imagen es de ${Math.round(base64Size / 1024)}KB. El servidor solo acepta imágenes muy pequeñas. Intenta con una imagen más pequeña o pide al administrador que aumente el límite del servidor.`
+          "La imagen es de " + Math.round(base64Size / 1024) + "KB. El servidor solo acepta imágenes muy pequeñas. Intenta con una imagen más pequeña o pide al administrador que aumente el límite del servidor."
         );
         return;
       }

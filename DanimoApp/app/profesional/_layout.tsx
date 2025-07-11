@@ -11,7 +11,7 @@ export default function TabsLayout() {
           if (route.name === "home") iconName = "home";
           else if (route.name === "stats") iconName = "bar-chart";
           else if (route.name === "rutines") iconName = "medkit";
-          else if (route.name === "profile") iconName = "user";
+          else if (route.name === "menu") iconName = "bars";
 
           return <FontAwesome name={iconName} size={size} color={color} />;
         },
@@ -24,6 +24,12 @@ export default function TabsLayout() {
         },
         headerShown: false,
       })}
-    />
+    >
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="stats" /> 
+      <Tabs.Screen name="rutines" />
+      <Tabs.Screen name="menu" />
+    </Tabs>
+    
   );
 }

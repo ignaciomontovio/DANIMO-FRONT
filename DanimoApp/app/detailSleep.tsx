@@ -1,4 +1,5 @@
 import { ButtonDark } from "@/components/buttons";
+import HeaderGoBack from "@/components/headerGoBack";
 import { Input_time } from "@/components/input";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_SLEEP } from "@/stores/consts";
@@ -31,9 +32,10 @@ export default function DetailSleepScreen() {
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText);
-      }
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
+        }
 
       console.log("Registro exitoso");
       router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Sleep"} });
@@ -71,8 +73,9 @@ export default function DetailSleepScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
+      <HeaderGoBack text="Sueño" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1 px-6">
-        <View className="relative mb-10 mt-20 ">
+        <View className="relative mb-10 mt-40">
           <View
             className="absolute top-0 left-0 right-0 bottom-0 bg-fondo rounded-2xl"
             style={{

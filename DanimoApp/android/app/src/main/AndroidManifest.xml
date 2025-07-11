@@ -27,6 +27,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="danimoapp"/>
         <data android:scheme="DanimoApp"/>
+        <data android:scheme="exp+danimoapp"/>
       </intent-filter>
     </activity>
   </application>
