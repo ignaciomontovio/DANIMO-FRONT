@@ -1,10 +1,10 @@
 # Ejecutar
 npm install
 npm expo install
-npx expo prebuild
+npx expo prebuild --clean 
 npx expo run:android 
 ### Hacer APK
-npx expo prebuild
+npx expo prebuild --clean 
 eas build -p android --profile production  
 
 # FALLAS?
