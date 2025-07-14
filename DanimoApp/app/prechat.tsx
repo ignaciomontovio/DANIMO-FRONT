@@ -19,7 +19,15 @@ import LinearGradient from "react-native-linear-gradient";
 
 export default function Prechat() {
   const router = useRouter();
-  const { sleepEmotionNum: sleepEmotionNum, detailType } = useLocalSearchParams<{ sleepEmotionNum: string; detailType: string }>();
+  const { 
+    sleepEmotionNum: sleepEmotionNum, 
+    detailType, 
+    extraData 
+    } = useLocalSearchParams<{ 
+      sleepEmotionNum: string; 
+      detailType: string, 
+      extraData:string[] }>();
+
   const emotion = useEmotionStore((state) => state.getEmotionByNumber(parseInt(sleepEmotionNum)));
   const sleep = useSleepStore((state) => state.getSleepByNumber(parseInt(sleepEmotionNum)));
   const emotionSleep = detailType === "Emotion" ? emotion : sleep
@@ -38,6 +46,14 @@ export default function Prechat() {
   const genericIcons = detailType === "Emotion" ? emotionIcons : sleepIcons;
   const Icon = emotionSleep ? genericIcons[emotionSleep.number] : null;
 
+  const gotoChat = () => {
+    if (detailType === "Emotion"){
+      router.push({ pathname: "/chat", params: { EmotionSleep: emotion?.name, activities: extraData, type: "Emotion" } })
+    }
+    else {
+      router.push({ pathname: "/chat", params: { EmotionSleep: sleep?.name, activities: [] , type: "Sleep"} })
+    }
+  };
   return (
      <LinearGradient
           colors={["#D2A8D6", "#F4E1E6"]}
@@ -75,7 +91,7 @@ export default function Prechat() {
             <Text className="text-white font-medium text-base">
               {msj}
             </Text>
-            <TouchableOpacity className="items-left" onPress={() => router.push('/chat')}>
+            <TouchableOpacity className="items-left" onPress={gotoChat}>
               <Text className="text-white font-bold text-right mt-2 underline text-base">
                 Charlar &gt;
               </Text>

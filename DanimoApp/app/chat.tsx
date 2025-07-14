@@ -5,7 +5,7 @@ import { colors } from "@/stores/colors";
 import { URL_BASE, URL_CHAT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -13,9 +13,21 @@ export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
-  const [chat, setChat] = useState<{ type: "sent" | "received"; text: string }[]>([
-    { type: "received", text: "Hola, ¿en qué puedo ayudarte hoy?" },
-  ]);
+  // const [chat, setChat] = useState<{ type: "sent" | "received"; text: string }[]>([
+  //   { type: "received", text: "Hola, ¿en qué puedo ayudarte hoy?" },
+  // ]);
+  // const [chat, setChat] = useState<{ type: "sent" | "received"; text: string }[]>([]);
+  const [chat, setChat] = useState<{ type: "sent" | "received" | "system"; text: string }[]>([]);
+
+  const { 
+    EmotionSleep, 
+    activities,
+    type 
+    } = useLocalSearchParams<{ 
+      EmotionSleep: string; 
+      activities:string[];
+      type: string  }>();
+
   const token = useUserLogInStore((state) => state.token);
 
   const sendMessage = async () => {
@@ -32,7 +44,7 @@ export default function Chat() {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
-        body: JSON.stringify({ message }), // ← aquí antes ponías "hola"
+        body: JSON.stringify({ message: message }), 
       });
 
       if (!response.ok) {
@@ -43,10 +55,9 @@ export default function Chat() {
 
       const data = await response.json();
 
-      // Asumiendo que el mensaje del backend viene como { response: "texto" }
       setChat((prev) => [
         ...prev,
-        { type: "received", text: data.message || JSON.stringify(data) }, // ← asegurás fallback
+        { type: "received", text: data.message || JSON.stringify(data) }, 
       ]);
 
     } catch (error: any) {
@@ -54,6 +65,56 @@ export default function Chat() {
       alert(error.message || "Error al enviar el mensaje");
     }
   };
+
+  useEffect(() => {
+    const sendFirstMessage = async () => {
+      console.log("type: " + type);
+      console.log("EmotionSleep: " + EmotionSleep);
+      console.log("activities: " + activities);
+      
+      let msjInit = "";
+      if (type === "Emotion") {
+        msjInit = `Me siento ${EmotionSleep}. Hice estas actividades: ${activities}`;
+      } else {
+        msjInit = `Dormí ${EmotionSleep}`;
+      }
+      console.log("msjInit: ", msjInit);
+
+      setChat([{ type: "system", text: "Dani está escribiendo..." }]);
+
+      try {
+        const response = await fetch(URL_BASE + URL_CHAT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify({ message: msjInit }),
+        });
+
+        const data = await response.json();
+        console.log("respuesta del backend:", data);
+
+        if (!response.ok) {
+          throw new Error(data.error || "Error desconocido");
+        }
+
+        // Reemplazamos el mensaje "Dani está escribiendo..." por la respuesta real
+        setChat([
+          { type: "received", text: data.message || JSON.stringify(data) },
+        ]);
+
+      } catch (error: any) {
+        console.error("Chat error:", error);
+        alert(error.message || "Error al enviar el mensaje");
+      }
+    };
+    console.log("first mesaje");
+    
+    sendFirstMessage();
+  }, []);
+
+
 
 
   useEffect(() => {
@@ -63,6 +124,7 @@ export default function Chat() {
   useEffect(() => {
     const showSubs = Keyboard.addListener("keyboardDidShow", handleKeyboardShow);
     const hideSubs = Keyboard.addListener("keyboardDidHide", handleKeyboardHide);// no hace falta pero esta por las dudas
+    console.log("entra a chat");
     return () => {
       showSubs.remove();
       hideSubs.remove();

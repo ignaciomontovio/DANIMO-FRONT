@@ -3,18 +3,73 @@
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
-import { URL_BASE, URL_EMOTION, URL_SLEEP } from "@/stores/consts";
+import { URL_BASE, URL_EMOTION, URL_NOTIFICATION, URL_SLEEP } from "@/stores/consts";
 import { useEmotionStore } from "@/stores/emotions";
 import { useSleepStore } from "@/stores/sleeps";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import messaging from "@react-native-firebase/messaging";
 import { router } from "expo-router";
-import React, { useState } from "react";
-import { Image, SafeAreaView, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, PermissionsAndroid, SafeAreaView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 export default function Index() {
   const setUserType = useUserLogInStore((state) => state.setUserType);
   const [showLoader, setShowLoader] = useState(true);
+  const token = useUserLogInStore((state) => state.token);
+
+
+  const requestPermission = async ()=>{
+    try {
+      const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      console.log("result**", result)
+      console.log("result**2", PermissionsAndroid.RESULTS.GRANTED)
+      if(result === PermissionsAndroid.RESULTS.GRANTED){
+        // request for device token
+        requestToken()
+      }else{
+        Alert.alert("Permission Denied")
+      }
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const requestToken = async ()=>{
+    try {
+      await messaging().registerDeviceForRemoteMessages();
+      const notifToken = await messaging().getToken();
+      console.log("token**", notifToken)
+      await fetch(URL_BASE + URL_NOTIFICATION + "/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ token: notifToken }),
+          });
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    requestPermission()
+  }, [])
+
+
+  /** foreground notification */
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
+
+
+
 
   const fetchEmotions = async () => {
     try {
