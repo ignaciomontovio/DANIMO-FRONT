@@ -74,7 +74,7 @@ export default function Chat() {
       
       let msjInit = "";
       if (type === "Emotion") {
-        msjInit = `Me siento ${EmotionSleep}. Hice estas actividades: ${activities}`;
+        msjInit = `Hola, me siento con ${EmotionSleep}. Hice estas actividades: ${activities}`;
       } else {
         msjInit = `Dormí ${EmotionSleep}`;
       }
@@ -169,7 +169,7 @@ export default function Chat() {
 
         {/* Input de mensaje */}
         {/* <View className= "flex-end"> */}
-          <View className="flex-row items-center p-3 pb-8 bg-white border-t border-gray-300">
+          <View className="flex-row items-center p-3 pb-8 bg-white text-white border-t border-gray-300">
             <TextInput
               className="flex-1 bg-oscuro rounded-full px-4 py-2 text-white font-bold"
               placeholder="Escribe un mensaje..."

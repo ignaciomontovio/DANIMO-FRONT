@@ -18,7 +18,6 @@ export default function Index() {
   const [showLoader, setShowLoader] = useState(true);
   const token = useUserLogInStore((state) => state.token);
 
-
   const requestPermission = async ()=>{
     try {
       const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
