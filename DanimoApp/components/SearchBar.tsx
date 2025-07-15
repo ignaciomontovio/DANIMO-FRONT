@@ -1,3 +1,4 @@
+import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { TextInput, View } from "react-native";
@@ -15,6 +16,8 @@ export default function SearchBar({ placeholder = "Buscar...", onChangeText }: {
         placeholder={placeholder}
         placeholderTextColor="#aaa"
         onChangeText={onChangeText}
+        style={{ color: colors.oscuro }}
+
       />
     </View>
   );
