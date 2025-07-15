@@ -38,10 +38,12 @@ export default function PatientsListScreen() {
     }
   };
 
-  const handlePatientPress = (patient: { name: any; }) => {
+  const handlePatientPress = (patient: {
+    id: string | number | (string | number)[] | null | undefined; name: any; 
+}) => {
     console.log("Paciente seleccionado:", patient.name);
     // detalle del paciente
-    // router.push({ pathname: "/patientDetail", params: { patientId: patient.id } });
+    router.push({ pathname: "/patientsDetail", params: { patientId: patient.id } });
   };
 
   const renderPatientItem = ({ item }: { item: { id: number; name: string } }) => (
