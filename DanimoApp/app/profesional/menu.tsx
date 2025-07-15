@@ -76,7 +76,7 @@ export default function Profile() {
         </View>
 
         <ButtonLight_small onPress={() => ("")} text="Rutinas" />
-        <ButtonLight_small onPress={() => ("")} text="Pacientes Ascociados" />
+        <ButtonLight_small onPress={() => ("")} text="Pacientes Asociados" />
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
     </LinearGradient>
