@@ -1,5 +1,3 @@
-// import { useUserLogInStore } from "@/stores/userLogIn";
- 
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
@@ -7,10 +5,18 @@ import { URL_BASE, URL_EMOTION, URL_NOTIFICATION, URL_SLEEP } from "@/stores/con
 import { useEmotionStore } from "@/stores/emotions";
 import { useSleepStore } from "@/stores/sleeps";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import messaging from "@react-native-firebase/messaging";
+import { getApp } from "@react-native-firebase/app";
+import { getMessaging, getToken, onMessage, registerDeviceForRemoteMessages } from "@react-native-firebase/messaging";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, PermissionsAndroid, SafeAreaView, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  PermissionsAndroid,
+  SafeAreaView,
+  Text,
+  View,
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 export default function Index() {
@@ -18,100 +24,85 @@ export default function Index() {
   const [showLoader, setShowLoader] = useState(true);
   const token = useUserLogInStore((state) => state.token);
 
-  const requestPermission = async ()=>{
+  const requestPermission = async () => {
     try {
-      const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-      console.log("result**", result)
-      console.log("result**2", PermissionsAndroid.RESULTS.GRANTED)
-      if(result === PermissionsAndroid.RESULTS.GRANTED){
-        // request for device token
-        requestToken()
-      }else{
-        Alert.alert("Permission Denied")
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      );
+      if (result === PermissionsAndroid.RESULTS.GRANTED) {
+        requestToken();
+      } else {
+        Alert.alert("Permiso denegado");
       }
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  const requestToken = async ()=>{
+  const requestToken = async () => {
     try {
-      await messaging().registerDeviceForRemoteMessages();
-      const notifToken = await messaging().getToken();
-      console.log("token**", notifToken)
+      const app = getApp();
+      const messaging = getMessaging(app);
+      await registerDeviceForRemoteMessages(messaging);
+      const notifToken = await getToken(messaging);
+      console.log("token**", notifToken);
       await fetch(URL_BASE + URL_NOTIFICATION + "/token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-            body: JSON.stringify({ token: notifToken }),
-          });
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ token: notifToken }),
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-
-  useEffect(()=>{
-    requestPermission()
-  }, [])
-
-
-  /** foreground notification */
+  };
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    requestPermission();
+  }, []);
+
+  useEffect(() => {
+    const app = getApp();
+    const messaging = getMessaging(app);
+
+    const unsubscribe = onMessage(messaging, async (remoteMessage) => {
+      Alert.alert("Nuevo mensaje FCM!", JSON.stringify(remoteMessage));
     });
 
     return unsubscribe;
   }, []);
 
-
-
-
   const fetchEmotions = async () => {
     try {
       const response = await fetch(URL_BASE + URL_EMOTION + "/types");
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
-      }
-
+      if (!response.ok) throw new Error(await response.text());
       const data = await response.json();
-      console.log("Emociones recibidas:", data);
-
       useEmotionStore.getState().setEmotions(data);
-
     } catch (error) {
       console.error("Error al obtener emociones:", error);
     }
   };
+
   const fetchSleeps = async () => {
     try {
       const response = await fetch(URL_BASE + URL_SLEEP + "/types");
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error(errorText);
-      }
-
+      if (!response.ok) throw new Error(await response.text());
       const data = await response.json();
-      console.log("Sueños recibidos:", data);
-
       useSleepStore.getState().setEmotions(data);
-
     } catch (error) {
-      console.error("Error al obtener Sueños:", error);
+      console.error("Error al obtener sueños:", error);
     }
   };
+
   const handleUsuario = () => {
-    fetchEmotions()
-    fetchSleeps()
+    fetchEmotions();
+    fetchSleeps();
     setUserType("usuario");
     router.replace("/auth/LoginRegisterScreen");
   };
+
   const handleProfesional = () => {
     setUserType("profesional");
     router.replace("/auth/LoginRegisterScreen");
@@ -123,8 +114,9 @@ export default function Index() {
     }, 1500);
     return <LoaderDanimo />;
   }
+
   return (
-  <SafeAreaView>
+    <SafeAreaView>
       <LinearGradient
         colors={[colors.color5, colors.fondo]}
         start={{ x: 0, y: 0 }}
@@ -132,16 +124,17 @@ export default function Index() {
         className="w-full h-full"
       >
         <View className="flex-1 justify-top items-center px-6 mt-10 py-20">
-          <Text className="text-oscuro text-4xl font-bold mb-6 text-center">Bienvenido a Danimo</Text>       
-          <Image 
-            source={require('../assets/images/logo.png')} 
+          <Text className="text-oscuro text-4xl font-bold mb-6 text-center">
+            Bienvenido a Danimo
+          </Text>
+          <Image
+            source={require("../assets/images/logo.png")}
             className="w-[250px] h-[250px] mb-5"
           />
-          <ButtonAccept text={"Usuario"} onPress={() => handleUsuario()}></ButtonAccept>
-          <ButtonDark text={"Profesional"} onPress={() => handleProfesional()}></ButtonDark>
+          <ButtonAccept text={"Usuario"} onPress={handleUsuario} />
+          <ButtonDark text={"Profesional"} onPress={handleProfesional} />
         </View>
       </LinearGradient>
     </SafeAreaView>
   );
 }
-

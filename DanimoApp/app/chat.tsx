@@ -13,10 +13,6 @@ export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
-  // const [chat, setChat] = useState<{ type: "sent" | "received"; text: string }[]>([
-  //   { type: "received", text: "Hola, ¿en qué puedo ayudarte hoy?" },
-  // ]);
-  // const [chat, setChat] = useState<{ type: "sent" | "received"; text: string }[]>([]);
   const [chat, setChat] = useState<{ type: "sent" | "received" | "system"; text: string }[]>([]);
 
   const { 

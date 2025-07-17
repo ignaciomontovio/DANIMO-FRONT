@@ -8,9 +8,7 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 // import { makeRedirectUri } from "expo-auth-session";
 import LoaderDanimo from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
-import { URL_AUTH, URL_BASE } from "@/stores/consts";
-import { makeRedirectUri } from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
+import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
@@ -28,45 +26,12 @@ export default function LoginRegisterScreen() {
   const setUserSession= useUserLogInStore((state) => state.setUserSession);
   const token = useUserLogInStore((state) => state.token);
   const mail = useUserLogInStore((state) => state.mail);
-
-  const redirectUri = makeRedirectUri({
-    scheme: 'com.danimo.app',
-  });
-
-  // useEffect(() => {
-  //   console.log("Redirect URI:", redirectUri);
-  // }, []);
-
-
-  const [request, response, promtAsync] = Google.useAuthRequest({
-    androidClientId: '889596207544-ftgc2j4tr6nsi90bfs66ctoqnvjot5de.apps.googleusercontent.com',
-    redirectUri: redirectUri,
-    // clientId_old: '889596207544-irhl04qjt7t03t6e004iuk55afrb0tot.apps.googleusercontent.com',
-  })
-
-  const sendTokenGoogle = async (token:string) => {
-    console.log(token)
-    // send to back
-  }
-
-  useEffect(() => {
-    console.log(response);
-    
-    if (response?.type === 'success') {
-      console.log("Login Google exitoso:", response);
-      const token = response.authentication?.idToken || '';
-      sendTokenGoogle(token);
-      setUserLogIn(true);
-    } else if (response?.type === 'error') {
-      console.error("Error autenticación Google:", response);
-    }
-  }, [response, setUserLogIn]);
-
+  let url_auth = userType === "profesional" ? URL_AUTH_PROF : URL_AUTH
 
   useEffect(() => {
     const validateToken = async (token: string | null, email: string | null) => {
       try {
-        const response = await fetch(URL_BASE + URL_AUTH + "/token-email", {
+        const response = await fetch(URL_BASE + url_auth + "/token-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -124,12 +89,12 @@ export default function LoginRegisterScreen() {
     checkLogin();
 
 
-  }, [UserLogIn, mail, setUserLogIn, setUserSession, token, userType]);
+  }, [UserLogIn, mail, setUserLogIn, setUserSession, token, url_auth, userType]);
 
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(URL_BASE + URL_AUTH + "/login", {
+      const response = await fetch(URL_BASE + url_auth + "/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), password: passw.trim() }),});
@@ -150,9 +115,6 @@ export default function LoginRegisterScreen() {
       alert("Email o contraseña incorrecta");
     }
   };
-  const handleLoginGoogle = async () => {
-    promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);})
-  }
   
   const handleRegister = async () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
@@ -175,13 +137,6 @@ export default function LoginRegisterScreen() {
       },
     });
   };
-
-
-  // const handleGoogleSignIn = async () => {
-  //     setEmail("ignaciomontovio@gmail.com")
-  //     setPassw("abcd123")
-  //     handleLogin()
-  // }
 
   if (UserLogIn) {
       return <LoaderDanimo />;
@@ -235,25 +190,7 @@ export default function LoginRegisterScreen() {
               {tab === "signup" ? (
                 <>
                   {renderPasswordInput(passw2, setPassw2, showPassword, setShowPassword)}
-                  {/* <View className="relative mb-4">
-                    <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw2} onChangeText={setPassw2}/>
-                    <TouchableOpacity
-                      onPress={() => setShowPassword(!showPassword)}
-                      style={{ position: "absolute", right: 12, top: 12 }}
-                    >
-                      <FontAwesome
-                        name={showPassword ? "eye" : "eye-slash"}
-                        size={20}
-                        color="gray"
-                      />
-                    </TouchableOpacity>
-                  </View> */}
-                  {userType === "profesional" && (
-                    <View className="relative mb-4">
-                      <Input icon="id-card" placeholder="DNI" keyboardType="decimal-pad"/>
-                      <Input icon="id-card" placeholder="Matrícula profesional" />
-                    </View>
-                  )}
+                  
                   <ButtonAccept text="Sign Up" onPress={handleRegister} />
                   
                 </>
@@ -266,16 +203,6 @@ export default function LoginRegisterScreen() {
                 </>
               )}
 
-              {/* <Text className="text-center mt-6 mb-4">Continuar con</Text>
-              <View className="flex-row justify-center space-x-4">
-                <SocialButton 
-                  bg="bg-red-600" 
-                  icon="google" 
-                  text="Google" 
-                  // onPress={() => promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);} )} 
-                  onPress={handleLoginGoogle} 
-                />
-              </View> */}
             </View>
           </View>
         </View>
