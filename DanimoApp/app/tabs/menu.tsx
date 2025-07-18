@@ -1,32 +1,23 @@
 import { ButtonDark_small, ButtonLight_small, } from "@/components/buttons";
+import ProfilePhoto from "@/components/profilePhoto";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-
-
-
-
-
-
-
 export default function Profile() {
-   
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
-  
   const token = useUserLogInStore((state) => state.token);
-
   const [name, setName] = useState("")
-  
+
   const handleLogoff = () => {
     setUserLogIn(false);
     router.replace("../auth/LoginRegisterScreen");
   };
+
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -45,7 +36,8 @@ export default function Profile() {
         } else {
           console.error("Error al cargar perfil:", response.status);
           Alert.alert("Error", "No se pudieron cargar los datos del perfil");
-        } 
+        }
+
       } catch (error) {
         console.error("Error loading profile data:", error);
         Alert.alert("Error", "Error de conexión al cargar el perfil");
@@ -53,7 +45,7 @@ export default function Profile() {
     };
     getProfile();
   }, [token]);
-  
+
   return (
     <LinearGradient
       colors={[colors.color5, colors.fondo]}
@@ -63,9 +55,11 @@ export default function Profile() {
     >
       <View className="flex-1 items-center justify-start space-y-15 px-6 py-10">
         <View className="w-full flex-row items-center justify-center gap-2 px-2 py-6">
-          {/* Ícono de usuario */}
-          <View className="rounded-full p-4 border-2 border-oscuro bg-colo2 shadow-md">
-            <FontAwesome name="user" size={60} color={colors.oscuro} />
+          {/* Foto de perfil */}
+          <View className="rounded-full bg-color2 shadow-md w-16 h-16 items-center justify-center">
+            <View style={{ transform: [{ scale: 1.3 }] }}>
+              <ProfilePhoto />
+            </View>
           </View>
 
           {/* Info del usuario */}
