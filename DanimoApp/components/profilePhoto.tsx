@@ -7,7 +7,6 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Image, TouchableOpacity, View } from "react-native";
 
-
 export default function ProfilePhoto() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,68 +38,127 @@ export default function ProfilePhoto() {
     }
   };
 
-  // Convertir imagen a base64
+  // Convertir imagen a base64 con mejor manejo de errores
   const convertToBase64 = async (uri: string): Promise<string> => {
     try {
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+      
+      if (!fileInfo.exists) {
+        throw new Error("El archivo no existe en la ruta especificada");
+      }
+      
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
       
       // Determinar el tipo MIME basado en la extensión
-      const mimeType = uri.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg';
-      return "data:" + mimeType + ";base64," + base64;
-    } catch (error) {
+      let mimeType = 'image/jpeg';
+      if (uri.toLowerCase().includes('.png')) {
+        mimeType = 'image/png';
+      } else if (uri.toLowerCase().includes('.jpg') || uri.toLowerCase().includes('.jpeg')) {
+        mimeType = 'image/jpeg';
+      }
+      
+      const dataUri = `data:${mimeType};base64,${base64}`;
+      return dataUri;
+    } catch (error: any) {
       console.error('Error converting to base64:', error);
-      throw error;
+      throw new Error(`Error al convertir imagen: ${error.message || error}`);
     }
   };
 
-  // Subir imagen al backend
-  const uploadToBackend = async (base64Image: string) => {
+  // Subir imagen al backend usando FormData
+  const uploadToBackend = async (uri: string) => {
     try {
-      console.log("Uploading image to backend...");
+      const formData = new FormData();
+      
+      // Sintaxis correcta para React Native
+      formData.append('profilePic', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: 'profile.jpg',
+      } as any);
 
       const response = await fetch(URL_BASE + URL_AUTH + "/update-profile", {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
-        body: JSON.stringify({
-          profilePic: base64Image
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
-        const errorText = await response.json();
-        console.error("Error:", errorText.error);
-        throw new Error(errorText.error);
+        const errorText = await response.text();
+        
+        // Si profilePic no es permitido, intentar con otros nombres
+        if (errorText.includes("profilePic is not allowed")) {
+          return await tryDifferentFieldNames(uri);
+        }
+        
+        throw new Error(`Error del servidor: ${response.status} - ${errorText}`);
       }
-
-      console.log("Image uploaded successfully");
+      
       Alert.alert("¡Éxito!", "Foto de perfil actualizada");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading to backend:', error);
-      Alert.alert("Error", "No se pudo subir la imagen al servidor");
       throw error;
     }
   };
 
+  // Intentar con diferentes nombres de campo
+  const tryDifferentFieldNames = async (uri: string) => {
+    const fieldNames = ['avatar', 'photo', 'image', 'profile_pic', 'profile_picture', 'profileImage'];
+    
+    for (const fieldName of fieldNames) {
+      try {
+        const formData = new FormData();
+        formData.append(fieldName, {
+          uri: uri,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        } as any);
+
+        const response = await fetch(URL_BASE + URL_AUTH + "/update-profile", {
+          method: "PATCH",
+          headers: {
+            "Authorization": "Bearer " + token,
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          Alert.alert("¡Éxito!", "Foto de perfil actualizada");
+          return;
+        }
+      } catch (error: any) {
+        // Continuar con el siguiente nombre
+      }
+    }
+    
+    throw new Error("No se pudo encontrar el nombre de campo correcto para la imagen");
+  };
+
   // Pedir permisos
   const requestPermissions = async () => {
-    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-    const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    return {
-      camera: cameraStatus === 'granted',
-      mediaLibrary: mediaLibraryStatus === 'granted'
-    };
+    try {
+      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+      const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      return {
+        camera: cameraStatus === 'granted',
+        mediaLibrary: mediaLibraryStatus === 'granted'
+      };
+    } catch (error: any) {
+      console.error('Error requesting permissions:', error);
+      throw new Error("Error al solicitar permisos");
+    }
   };
 
   // Tomar foto con cámara
   const takePhoto = async () => {
     try {
       setLoading(true);
+      
       const permissions = await requestPermissions();
       
       if (!permissions.camera) {
@@ -112,15 +170,15 @@ export default function ProfilePhoto() {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.1,
+        quality: 0.3,
       });
 
       if (!result.canceled && result.assets[0]) {
         await processImage(result.assets[0].uri);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error tomando foto:', error);
-      Alert.alert('Error', 'No se pudo tomar la foto');
+      Alert.alert('Error', `No se pudo tomar la foto: ${error.message || error}`);
     } finally {
       setLoading(false);
     }
@@ -130,6 +188,7 @@ export default function ProfilePhoto() {
   const pickImage = async () => {
     try {
       setLoading(true);
+      
       const permissions = await requestPermissions();
       
       if (!permissions.mediaLibrary) {
@@ -141,15 +200,15 @@ export default function ProfilePhoto() {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.1,
+        quality: 0.3,
       });
 
       if (!result.canceled && result.assets[0]) {
         await processImage(result.assets[0].uri);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error seleccionando imagen:', error);
-      Alert.alert('Error', 'No se pudo seleccionar la imagen');
+      Alert.alert('Error', `No se pudo seleccionar la imagen: ${error.message || error}`);
     } finally {
       setLoading(false);
     }
@@ -158,81 +217,43 @@ export default function ProfilePhoto() {
   // Procesar imagen y subirla al backend
   const processImage = async (uri: string) => {
     try {
-      console.log("Processing image...");
-      
       const fileInfo = await FileSystem.getInfoAsync(uri);
-      console.log(
-        "📄 Original file size:",
-        'size' in fileInfo && typeof fileInfo.size === 'number'
-          ? `${Math.round(fileInfo.size / 1024)}KB`
-          : 'unknown'
-      );
       
-      const base64Image = await convertToBase64(uri);
-      const base64Size = base64Image.length * 0.75;
-      console.log("Base64 size: " + Math.round(base64Size / 1024) + "KB");
-      
-      if (base64Size > 100000) {
-        Alert.alert(
-          "Imagen muy grande", 
-          "La imagen es de " + Math.round(base64Size / 1024) + "KB. El servidor solo acepta imágenes muy pequeñas. Intenta con una imagen más pequeña o pide al administrador que aumente el límite del servidor."
-        );
-        return;
+      if (!fileInfo.exists) {
+        throw new Error("El archivo no existe");
       }
       
-      await uploadToBackend(base64Image);
+      if ('size' in fileInfo && typeof fileInfo.size === 'number') {
+        // Si el archivo es muy grande, alertar
+        if (fileInfo.size > 2000000) { // 2MB
+          Alert.alert(
+            "Imagen muy grande",
+            `La imagen es de ${Math.round(fileInfo.size / 1024)}KB. Esto podría causar problemas. ¿Continuar?`,
+            [
+              { text: "Cancelar", style: "cancel" },
+              { text: "Continuar", onPress: async () => await uploadToBackend(uri) }
+            ]
+          );
+          return;
+        }
+      }
+      
+      // Subir directamente el archivo
+      await uploadToBackend(uri);
+      
+      // Actualizar la imagen local (convertir a base64 solo para mostrar)
+      const base64Image = await convertToBase64(uri);
       setProfileImage(base64Image);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error processing image:', error);
-      
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'message' in error &&
-        typeof (error as any).message === 'string' &&
-        (error as any).message.includes('PayloadTooLargeError')
-      ) {
-        Alert.alert(
-          'Imagen muy grande', 
-          'La imagen es demasiado grande para el servidor. Intenta con una imagen más pequeña o contacta al administrador para aumentar el límite.'
-        );
-      } else {
-        Alert.alert('Error', 'No se pudo procesar la imagen');
-      }
-    }
-  };
-
-  // Eliminar foto
-  const removePhoto = async () => {
-    try {
-      setLoading(true);
-      await uploadToBackend("");
-      setProfileImage(null);
-      Alert.alert('Foto eliminada', 'Tu foto de perfil ha sido eliminada');
-    } catch (error) {
-      console.error('Error eliminando imagen:', error);
-      Alert.alert('Error', 'No se pudo eliminar la imagen');
-    } finally {
-      setLoading(false);
+      Alert.alert('Error', `No se pudo procesar la imagen: ${error.message || error}`);
     }
   };
 
   // Manejar selección de opción
   const handleImagePress = () => {
-    if (profileImage) {
-      Alert.alert(
-        "Foto de perfil",
-        "¿Qué deseas hacer?",
-        [
-          { text: "Cancelar", style: "cancel" },
-          { text: "Cambiar foto", onPress: showImageOptions },
-          { text: "Eliminar", style: "destructive", onPress: removePhoto },
-        ]
-      );
-    } else {
-      showImageOptions();
-    }
+    showImageOptions();
   };
 
   const showImageOptions = () => {

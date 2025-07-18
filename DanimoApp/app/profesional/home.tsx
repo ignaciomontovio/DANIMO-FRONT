@@ -46,7 +46,7 @@ export default function Home() {
               </TouchableOpacity>
             ))}
 
-            <ButtonDark text="Ver todos" />
+            <ButtonDark text="Ver todos" onPress={() => router.push("/patientsList")}/>
             <ButtonAccept text="Nuevo" onPress={() => router.push("/enterCode")}/>
             
           </View>
