@@ -1,7 +1,7 @@
 import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
-import { Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Input_date_big } from "./input";
 
 export type ShowInfoProps = {
@@ -16,7 +16,8 @@ export type ShowInfoEditProps = {
   onChangeText: (text: string) => void;
   placeholder?: string;
   label?: string;
-  type?: "text" | "phone" | "date";
+  type?: "text" | "phone" | "date" | "picklist";
+  picklistOptions?: string[];
 };
 
 export default function ShowInfo({ text, icon }: ShowInfoProps) {
@@ -34,11 +35,13 @@ export function ShowInfo_edit({
   onChangeText, 
   placeholder, 
   label, 
-  type
+  type,
+  picklistOptions,
 }: ShowInfoEditProps) {
   console.log("ShowInfo_edit: " + text + " type " + type);
 
-  
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => setModalVisible(!isModalVisible);
   return (
     <View className="mb-3">
       {label && (
@@ -93,6 +96,61 @@ export function ShowInfo_edit({
             placeholderTextColor={colors.oscuro + "80"}
           />
         </View>
+      )}
+      {type === "picklist" && (
+        <>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            className="w-full py-3 px-5 rounded-md mt-2 shadow-2xl border border-oscuro flex-row items-center justify-between"
+          >
+            <FontAwesome name={icon} size={30} color={colors.oscuro} />
+            <Text className="text-oscuro px-5 font-bold text-lg flex-1">
+              {text || placeholder || "Seleccionar..."}
+            </Text>
+          </TouchableOpacity>
+
+          <Modal
+            visible={isModalVisible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={toggleModal}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={toggleModal}
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                className="bg-fondo rounded-xl p-4"
+                style={{ minWidth: 250 }}
+                // Prevent closing when pressing inside the modal content
+                onStartShouldSetResponder={() => true}
+              >
+                <Text className="text-lg font-bold mb-2">
+                  Selecciona el tipo de rutina
+                </Text>
+                {picklistOptions &&
+                  picklistOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option}
+                      onPress={() => {
+                        onChangeText(option);
+                        setModalVisible(false);
+                      }}
+                      className="py-2"
+                    >
+                      <Text className="text-base">{option}</Text>
+                    </TouchableOpacity>
+                  ))}
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </>
       )}
 
     </View>
