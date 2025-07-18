@@ -1,3 +1,4 @@
+import CardsList from "@/app/cards/cardsList";
 import { profileCardConfigProfesional, profileCardConfigUsuario, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
 import HeaderGoBack from "@/components/headerGoBack";
 import ProfilePhoto from "@/components/profilePhoto";
@@ -7,7 +8,6 @@ import { router } from "expo-router";
 import React from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import CardsList from "./cards/cardsList";
 
 
 

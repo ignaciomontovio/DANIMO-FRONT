@@ -143,7 +143,7 @@ export default function Prechat() {
             }}
           >
             <Image
-              source={require('../assets/images/bicho-transparent.png')}
+              source={require('../../assets/images/bicho-transparent.png')}
               className="w-32 h-32"
               resizeMode="contain"
             />

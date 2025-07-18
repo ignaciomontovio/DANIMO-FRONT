@@ -61,7 +61,7 @@ export default function DetailSleepScreen() {
         }
 
       console.log("Registro exitoso");
-      router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Sleep", extraData:[]} });
+      router.push({ pathname: "/prechat" as any, params: { sleepEmotionNum: value, detailType: "Sleep", extraData:[]} });
 
     } catch (error) {
       console.error("Error al registrar sueño:", error);

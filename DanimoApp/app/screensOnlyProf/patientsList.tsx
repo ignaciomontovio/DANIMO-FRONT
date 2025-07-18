@@ -43,7 +43,7 @@ export default function PatientsListScreen() {
 }) => {
     console.log("Paciente seleccionado:", patient.name);
     // detalle del paciente
-    router.push({ pathname: "/patientsDetail", params: { patientId: patient.id } });
+    router.push({ pathname: "/screensOnlyProf/patientsDetail", params: { patientId: patient.id } });
   };
 
   const renderPatientItem = ({ item }: { item: { id: number; name: string } }) => (

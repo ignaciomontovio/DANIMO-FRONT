@@ -149,7 +149,7 @@ export default function Chat() {
         <HeaderGoBack
           text="DANI.AI"
           onPress={() => router.push("/tabs/home")}
-          img={require("../assets/images/logo.png")}
+          img={require("../../assets/images/logo.png")}
         />
 
         {/* Chat scrollable */}

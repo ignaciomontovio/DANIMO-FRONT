@@ -10,9 +10,9 @@ export default function Home() {
     // Lista de pacientes de ejemplo
     const patient = ["Juan Pérez", "María Gómez", "Carlos Ruiz"]; // traer desde el back
 
-  const gotoStatsPatient = (nombre: string) => {
-    console.log("Ver paciente", nombre);
-    // ir a una pantalla que haga stadisticas basado en la info de un paciente
+  const gotoStatsPatient = (patient: string) => {
+    console.log("Ver paciente", patient);
+    router.push({ pathname: "/screensOnlyProf/patientsDetail", params: { patientId: "2" } });
   }
     return (
       <LinearGradient
@@ -36,7 +36,7 @@ export default function Home() {
               <TouchableOpacity
                 key={index}
                 className="flex-row items-center justify-between bg-white/60 rounded-full px-4 py-4 mb-2"
-                onPress={() => gotoStatsPatient(nombre)}
+                onPress={() => gotoStatsPatient(patient[index])}
               >
                 <View className="flex-row items-center">
                   <FontAwesome name="user" size={18} color="gray" />
@@ -46,7 +46,7 @@ export default function Home() {
               </TouchableOpacity>
             ))}
 
-            <ButtonDark text="Ver todos" onPress={() => router.push("/patientsList")}/>
+            <ButtonDark text="Ver todos" onPress={() => router.push("/screensOnlyProf/patientsList")}/>
             <ButtonAccept text="Nuevo" onPress={() => router.push("/enterCode")}/>
             
           </View>
