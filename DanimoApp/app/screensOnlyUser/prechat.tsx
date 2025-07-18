@@ -72,10 +72,10 @@ export default function Prechat() {
 
   const gotoChat = () => {
     if (detailType === "Emotion"){
-      router.push({ pathname: "/chat", params: { EmotionSleep: emotion?.name, activities: extraData, type: "Emotion" } })
+      router.push({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: emotion?.name, activities: extraData, type: "Emotion" } })
     }
     else {
-      router.push({ pathname: "/chat", params: { EmotionSleep: sleep?.name, activities: [] , type: "Sleep"} })
+      router.push({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: sleep?.name, activities: [] , type: "Sleep"} })
     }
   };
 
