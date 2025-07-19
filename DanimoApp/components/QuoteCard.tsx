@@ -39,7 +39,7 @@ export default function QuoteCard( ) {
   }, []);
 
   const gotoDetail = () => {
-    router.push({ pathname: "../detailQuote", params: { quote: quote, author: author } });
+    router.push({ pathname: "/screensOnlyUser/detailQuote", params: { quote: quote, author: author } });
   };
 
   return (

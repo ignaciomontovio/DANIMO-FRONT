@@ -1,8 +1,10 @@
 
-import CardRutine from "@/app/cards/cardRutine";
+import CardRutine, { Rutine } from "@/app/cards/cardRutine";
 import { ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
+import { URL_BASE, URL_RUTINE } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -14,28 +16,56 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-type Rutine = {
-  title: string;
-  type: "Video" | "Pasos" | "Texto";
-  content: string; // JSON con estructura
-};
 
 export default function Rutines() {
   const [loading, setLoading] = useState(true);
   const [rutines, setRutines] = useState<Rutine[]>([]);
+  const token = useUserLogInStore((state) => state.token);
 
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
-      // Simulación
-      const mockData: Rutine[] = [
-        { title: "Relajación", type: "Texto", content: '{"content": "Respirá hondo y solta el aire lentamente."}' },
-        { title: "Furia", type: "Video", content: '{"content": "https://www.youtube.com/watch?v=EGO5m_DBzF8"}' },
-        // { title: "Ataque de ansiedad", type: "Pasos", content: '{"content": [{"1":"pensa en otra cosa", "2":"controla la respiracion"}]}' },
-      ];
-      setRutines(mockData);
+      const response = await fetch(URL_BASE + URL_RUTINE + "/obtain", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+      });
+
+    if (!response.ok) {
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
+    }
+
+    const data = await response.json();
+    
+    const rutinasBack = Array.isArray(data) ? data : data.data || [];
+    // setRutines(rutinas); // por ahora no esta el back
+    const mockData: Rutine[] = [
+    {
+      title: "Relajación", 
+      type: "Texto", 
+      content: "Respirá hondo y solta el aire lentamente",
+      id: "",
+      createdBy: "",
+      emotion: ""
+    },
+    {
+      title: "Furia", 
+      type: "Video", 
+      content: "https://www.youtube.com/watch?v=EGO5m_DBzF8",
+      id: "",
+      createdBy: "",
+      emotion: ""
+    }
+    ];
+    setRutines(mockData);
+    
     } catch (error) {
-      Alert.alert("Error", (error as Error).message);
+      console.error("Error al obtener medicaciones:", error);
+      Alert.alert("Error", "No se pudo obtener la lista de medicaciones.");
+      return [];
     } finally {
       setLoading(false);
     }
@@ -43,7 +73,13 @@ export default function Rutines() {
 
   const handleEdit = (rutine: Rutine) => {
     // Redirigir a pantalla de edición con datos
-    // router.push({ pathname: "/profesional/editarRutina", params: { rutine: JSON.stringify(rutine) } });
+    console.log("handleEdit : " + rutine );
+
+    router.push({ pathname: "/cards/cardEditRutine", params: { rutineParam: JSON.stringify(rutine) } });
+  };
+
+  const handleCreate = () => {
+    router.push("/cards/cardEditRutine");
   };
 
   const handleDelete = (rutine: Rutine) => {
@@ -64,11 +100,9 @@ export default function Rutines() {
   }
   
 
-  const handleCreate = () => {
-    router.push("/cards/cardEditRutine");
-  };
+ 
 
-  useEffect(() => {
+  useEffect(() => { 
     fetchData();
   }, [fetchData]);
 

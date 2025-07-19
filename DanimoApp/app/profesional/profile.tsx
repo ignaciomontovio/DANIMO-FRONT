@@ -82,8 +82,8 @@
 //     </LinearGradient>
 //   );
 // }
+import Profile from "@/app/profile";
 import React from "react";
-import Profile from "../profile";
 
 
 export default function Menu() {

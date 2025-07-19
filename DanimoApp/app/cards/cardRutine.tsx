@@ -9,9 +9,15 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 
-type Rutine = {
+export const RutineTypes = ["Video", "Pasos" , "Texto" , ""];
+
+
+export type Rutine = {
+  id: string;
   title: string;
-  type: "Video" | "Pasos" | "Texto";
+  createdBy: string;
+  emotion: string;
+  type: "Video"| "Pasos" | "Texto" | "";
   content: string; // JSON con estructura
 };
 
@@ -24,8 +30,10 @@ type PropsCard = {
 };
 
 export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: PropsCard) {
-  const content = JSON.parse(element.content);
-
+  console.log("CardRutine element:", element);
+  const content = element;
+  console.log("CardRutine content:", content);
+  
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"

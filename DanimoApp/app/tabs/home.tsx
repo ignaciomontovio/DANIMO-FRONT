@@ -21,8 +21,8 @@ export default function Home() {
         <ScrollView className="flex-1 px-4 pb-20 py-10">
           <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
-            <SelectFive goto="/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
-            <SelectFive goto="/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
+            <SelectFive goto="/screensOnlyUser/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
+            <SelectFive goto="/screensOnlyUser/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
             <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
             <View className="flex-row justify-center items-center">
               <QuoteCard/>   

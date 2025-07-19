@@ -2,7 +2,7 @@ import CardsList from "@/app/cards/cardsList";
 import { profileCardConfigProfesional, profileCardConfigUsuario, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
 import HeaderGoBack from "@/components/headerGoBack";
 import ProfilePhoto from "@/components/profilePhoto";
-import { URL_AUTH, URL_BASE } from "@/stores/consts";
+import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React from "react";
@@ -20,6 +20,8 @@ export default function Profile() {
 
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
+      console.log(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile",);
+      
 
       try {
         const response = await fetch(URL_BASE + URL_AUTH + "/profile", {

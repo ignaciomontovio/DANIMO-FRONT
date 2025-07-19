@@ -1,3 +1,4 @@
+import { Rutine } from "@/app/cards/cardRutine";
 import { ButtonDark, ButtonDark_add } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
@@ -8,11 +9,6 @@ import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } fr
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-type Rutine = {
-  title: string;
-  type: "Video"|"Pasos"|"Texto";
-  content: string; // json con estructura
-};
 
 export default function Rutines() {
 

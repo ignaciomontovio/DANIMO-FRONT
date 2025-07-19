@@ -37,9 +37,9 @@ export default function Medication() {
   
   const getMedication = async (): Promise<MedicationType[]> => {
     const endpoint = URL_BASE + "/medication";
-    
-    // Obtener lista de medicaciones
-    const response = await fetch(endpoint + "/obtain", {
+    try {
+      // Obtener lista de medicaciones
+      const response = await fetch(endpoint + "/obtain", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -55,6 +55,11 @@ export default function Medication() {
   
     const data = await response.json();
     return Array.isArray(data) ? data : (data.data || [])
+    } catch (error) {
+      console.error("Error al obtener medicaciones:", error);
+      Alert.alert("Error", "No se pudo obtener la lista de medicaciones.");
+      return [];
+    }
   };
   return (
     <SafeAreaProvider>

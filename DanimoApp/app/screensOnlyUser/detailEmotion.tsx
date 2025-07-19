@@ -1,5 +1,6 @@
 import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
+import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
@@ -208,6 +209,7 @@ export default function DetailEmotionScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
+      <HeaderGoBack text="Emocion" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1">
         <ScrollView className="flex-1 px-6 pt-10 pb-20">
           {loading ? (

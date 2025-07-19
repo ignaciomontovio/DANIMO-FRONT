@@ -7,7 +7,7 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, SafeAreaView, Text, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 export default function DetailSleepScreen() {
@@ -61,7 +61,7 @@ export default function DetailSleepScreen() {
         }
 
       console.log("Registro exitoso");
-      router.push({ pathname: "/prechat" as any, params: { sleepEmotionNum: value, detailType: "Sleep", extraData:[]} });
+      router.push({ pathname: "/screensOnlyUser/prechat" as any, params: { sleepEmotionNum: value, detailType: "Sleep", extraData:[]} });
 
     } catch (error) {
       console.error("Error al registrar sueño:", error);
@@ -98,7 +98,7 @@ export default function DetailSleepScreen() {
     >
       <HeaderGoBack text="Sueño" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1 px-6">
-
+        <ScrollView className="flex-1 ">
         <View className="items-center mt-4 mb-4">
           <Ionicons name="moon-outline" size={28} color={colors.oscuro} style={{ marginBottom: 4 }} />
           <Text className="text-lg font-bold text-oscuro text-center">
@@ -152,15 +152,15 @@ export default function DetailSleepScreen() {
 
               <View className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-3 mt-2">
                 <View className="flex-row items-center justify-center mb-1">
-                  <Ionicons name="time-outline" size={14} color="white" style={{ marginRight: 6 }} />
-                  <Text className="text-white text-center text-xs font-medium">
+                  <Ionicons name="time-outline" size={14} color="oscuro" style={{ marginRight: 6 }} />
+                  <Text className="text-oscuro text-center text-xs font-medium">
                     Duración Total del Sueño
                   </Text>
                 </View>
-                <Text className="text-white text-center text-2xl font-bold">
+                <Text className="text-oscuro text-center text-2xl font-bold">
                   {sleepDuration}
                 </Text>
-                <Text className="text-white/80 text-center text-xs mt-1">
+                <Text className="text-oscuro/80 text-center text-xs mt-1">
                   {sleepDuration.includes('8h') || sleepDuration.includes('7h') 
                     ? "¡Excelente duración!" 
                     : sleepDuration.includes('6h') || sleepDuration.includes('5h')
@@ -181,9 +181,10 @@ export default function DetailSleepScreen() {
           </View>
         </View>
 
-        <View className="mb-16 absolute left-6 right-6 bottom-0">          
+        <View className="mb-16 justify-bottom">          
           <ButtonDark text="Registrar" onPress={handleRegister} />   
         </View>
+      </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

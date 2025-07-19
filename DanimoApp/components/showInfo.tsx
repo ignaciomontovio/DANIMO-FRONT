@@ -81,6 +81,8 @@ export function ShowInfo_edit({
             onChangeText={onChangeText}
             placeholder={placeholder || "Ingresa valor..."}
             placeholderTextColor={colors.oscuro + "80"}
+            multiline
+            textAlignVertical="top"
           />
         </View>
       )}

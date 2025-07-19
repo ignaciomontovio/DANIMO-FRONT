@@ -1,8 +1,9 @@
+import { Rutine, RutineTypes } from "@/app/cards/cardRutine";
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
 import { colors } from "@/stores/colors";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ScrollView,
@@ -12,19 +13,44 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-type Rutine = {
-  title: string;
-  type: "Video" | "Pasos" | "Texto" | "";
-  content: string;
-};
-
+// 
 export default function CardRutineEdit() {
-  const [rutine, setRutine] = useState<Rutine>({
-    title: "",
-    type: "",
-    content: "",
-  });
+  const { rutineParam } = useLocalSearchParams();
 
+  // const rutineParam: Rutine = {
+  //   title: title?.toString() ?? "",
+  //   type: (RutineTypes.includes(type?.toString() ?? "") ? (type?.toString() as Rutine["type"]) : ""),
+  //   content: content?.toString() ?? "",
+  //   id: id?.toString() ?? "",
+  //   createdBy: createdBy?.toString() ?? "",
+  //   emotion: emotion?.toString() ?? "",
+  // };
+  
+  const [rutine, setRutine] = useState<Rutine>(() => {
+    const emptyRutine: Rutine = {
+      id: "",
+      title: "",
+      type: "",
+      content: "",
+      createdBy: "",
+      emotion: "",
+    };
+    if (rutineParam ) {
+      if (typeof rutineParam === "string") {
+        try {
+          
+          return JSON.parse(rutineParam) as Rutine;
+        } catch (error) {
+          console.error("Error parsing rutineParam:", error);
+          return emptyRutine;
+        }
+      }
+      
+    }
+    return emptyRutine;
+  });
+  console.log("Rutina cargada:", rutine);
+  
   const save = () => {
     // TODO: lógica de guardado con validación si es necesario
     console.log("Rutina guardada:", rutine);
@@ -73,16 +99,16 @@ export default function CardRutineEdit() {
                 icon={"edit"}
                 text={rutine.type|| ""}
                 onChangeText={(text) =>
-                  setRutine({ ...rutine, type: (["Video", "Pasos", "Texto", ""] as Rutine["type"][]).includes(text as Rutine["type"]) ? (text as Rutine["type"]) : "" })
+                  setRutine({ ...rutine, type: (RutineTypes as Rutine["type"][]).includes(text as Rutine["type"]) ? (text as Rutine["type"]) : "" })
                 }
                 placeholder={"tipo"}
                 type={"picklist"}
-                picklistOptions={["Video", "Pasos", "Texto"]}
+                picklistOptions={RutineTypes}
               />
               {/*Contenido */}
               <ShowInfo_edit 
-                icon={"trash"}
-                text={rutine.content|| ""}
+                icon={"edit"}
+                text={rutine.content || ""}
                 onChangeText={(text) =>
                   setRutine({ ...rutine, content: text })
                 }
