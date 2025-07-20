@@ -28,12 +28,12 @@ export default function CardRutineEdit() {
   
   const [rutine, setRutine] = useState<Rutine>(() => {
     const emptyRutine: Rutine = {
-      id: "",
-      title: "",
-      type: "",
-      content: "",
-      createdBy: "",
-      emotion: "",
+      body: "",
+      createdBy:  "",
+      emotion:  "",
+      id:  "",
+      title:  "",
+      type:  "",
     };
     if (rutineParam ) {
       if (typeof rutineParam === "string") {
@@ -56,6 +56,10 @@ export default function CardRutineEdit() {
     console.log("Rutina guardada:", rutine);
     router.replace("/profesional/rutines");
   };
+
+  const addPaso= () => {
+    // ir hacia cardEditPaso
+  }
 
   return (
     <SafeAreaProvider>
@@ -106,15 +110,22 @@ export default function CardRutineEdit() {
                 picklistOptions={RutineTypes}
               />
               {/*Contenido */}
-              <ShowInfo_edit 
-                icon={"edit"}
-                text={rutine.content || ""}
-                onChangeText={(text) =>
-                  setRutine({ ...rutine, content: text })
-                }
-                placeholder={"Contenido"}
-                type={"text"}
-              />
+              { rutine.type === "Pasos" ? 
+                ( 
+                  <ButtonDark text="Agregar Paso" onPress={addPaso} />
+                ) 
+                : (
+                    <ShowInfo_edit 
+                    icon={"edit"}
+                    text={rutine.body || ""}
+                    onChangeText={(text) =>
+                      setRutine({ ...rutine, body: text })
+                    }
+                    placeholder={"Contenido"}
+                    type={"text"}
+                  />
+                )}
+              
               
               <ButtonDark text="Guardar" onPress={save} />
             </View>

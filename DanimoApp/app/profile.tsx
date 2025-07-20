@@ -17,14 +17,14 @@ export default function Profile() {
     const userType = useUserLogInStore((state) => state.userType); 
     const homePath = userType === "profesional"? "/profesional/home" : "/tabs/home"
     const profileCardConfig = userType === "profesional"? profileCardConfigProfesional : profileCardConfigUsuario
-
+   
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
       console.log(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile",);
       
 
       try {
-        const response = await fetch(URL_BASE + URL_AUTH + "/profile", {
+        const response = await fetch(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile", {
           method: "GET",
           headers: {
             "Authorization": "Bearer " + token,

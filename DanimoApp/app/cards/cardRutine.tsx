@@ -13,12 +13,12 @@ export const RutineTypes = ["Video", "Pasos" , "Texto" , ""];
 
 
 export type Rutine = {
-  id: string;
-  title: string;
+  body: string; // JSON con estructura
   createdBy: string;
   emotion: string;
+  id: string;
+  title: string;
   type: "Video"| "Pasos" | "Texto" | "";
-  content: string; // JSON con estructura
 };
 
 type PropsCard = {
@@ -68,13 +68,13 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
         {element.type === "Video" ? (
           <View className="w-full aspect-video rounded-xl overflow-hidden mb-4 mt-4 justify-center item-center">
             <WebView
-              source={{ uri: getEmbeddedYoutubeUrl(content.content) }}
+              source={{ uri: getEmbeddedYoutubeUrl(content.body) }}
               style={{ flex: 1 }}
               allowsFullscreenVideo
             />
           </View>
         ) : (
-          <ShowInfo text={content.content} icon="file-text" />
+          <ShowInfo text={content.body} icon="file-text" />
         )}
 
         <ButtonDark text="Editar" onPress={onButton} />

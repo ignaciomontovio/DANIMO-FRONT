@@ -42,25 +42,28 @@ export default function Rutines() {
     
     const rutinasBack = Array.isArray(data) ? data : data.data || [];
     // setRutines(rutinas); // por ahora no esta el back
-    const mockData: Rutine[] = [
-    {
-      title: "Relajación", 
-      type: "Texto", 
-      content: "Respirá hondo y solta el aire lentamente",
-      id: "",
-      createdBy: "",
-      emotion: ""
-    },
-    {
-      title: "Furia", 
-      type: "Video", 
-      content: "https://www.youtube.com/watch?v=EGO5m_DBzF8",
-      id: "",
-      createdBy: "",
-      emotion: ""
-    }
-    ];
-    setRutines(mockData);
+    // const mockData: Rutine[] = [
+    // {
+    //   title: "Relajación", 
+    //   type: "Texto", 
+    //   content: "Respirá hondo y solta el aire lentamente",
+    //   id: "",
+    //   createdBy: "",
+    //   emotion: ""
+    // },
+    // {
+    //   title: "Furia", 
+    //   type: "Video", 
+    //   content: "https://www.youtube.com/watch?v=EGO5m_DBzF8",
+    //   id: "",
+    //   createdBy: "",
+    //   emotion: ""
+    // }
+    // ];
+    // console.log("Rutinas obtenidas:", rutinasBack);
+    setRutines(rutinasBack);
+    // console.log("Rutinas GUARDADAS:", rutines);
+
     
     } catch (error) {
       console.error("Error al obtener medicaciones:", error);
@@ -98,9 +101,6 @@ export default function Rutines() {
     // ir a pantalla de lista de pacientes 
 
   }
-  
-
- 
 
   useEffect(() => { 
     fetchData();
