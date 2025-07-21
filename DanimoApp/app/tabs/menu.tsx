@@ -75,7 +75,7 @@ export default function Profile() {
           </View>
         </View>
 
-        <ButtonLight_small onPress={() => ("")} text="Recomendación" />
+        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/recomendation"))} text="Recomendación" />
         <ButtonLight_small onPress={() => ("")} text="Rutinas" />
         <ButtonLight_small onPress={() => ("")} text="Estadísticas" />
         <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />

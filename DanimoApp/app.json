@@ -46,6 +46,12 @@
           "photosPermission": "DanimoApp necesita acceso a tus fotos para permitirte elegir una imagen de perfil.",
           "cameraPermission": "DanimoApp necesita acceso a tu cámara para permitirte tomar una foto de perfil."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Esta app necesita acceso a la ubicación para mostrar centros médicos cercanos."
+        }
       ]
     ],
     "experiments": {
