@@ -80,7 +80,7 @@ export default function Profile() {
         <ButtonLight_small onPress={() => ("")} text="Estadísticas" />
         <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
         <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/emergencyContacts"))} text="Contactos de Emergencia" />
-        <ButtonLight_small onPress={() => ("")} text="Profesionales Ascociados" />
+        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/shareCode"))} text="Profesionales Ascociados" />
         <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/medications"))} text="Medicación" />
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
