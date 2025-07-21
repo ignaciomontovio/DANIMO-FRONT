@@ -1,5 +1,6 @@
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
+import LoaderDanimo from "@/components/LoaderDanimo";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
@@ -43,10 +44,15 @@ export default function ShareCode() {
       }
      }
      fetchData();
-  }, []);
+  }, [token]);
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(code);
   };
+  
+  if (loading) {
+    return <LoaderDanimo />;
+  }
+      
 
   return (
     <SafeAreaProvider>
