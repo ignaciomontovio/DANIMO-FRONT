@@ -3,67 +3,81 @@ import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
 import { colors } from "@/stores/colors";
+import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ScrollView,
   TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-// 
+// Tipo para los pasos
+interface Paso {
+  id: string;
+  titulo: string;
+  descripcion: string;
+}
+
 export default function CardRutineEdit() {
   const { rutineParam } = useLocalSearchParams();
 
-  // const rutineParam: Rutine = {
-  //   title: title?.toString() ?? "",
-  //   type: (RutineTypes.includes(type?.toString() ?? "") ? (type?.toString() as Rutine["type"]) : ""),
-  //   content: content?.toString() ?? "",
-  //   id: id?.toString() ?? "",
-  //   createdBy: createdBy?.toString() ?? "",
-  //   emotion: emotion?.toString() ?? "",
-  // };
-
-  // pasos : [{
-  // "titulo_p1":"algo",
-  // "titulo_p2":"otro"
-  // }]
   const [rutine, setRutine] = useState<Rutine>(() => {
     const emptyRutine: Rutine = {
       body: "",
-      createdBy:  "",
-      emotion:  "",
-      id:  "",
-      title:  "",
-      type:  "",
+      createdBy: "",
+      emotion: "",
+      id: "",
+      title: "",
+      type: "",
     };
-    if (rutineParam ) {
+    if (rutineParam) {
       if (typeof rutineParam === "string") {
         try {
-          
           return JSON.parse(rutineParam) as Rutine;
         } catch (error) {
           console.error("Error parsing rutineParam:", error);
           return emptyRutine;
         }
       }
-      
     }
     return emptyRutine;
   });
+
+  // Estado para los pasos
+  const [pasos, setPasos] = useState<Paso[]>([]);
+
   console.log("Rutina cargada:", rutine);
-  
+  console.log("Pasos:", pasos);
+
   const save = () => {
     // TODO: lógica de guardado con validación si es necesario
     console.log("Rutina guardada:", rutine);
+    console.log("Pasos guardados:", pasos);
     router.replace("/profesional/rutines");
   };
 
-  const addPaso= () => {
-    // ir hacia cardEditPaso
-  }
+  const addPaso = () => {
+    const nuevoPaso: Paso = {
+      id: Date.now().toString(),
+      titulo: "Paso " + (pasos.length + 1).toString(),
+      descripcion: ""
+    };
+    setPasos([...pasos, nuevoPaso]);
+  };
+
+  const editPaso = (id: string, field: keyof Paso, value: string) => {
+    setPasos(pasos.map(paso => 
+      paso.id === id ? { ...paso, [field]: value } : paso
+    ));
+  };
+
+  const deletePaso = (id: string) => {
+    setPasos(pasos.filter(paso => paso.id !== id));
+  };
 
   return (
     <SafeAreaProvider>
@@ -89,53 +103,91 @@ export default function CardRutineEdit() {
               elevation: 10,
             }}
           >
-            <View className="py-3 bg-color1 rounded-t-2xl">
+            <View className="py-3 rounded-t-2xl" style={{ backgroundColor: colors.color1 }}>
               <TextInput
                 className="text-2xl font-bold text-white text-center"
                 value={rutine.title || ""}
                 onChangeText={(text) =>
                   setRutine({ ...rutine, title: text })
                 }
-                placeholder={"Título"}
+                placeholder="Título"
                 placeholderTextColor="rgba(255,255,255,0.7)"
               />
             </View>
 
-            <View className="p-6 bg-fondo rounded-b-2xl">
+            <View className="p-6 rounded-b-2xl" style={{ backgroundColor: colors.fondo }}>
               {/* Selector de tipo */}
               <ShowInfo_edit 
-                icon={"edit"}
-                text={rutine.type|| ""}
+                icon="edit"
+                text={rutine.type || ""}
                 onChangeText={(text) =>
                   setRutine({ ...rutine, type: (RutineTypes as Rutine["type"][]).includes(text as Rutine["type"]) ? (text as Rutine["type"]) : "" })
                 }
-                placeholder={"tipo"}
-                type={"picklist"}
+                placeholder="tipo"
+                type="picklist"
                 picklistOptions={RutineTypes}
               />
-              {/*Contenido */}
-              { rutine.type === "Pasos" ? 
-                ( 
-                  <ButtonDark text="Agregar Paso" onPress={addPaso} />
-                ) 
-                : (
-                    <ShowInfo_edit 
-                    icon={"edit"}
+
+              {/* Contenido */}
+              {rutine.type === "Pasos" ? (
+                <View className="mt-4">
+                  {/* Lista de pasos */}
+                  {pasos.map((paso, index) => (
+                    <View 
+                      key={paso.id}
+                      className="mb-3 p-4 rounded-xl"
+                      style={{ backgroundColor: colors.color1 }}
+                    >
+                      <View className="flex-row items-center justify-between mb-2">
+                        <TextInput
+                          className="text-white font-bold text-lg flex-1"
+                          value={paso.titulo}
+                          onChangeText={(text) => editPaso(paso.id, "titulo", text)}
+                          placeholder={`Paso ${index + 1}`}
+                          placeholderTextColor="rgba(255,255,255,0.7)"
+                        />
+                        <TouchableOpacity 
+                          onPress={() => deletePaso(paso.id)}
+                          className="ml-2"
+                        >
+                          <FontAwesome name="trash" size={16} color="white" />
+                        </TouchableOpacity>
+                      </View>
+                      <TextInput
+                        className="text-white text-base"
+                        value={paso.descripcion}
+                        onChangeText={(text) => editPaso(paso.id, "descripcion", text)}
+                        placeholder="Descripción del paso..."
+                        placeholderTextColor="rgba(255,255,255,0.7)"
+                        multiline
+                        numberOfLines={3}
+                      />
+                    </View>
+                  ))}
+
+                  {/* Botón Agregar Paso */}
+                  <View className="mb-4">
+                    <ButtonDark text="Agregar Paso" onPress={addPaso} />
+                  </View>
+                </View>
+              ) : (
+                <View className="mt-4">
+                  <ShowInfo_edit 
+                    icon="edit"
                     text={rutine.body || ""}
                     onChangeText={(text) =>
                       setRutine({ ...rutine, body: text })
                     }
-                    placeholder={"Contenido"}
-                    type={"text"}
+                    placeholder="Contenido"
+                    type="text"
                   />
-                )}
-              
+                </View>
+              )}
               
               <ButtonDark text="Guardar" onPress={save} />
             </View>
           </View>
         </ScrollView>
-
       </LinearGradient>
     </SafeAreaProvider>
   );
