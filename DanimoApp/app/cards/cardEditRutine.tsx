@@ -25,7 +25,11 @@ export default function CardRutineEdit() {
   //   createdBy: createdBy?.toString() ?? "",
   //   emotion: emotion?.toString() ?? "",
   // };
-  
+
+  // pasos : [{
+  // "titulo_p1":"algo",
+  // "titulo_p2":"otro"
+  // }]
   const [rutine, setRutine] = useState<Rutine>(() => {
     const emptyRutine: Rutine = {
       body: "",

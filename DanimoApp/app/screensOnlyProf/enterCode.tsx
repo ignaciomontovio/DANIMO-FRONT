@@ -1,6 +1,8 @@
 import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
+import { URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, View } from "react-native";
@@ -9,7 +11,32 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function EnterCode() {
   const [code, setCode] = useState("");
+  const token = useUserLogInStore((state) => state.token);
+  const linkUser = async () => {
+    if (!code) {
+      Alert.alert("Error", "Por favor ingresa un código.");
+      return;
+    }
+    try {
+      const response = await fetch(URL_BASE + URL_AUTH_PROF + "/link-user" , {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ token : code }),
+      });
 
+      if (!response.ok) {
+        const errorText = await response.json();
+        throw new Error(errorText.error);
+      }
+      router.replace("/profesional/home");
+    } catch (error) {
+      console.error("Error al obtener pacientes:", error);
+      Alert.alert("Error", "No se pudo obtener la lista de pacientes.");
+    };
+  }
   return (
     <SafeAreaProvider>
       <LinearGradient
@@ -45,7 +72,7 @@ export default function EnterCode() {
                   onChangeText={setCode}
                 />
 
-                <ButtonDark text="Añadir paciente" onPress={() => Alert.alert("Funcionalidad en desarrollo")} />
+                <ButtonDark text="Añadir paciente" onPress={linkUser} />
               </View>
             </View>
           </View>
@@ -53,3 +80,4 @@ export default function EnterCode() {
     </SafeAreaProvider>
   );
 }
+
