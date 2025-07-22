@@ -41,33 +41,11 @@ export default function Rutines() {
     const data = await response.json();
     
     const rutinasBack = Array.isArray(data) ? data : data.data || [];
-    // setRutines(rutinas); // por ahora no esta el back
-    // const mockData: Rutine[] = [
-    // {
-    //   title: "Relajación", 
-    //   type: "Texto", 
-    //   content: "Respirá hondo y solta el aire lentamente",
-    //   id: "",
-    //   createdBy: "",
-    //   emotion: ""
-    // },
-    // {
-    //   title: "Furia", 
-    //   type: "Video", 
-    //   content: "https://www.youtube.com/watch?v=EGO5m_DBzF8",
-    //   id: "",
-    //   createdBy: "",
-    //   emotion: ""
-    // }
-    // ];
-    // console.log("Rutinas obtenidas:", rutinasBack);
     setRutines(rutinasBack);
-    // console.log("Rutinas GUARDADAS:", rutines);
 
-    
     } catch (error) {
-      console.error("Error al obtener medicaciones:", error);
-      Alert.alert("Error", "No se pudo obtener la lista de medicaciones.");
+      console.error("Error al obtener rutinas:", error);
+      Alert.alert("Error", "No se pudo obtener la lista de rutinas.");
       return [];
     } finally {
       setLoading(false);
@@ -84,15 +62,42 @@ export default function Rutines() {
   const handleCreate = () => {
     router.push("/cards/cardEditRutine");
   };
+  const deleteRutine = async (rutine: Rutine) => {
+    try {
+      const response = await fetch(URL_BASE + URL_RUTINE + "/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+        body: JSON.stringify({
+          name: rutine.name,
+        }),
+      });
 
+      if (!response.ok) {
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
+      }
+
+      // Optionally refresh the list after deletion
+      fetchData();
+
+    } catch (error) {
+      console.error("Error al borrar la rutina:", error);
+      Alert.alert("Error", "No se pudo borrar la rutina.");
+      return [];
+    }
+  };
   const handleDelete = (rutine: Rutine) => {
-    Alert.alert("Eliminar rutina", `¿Estás seguro de eliminar "${rutine.title}"?`, [
+    Alert.alert("Eliminar rutina", `¿Estás seguro de eliminar "${rutine.name}"?`, [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Eliminar",
         style: "destructive",
         onPress: () => {
-          setRutines((prev) => prev.filter((r) => r.title !== rutine.title));
+          deleteRutine(rutine);
         },
       },
     ]);

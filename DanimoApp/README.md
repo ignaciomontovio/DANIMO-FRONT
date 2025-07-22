@@ -1,6 +1,6 @@
 # Ejecutar
 npm install
-npm expo install
+npx expo install
 npx expo prebuild --clean 
 npx expo run:android 
 ### Hacer APK

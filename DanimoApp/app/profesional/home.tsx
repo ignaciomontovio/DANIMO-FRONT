@@ -1,4 +1,5 @@
 import { ButtonAccept, ButtonDark } from "@/components/buttons";
+import LoaderDanimo from "@/components/LoaderDanimo";
 import SearchBar from "@/components/SearchBar";
 import { colors } from "@/stores/colors";
 import { URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
@@ -59,6 +60,10 @@ export default function Home() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  if (loading) {
+    return <LoaderDanimo />;
+  }
 
   return (
     <LinearGradient

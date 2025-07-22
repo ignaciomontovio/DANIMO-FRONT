@@ -104,6 +104,8 @@ export default function Index() {
   };
 
   const handleProfesional = () => {
+    fetchEmotions();
+    fetchSleeps();
     setUserType("profesional");
     router.replace("/auth/LoginRegisterScreen");
   };

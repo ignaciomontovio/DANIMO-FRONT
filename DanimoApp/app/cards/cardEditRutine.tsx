@@ -3,10 +3,14 @@ import { ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
 import { colors } from "@/stores/colors";
+import { URL_BASE, URL_RUTINE } from "@/stores/consts";
+import { useEmotionStore } from "@/stores/emotions";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   ScrollView,
   TextInput,
   TouchableOpacity,
@@ -24,6 +28,12 @@ interface Paso {
 
 export default function CardRutineEdit() {
   const { rutineParam } = useLocalSearchParams();
+  const token = useUserLogInStore((state) => state.token);
+  const [pasos, setPasos] = useState<Paso[]>([]);
+  const emotions = useEmotionStore((state) => state.emotions);
+  console.log("Emociones cargadas:", emotions);
+  let editMode = false;
+  let oldName = ""
 
   const [rutine, setRutine] = useState<Rutine>(() => {
     const emptyRutine: Rutine = {
@@ -31,32 +41,72 @@ export default function CardRutineEdit() {
       createdBy: "",
       emotion: "",
       id: "",
-      title: "",
+      name: "",
       type: "",
     };
     if (rutineParam) {
       if (typeof rutineParam === "string") {
         try {
+          editMode = true;
           return JSON.parse(rutineParam) as Rutine;
         } catch (error) {
           console.error("Error parsing rutineParam:", error);
+          editMode = false;
           return emptyRutine;
         }
       }
     }
     return emptyRutine;
   });
+  oldName = rutine.name || "";
 
-  // Estado para los pasos
-  const [pasos, setPasos] = useState<Paso[]>([]);
 
   console.log("Rutina cargada:", rutine);
   console.log("Pasos:", pasos);
 
-  const save = () => {
+  const save = async () => {
     // TODO: lógica de guardado con validación si es necesario
     console.log("Rutina guardada:", rutine);
     console.log("Pasos guardados:", pasos);
+    const url_edit = editMode ? "/update" :"/create"
+    let bodyJson = ""
+    if (editMode){
+      bodyJson = JSON.stringify({ 
+          body: rutine.body,
+          name: rutine.name,
+          emotion: 1,
+          currentName : oldName,
+        })
+    }
+    else{
+      bodyJson = JSON.stringify({ 
+          body: rutine.body,
+          name: rutine.name,
+          emotion: 1,
+          type: rutine.type,
+        })
+    }
+    try {
+      const response = await fetch(URL_BASE + URL_RUTINE + url_edit, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+        body: bodyJson,
+      });
+
+    if (!response.ok) {
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
+    }
+
+    } catch (error) {
+      console.error("Error al crear rutina:", error);
+      Alert.alert("Error", "No se pudo crear la rutina.");
+      return [];
+    } 
     router.replace("/profesional/rutines");
   };
 
@@ -106,9 +156,9 @@ export default function CardRutineEdit() {
             <View className="py-3 rounded-t-2xl" style={{ backgroundColor: colors.color1 }}>
               <TextInput
                 className="text-2xl font-bold text-white text-center"
-                value={rutine.title || ""}
+                value={rutine.name || ""}
                 onChangeText={(text) =>
-                  setRutine({ ...rutine, title: text })
+                  setRutine({ ...rutine, name: text })
                 }
                 placeholder="Título"
                 placeholderTextColor="rgba(255,255,255,0.7)"
@@ -127,7 +177,22 @@ export default function CardRutineEdit() {
                 type="picklist"
                 picklistOptions={RutineTypes}
               />
-
+              {/* Selector de EMOCIONES */}
+              <ShowInfo_edit
+                icon="smile-o"
+                text={
+                  emotions.find((e) => e.number.toString() === rutine.emotion)?.name || ""
+                }
+                onChangeText={(text) => {
+                  const selected = emotions.find((e) => e.name === text);
+                  if (selected) {
+                    setRutine({ ...rutine, emotion: selected.number.toString() });
+                  }
+                }}
+                placeholder="Emoción asociada"
+                type="picklist"
+                picklistOptions={emotions.map((e) => e.name)}
+              />
               {/* Contenido */}
               {rutine.type === "Pasos" ? (
                 <View className="mt-4">

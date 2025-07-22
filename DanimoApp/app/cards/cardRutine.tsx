@@ -1,7 +1,7 @@
 import { ButtonDark } from "@/components/buttons";
 import ShowInfo from "@/components/showInfo";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -17,7 +17,7 @@ export type Rutine = {
   createdBy: string;
   emotion: string;
   id: string;
-  title: string;
+  name: string;
   type: "Video"| "Pasos" | "Texto" | "";
 };
 
@@ -30,10 +30,10 @@ type PropsCard = {
 };
 
 export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: PropsCard) {
-  console.log("CardRutine element:", element);
+  // console.log("CardRutine element:", element);
   const content = element;
-  console.log("CardRutine content:", content);
-  
+  // console.log("CardRutine content:", content);
+  const [showFullContent, setShowFullContent] = useState(false);
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -52,7 +52,9 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
                 <FontAwesome name="plus" size={20} color="white" />
             </TouchableOpacity>
           )}
-          <Text className="text-2xl font-bold text-white text-center">{element.title}</Text>
+          <TouchableOpacity onPress={() => setShowFullContent(!showFullContent)} className="flex-1 items-center max-w-20">
+              <Text className="text-2xl font-bold text-white text-center">{element.name}</Text>
+          </TouchableOpacity>
           {pov === "profesional" && (
             <TouchableOpacity onPress={() => delIcon(element)} className="p-2">
               <FontAwesome name="trash" size={20} color="white" />
@@ -61,10 +63,10 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
           
         </View>
       </View>
-            
+      {showFullContent && (
       <View className="p-6 bg-fondo rounded-b-2xl">
         <ShowInfo text={element.type} icon="link" />
-
+        <ShowInfo text={element.emotion} icon="smile-o" />
         {element.type === "Video" ? (
           <View className="w-full aspect-video rounded-xl overflow-hidden mb-4 mt-4 justify-center item-center">
             <WebView
@@ -79,6 +81,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
 
         <ButtonDark text="Editar" onPress={onButton} />
       </View>
+      )}
     </View>
   );
 }
