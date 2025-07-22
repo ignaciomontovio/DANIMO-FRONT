@@ -19,6 +19,7 @@ export type Rutine = {
   id: string;
   name: string;
   type: "Video"| "Pasos" | "Texto" | "";
+  Users?: string[]; // Array de IDs de usuarios asignados
 };
 
 type PropsCard = {
@@ -47,7 +48,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
     >
       <View className="py-3 bg-color1 rounded-t-2xl px-4">
         <View className="flex-row items-center justify-between">
-          {pov === "profesional" && (
+          {pov === "profesional" && element.Users && (
             <TouchableOpacity onPress={() => addIcon(element)} className="p-2">
                 <FontAwesome name="plus" size={20} color="white" />
             </TouchableOpacity>

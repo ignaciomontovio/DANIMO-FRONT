@@ -1,19 +1,25 @@
 
 import CardRutine, { Rutine } from "@/app/cards/cardRutine";
-import { ButtonDark_add } from "@/components/buttons";
+import { ButtonDark_add, ButtonDark_small } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_RUTINE } from "@/stores/consts";
+import { patientProfile, usePatientStore } from "@/stores/patientStore";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
+  Modal,
   ScrollView,
   Text,
+  TouchableOpacity,
   View
 } from "react-native";
+
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -21,7 +27,10 @@ export default function Rutines() {
   const [loading, setLoading] = useState(true);
   const [rutines, setRutines] = useState<Rutine[]>([]);
   const token = useUserLogInStore((state) => state.token);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const patients = usePatientStore((state: { patients: any; }) => state.patients);
+  const [selectedPatients, setSelectedPatients] = useState<patientProfile[]>([]);
+  
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(URL_BASE + URL_RUTINE + "/obtain", {
@@ -105,13 +114,26 @@ export default function Rutines() {
   };
   const handleAddPatient = (rutine: Rutine) => {
     // ir a pantalla de lista de pacientes 
-    console.log("Rutine." + rutine);
+    if(!rutine.Users){
+      Alert.alert("Error", "No se puede asignar a pacientes una rutina de sistema.");
+    }
     
+    setModalVisible(true);
   }
 
   useEffect(() => { 
     fetchData();
   }, [fetchData]);
+  const togglePatientSelection = (patient: patientProfile) => {
+    setSelectedPatients((prevSelected) => {
+      const alreadySelected = prevSelected.some(p => p.id === patient.id);
+      if (alreadySelected) {
+        return prevSelected.filter(p => p.id !== patient.id); // quitar
+      } else {
+        return [...prevSelected, patient]; // agregar
+      }
+    });
+  };
 
   return (
     <SafeAreaProvider>
@@ -151,6 +173,52 @@ export default function Rutines() {
             </View>
           </View>
         </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="bg-fondo rounded-2xl p-5 w-11/12 max-h-[80%]">
+              <Text className="text-lg font-bold mb-4">Seleccionar Pacientes</Text>
+
+              <FlatList
+                data={patients}
+                keyExtractor={(item) => item.id}
+                className="mb-4"
+                renderItem={({ item }) => {
+                  const isSelected = selectedPatients.some(p => p.id === item.id);
+                  return (
+                    <TouchableOpacity
+                      onPress={() => togglePatientSelection(item)}
+                      className="mx-4 mb-3"
+                    >
+                    <View className="flex-row items-center justify-between rounded-xl">
+                      <View className="flex-row items-center flex-1">
+                        <View className="w-5 h-5 mr-3">
+                          {isSelected ? (
+                            <FontAwesome name="check-square-o" size={18} color={colors.oscuro} />
+                          ) : (
+                            <FontAwesome name="square-o" size={18} color={colors.oscuro} />
+                          )}
+                        </View>
+                        <Text className="text-base font-medium flex-1 text-oscuro">
+                          {item.firstName} {item.lastName}
+                        </Text>
+                      </View>
+                    </View>
+      </TouchableOpacity>
+    );
+  }}
+/>
+
+              
+              <ButtonDark_small text="Cerrar" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
+
       </LinearGradient>
     </SafeAreaProvider>
   );
