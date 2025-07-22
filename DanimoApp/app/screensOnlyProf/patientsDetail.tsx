@@ -1,4 +1,4 @@
-import { ButtonDark } from "@/components/buttons";
+import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
@@ -7,7 +7,7 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Alert, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 export default function PatientDetailScreen() {
@@ -114,25 +114,9 @@ export default function PatientDetailScreen() {
               
               {/* Botones de acción */}
               <View className="space-y-3">
-                <TouchableOpacity 
-                  className="rounded-xl p-4 bg-color1"
-                >
-                  <Text className="text-white text-center text-2xl font-bold">
-                    Estadísticas
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  className="rounded-xl p-4 bg-color1"
-                >
-                  <Text className="text-white text-center text-2xl font-bold">
-                    Historial chat
-                  </Text>
-                </TouchableOpacity>
-                
-                <View className="mt-4">
-                  <ButtonDark text="Desvincular" onPress={unlinkPatient} />
-                </View>
+                <ButtonAccept text="Estadisticas"  />
+                <ButtonAccept text="Historial chat" onPress={()=>router.push("/screensOnlyProf/historialDeChat")} />
+                <ButtonDark text="Desvincular" onPress={unlinkPatient} />
               </View>
             </View>
           </View>

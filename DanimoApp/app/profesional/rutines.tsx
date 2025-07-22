@@ -41,6 +41,7 @@ export default function Rutines() {
     const data = await response.json();
     
     const rutinasBack = Array.isArray(data) ? data : data.data || [];
+    console.log(rutinasBack);
     setRutines(rutinasBack);
 
     } catch (error) {
@@ -104,7 +105,8 @@ export default function Rutines() {
   };
   const handleAddPatient = (rutine: Rutine) => {
     // ir a pantalla de lista de pacientes 
-
+    console.log("Rutine." + rutine);
+    
   }
 
   useEffect(() => { 
