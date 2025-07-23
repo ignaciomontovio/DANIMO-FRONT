@@ -31,9 +31,12 @@ export default function CardRutineEdit() {
   const token = useUserLogInStore((state) => state.token);
   const [pasos, setPasos] = useState<Paso[]>([]);
   const emotions = useEmotionStore((state) => state.emotions);
-  console.log("Emociones cargadas:", emotions);
-  let editMode = false;
-  let oldName = ""
+  
+  // Determinar si estamos en modo edición
+  const editMode = !!rutineParam;
+  
+  // Guardar el nombre original para updates
+  const [originalName, setOriginalName] = useState<string>("");
 
   const [rutine, setRutine] = useState<Rutine>(() => {
     const emptyRutine: Rutine = {
@@ -47,48 +50,106 @@ export default function CardRutineEdit() {
     if (rutineParam) {
       if (typeof rutineParam === "string") {
         try {
-          editMode = true;
-          return JSON.parse(rutineParam) as Rutine;
+          const parsedRutine = JSON.parse(rutineParam) as Rutine;
+          
+          // Si es una rutina de pasos, intentar cargar los pasos desde el body
+          if (parsedRutine.type === "Pasos" && parsedRutine.body) {
+            try {
+              const pasosFromBody = JSON.parse(parsedRutine.body);
+              if (Array.isArray(pasosFromBody)) {
+                setPasos(pasosFromBody);
+              }
+            } catch (error) {
+              console.error("Error parseando pasos del body:", error);
+            }
+          }
+          
+          // Guardar el nombre original
+          setOriginalName(parsedRutine.name);
+          
+          return parsedRutine;
         } catch (error) {
           console.error("Error parsing rutineParam:", error);
-          editMode = false;
           return emptyRutine;
         }
       }
     }
     return emptyRutine;
   });
-  oldName = rutine.name || "";
-
 
   console.log("Rutina cargada:", rutine);
   console.log("Pasos:", pasos);
 
   const save = async () => {
-    // TODO: lógica de guardado con validación si es necesario
+    // Validar que si es tipo "Pasos" tenga al menos un paso
+    if (rutine.type === "Pasos" && pasos.length === 0) {
+      Alert.alert("Error", "Debe agregar al menos un paso para guardar la rutina.");
+      return;
+    }
+
+    // Validar campos obligatorios
+    if (!rutine.name.trim()) {
+      Alert.alert("Error", "El nombre de la rutina es obligatorio.");
+      return;
+    }
+
+    if (!rutine.type) {
+      Alert.alert("Error", "Debe seleccionar un tipo de rutina.");
+      return;
+    }
+
     console.log("Rutina guardada:", rutine);
     console.log("Pasos guardados:", pasos);
-    const url_edit = editMode ? "/update" :"/create"
-    let bodyJson = ""
-    if (editMode){
-      bodyJson = JSON.stringify({ 
-          body: rutine.body,
-          name: rutine.name,
-          emotion: 1,
-          currentName : oldName,
-        })
+    
+    const url_edit = editMode ? "/update" : "/create";
+    let bodyJson = "";
+    let rutineBody = "";
+
+    // Si es tipo "Pasos", serializar los pasos en el body
+    if (rutine.type === "Pasos") {
+      rutineBody = JSON.stringify(pasos);
+    } else {
+      rutineBody = rutine.body;
     }
-    else{
+
+    if (editMode) {
+      // Convertir emotion string a número para el servidor
+      let emotionNumber = 1; // Default
+      if (typeof rutine.emotion === "string") {
+        const emotionObj = emotions.find(e => e.name === rutine.emotion);
+        emotionNumber = emotionObj ? emotionObj.number : 1;
+      } else {
+        emotionNumber = parseInt(rutine.emotion) || 1;
+      }
+
       bodyJson = JSON.stringify({ 
-          body: rutine.body,
-          name: rutine.name,
-          emotion: 1,
-          type: rutine.type,
-        })
+        body: rutineBody,
+        name: rutine.name,
+        type: rutine.type,
+        emotion: emotionNumber,
+        currentName: originalName,
+      });
+    } else {
+      // Para crear también convertir emotion
+      let emotionNumber = 1;
+      if (typeof rutine.emotion === "string") {
+        const emotionObj = emotions.find(e => e.name === rutine.emotion);
+        emotionNumber = emotionObj ? emotionObj.number : 1;
+      } else {
+        emotionNumber = parseInt(rutine.emotion) || 1;
+      }
+
+      bodyJson = JSON.stringify({ 
+        body: rutineBody,
+        name: rutine.name,
+        emotion: emotionNumber,
+        type: rutine.type,
+      });
     }
+
     try {
       const response = await fetch(URL_BASE + URL_RUTINE + url_edit, {
-        method: "POST",
+        method: editMode ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
@@ -96,18 +157,23 @@ export default function CardRutineEdit() {
         body: bodyJson,
       });
 
-    if (!response.ok) {
-      const errorText = await response.json();
-      console.error("Error:", errorText.error);
-      throw new Error(errorText.error);
-    }
+      if (!response.ok) {
+        const errorText = await response.json();
+        console.error("Error del servidor:", errorText);
+        throw new Error(errorText.error || "Error desconocido del servidor");
+      }
+
+      const result = await response.json();
+      
+      Alert.alert("Éxito", "Rutina guardada correctamente", [
+        { text: "OK", onPress: () => router.replace("/profesional/rutines") }
+      ]);
 
     } catch (error) {
-      console.error("Error al crear rutina:", error);
-      Alert.alert("Error", "No se pudo crear la rutina.");
-      return [];
+      console.error("Error al guardar rutina:", error);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      Alert.alert("Error", `No se pudo guardar la rutina: ${errorMessage}`);
     } 
-    router.replace("/profesional/rutines");
   };
 
   const addPaso = () => {
@@ -157,11 +223,14 @@ export default function CardRutineEdit() {
               <TextInput
                 className="text-2xl font-bold text-white text-center"
                 value={rutine.name || ""}
-                onChangeText={(text) =>
-                  setRutine({ ...rutine, name: text })
-                }
+                onChangeText={(text) => {
+                  console.log("Cambiando nombre a:", text);
+                  setRutine({ ...rutine, name: text });
+                }}
                 placeholder="Título"
                 placeholderTextColor="rgba(255,255,255,0.7)"
+                editable={true}
+                selectTextOnFocus={true}
               />
             </View>
 
@@ -181,13 +250,14 @@ export default function CardRutineEdit() {
               <ShowInfo_edit
                 icon="smile-o"
                 text={
-                  emotions.find((e) => e.number.toString() === rutine.emotion)?.name || ""
+                  // Siempre mostrar el nombre de la emoción
+                  typeof rutine.emotion === "string" 
+                    ? rutine.emotion
+                    : emotions.find((e) => e.number.toString() === rutine.emotion)?.name || ""
                 }
                 onChangeText={(text) => {
-                  const selected = emotions.find((e) => e.name === text);
-                  if (selected) {
-                    setRutine({ ...rutine, emotion: selected.number.toString() });
-                  }
+                  // Guardar directamente el nombre de la emoción como string
+                  setRutine({ ...rutine, emotion: text });
                 }}
                 placeholder="Emoción asociada"
                 type="picklist"
