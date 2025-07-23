@@ -1,5 +1,6 @@
 import { ButtonDark } from "@/components/buttons";
 import ShowInfo from "@/components/showInfo";
+import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -11,6 +12,12 @@ import { WebView } from "react-native-webview";
 
 export const RutineTypes = ["Video", "Pasos" , "Texto" , ""];
 
+// Tipo para los pasos
+interface Paso {
+  id: string;
+  titulo: string;
+  descripcion: string;
+}
 
 export type Rutine = {
   body: string; // JSON con estructura
@@ -31,10 +38,72 @@ type PropsCard = {
 };
 
 export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: PropsCard) {
-  // console.log("CardRutine element:", element);
   const content = element;
-  // console.log("CardRutine content:", content);
   const [showFullContent, setShowFullContent] = useState(false);
+
+  // Función para renderizar los pasos
+  const renderPasos = (body: string) => {
+    try {
+      // Intentar parsear como JSON primero (rutinas creadas por usuarios)
+      const pasos: Paso[] = JSON.parse(body);
+      
+      if (!Array.isArray(pasos)) {
+        return <ShowInfo text={body} icon="file-text" />;
+      }
+
+      if (pasos.length === 0) {
+        return <ShowInfo text="No hay pasos definidos" icon="file-text" />;
+      }
+
+      // Renderizar pasos como objetos JSON
+      return (
+        <View className="mt-4">
+          {pasos.map((paso, index) => (
+            <View 
+              key={paso.id || index}
+              className="mb-3 p-4 rounded-xl"
+              style={{ backgroundColor: colors.color1 }}
+            >
+              <Text className="text-white font-bold text-lg mb-2">
+                {paso.titulo || `Paso ${index + 1}`}
+              </Text>
+              <Text className="text-white text-base">
+                {paso.descripcion || "Sin descripción"}
+              </Text>
+            </View>
+          ))}
+        </View>
+      );
+    } catch (error) {
+      // Si no es JSON válido, tratarlo como texto plano (rutinas del sistema)
+      const pasosTexto = body.split('\n').filter(paso => paso.trim() !== '');
+      
+      if (pasosTexto.length === 0) {
+        return <ShowInfo text="No hay pasos definidos" icon="file-text" />;
+      }
+
+      // Renderizar pasos como texto plano
+      return (
+        <View className="mt-4">
+          {pasosTexto.map((paso, index) => (
+            <View 
+              key={index}
+              className="mb-3 p-4 rounded-xl"
+              style={{ backgroundColor: colors.color1 }}
+            >
+              <Text className="text-white font-bold text-lg mb-2">
+                {`Paso ${index + 1}`}
+              </Text>
+              <Text className="text-white text-base">
+                {paso.replace(/^\d+\.\s*/, '')} {/* Remover numeración si existe */}
+              </Text>
+            </View>
+          ))}
+        </View>
+      );
+    }
+  };
+
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -68,6 +137,9 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
       <View className="p-6 bg-fondo rounded-b-2xl">
         <ShowInfo text={element.type} icon="link" />
         <ShowInfo text={element.emotion} icon="smile-o" />
+        
+        {/* Debug temporal */}
+        
         {element.type === "Video" ? (
           <View className="w-full aspect-video rounded-xl overflow-hidden mb-4 mt-4 justify-center item-center">
             <WebView
@@ -76,6 +148,8 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
               allowsFullscreenVideo
             />
           </View>
+        ) : element.type === "Pasos" ? (
+          renderPasos(content.body)
         ) : (
           <ShowInfo text={content.body} icon="file-text" />
         )}
