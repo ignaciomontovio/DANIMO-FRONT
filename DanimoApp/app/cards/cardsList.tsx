@@ -20,6 +20,8 @@ type Props<T> = {
   showDeleteIcon?:boolean;
   keepAdding?: boolean;
   showHeader?: boolean;
+  showCloseSession?: boolean;
+  onCloseSession?: () => void;
 };
 
 type PropsCard<T> = {
@@ -29,6 +31,8 @@ type PropsCard<T> = {
   icon: React.ComponentProps<typeof FontAwesome>['name'];
   cardConfig: CardConfig<T>;
   showDeleteIcon: boolean;
+  showCloseSession?: boolean
+  onCloseSession?: () => void;
 };
 
 // COMPONENTE PRINCIPAL GENÉRICO
@@ -40,7 +44,9 @@ export default function CardsList<T>({
   deleteFunct,
   showDeleteIcon,
   keepAdding,
-  showHeader
+  showHeader,
+  showCloseSession,
+  onCloseSession,
 }: Props<T>) {
   const [element, setElement] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,6 +129,8 @@ export default function CardsList<T>({
                     icon="trash"
                     cardConfig={cardConfig}
                     showDeleteIcon = {showDeleteIcon}
+                    showCloseSession={showCloseSession}
+                    onCloseSession={onCloseSession}
                   />
                 ))}
               </>
@@ -140,7 +148,7 @@ export default function CardsList<T>({
 }
 
 // COMPONENTE CARD GENÉRICO
-function Card<T>({ element, onIcon, onButton, icon, cardConfig, showDeleteIcon }: PropsCard<T>) {
+function Card<T>({ element, onIcon, onButton, icon, cardConfig, showDeleteIcon,showCloseSession, onCloseSession }: PropsCard<T>) {
   return (
     <View 
       className="w-full max-w-md rounded-2xl shadow-xl mb-4"
@@ -174,6 +182,7 @@ function Card<T>({ element, onIcon, onButton, icon, cardConfig, showDeleteIcon }
       <View className="p-6 bg-fondo rounded-b-2xl">
         {cardConfig.renderContent(element)}
         <ButtonDark text="Editar" onPress={onButton} />
+        {showCloseSession && <ButtonDark text="Cerrar Sesion" onPress={onCloseSession} />}        
       </View>
     </View>
   );

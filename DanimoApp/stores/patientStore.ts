@@ -11,6 +11,7 @@ export type patientProfile = {
   gender:string;
   livesWith:string;
   occupation:string;
+  Users?: string[];
 };
 
 type PatientStore = {
