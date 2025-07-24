@@ -11,7 +11,7 @@ export interface Contact extends Record<string, string | undefined> {
 
 // CONFIGURACIÓN DE NAVEGACIÓN PARA CONTACTOS
 export const contactNavigationConfig: NavigationConfig<Contact> = {
-  goto: "/editEmergencyContact",
+  goto: "/screensOnlyUser/editEmergencyContact",
   getEditParams: (item: Contact) => ({
     who: item.who,
     name: item.name,

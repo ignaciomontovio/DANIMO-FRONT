@@ -21,7 +21,7 @@ export interface FetchConfig<T> {
 
 // CONFIGURACIÓN DE NAVEGACIÓN PARA MEDICACIÓN
 export const medicationNavigationConfig: NavigationConfig<MedicationType> = {
-  goto: "/editMedication",
+  goto: "/screensOnlyUser/editMedication",
   getEditParams: (item: MedicationType) => ({
     name: item.name,
     dosage: item.dosage || "",
