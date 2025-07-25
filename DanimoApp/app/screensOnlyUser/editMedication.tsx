@@ -1,9 +1,9 @@
+import EditCardFromList from "@/app/cards/editCardFromList";
+import { MedicationType, medicationEditConfig } from "@/components/config/medicationConfig";
 import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import { MedicationType, medicationEditConfig } from "../components/config/medicationConfig";
-import EditCardFromList from "./cards/editCardFromList";
 
 export default function EditMedication() {
   const token = useUserLogInStore((state) => state.token);
@@ -107,7 +107,9 @@ export default function EditMedication() {
     });
 
     if (!response.ok) {
-      throw new Error(await response.text());
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
     }
   };
 

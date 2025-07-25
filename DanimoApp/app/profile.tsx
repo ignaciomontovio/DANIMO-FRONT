@@ -1,25 +1,30 @@
-import { profileCardConfig, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
+import CardsList from "@/app/cards/cardsList";
+import { profileCardConfigProfesional, profileCardConfigUsuario, profileNavigationConfig, UserProfile } from "@/components/config/profileConfig";
 import HeaderGoBack from "@/components/headerGoBack";
 import ProfilePhoto from "@/components/profilePhoto";
-import { URL_AUTH, URL_BASE } from "@/stores/consts";
+import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import CardsList from "./cards/cardsList";
 
 
 
 export default function Profile() {
     const token = useUserLogInStore((state) => state.token);
     const userEmail = useUserLogInStore((state) => state.mail); 
-
+    const userType = useUserLogInStore((state) => state.userType); 
+    const homePath = userType === "profesional"? "/profesional/home" : "/tabs/home"
+    const profileCardConfig = userType === "profesional"? profileCardConfigProfesional : profileCardConfigUsuario
+   
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
+      console.log(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile",);
+      
 
       try {
-        const response = await fetch(URL_BASE + URL_AUTH + "/profile", {
+        const response = await fetch(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile", {
           method: "GET",
           headers: {
             "Authorization": "Bearer " + token,
@@ -64,20 +69,24 @@ export default function Profile() {
       // Retornar como array, aunque solo haya un perfil
       return profile ? [profile] : [];
     };
-
+  const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
+  const handleLogoff = () => {
+    setUserLogIn(false);
+    router.replace("../auth/LoginRegisterScreen");
+    };
 
   return(
     <SafeAreaProvider>
       {/* Header original con foto agregada */}
       <View className="relative">
-        <HeaderGoBack text="Perfil" onPress={() => router.replace("/tabs/home")} />
+        <HeaderGoBack text="Perfil" onPress={() => router.replace(homePath)} />
         
         {/* Foto de perfil posicionada absolutamente */}
         <View 
           style={{ 
             position: 'absolute', 
             right: 16, 
-            top: 4,
+            top: 30,
             zIndex: 10, 
             elevation: 10 
           }}
@@ -94,7 +103,10 @@ export default function Profile() {
         showDeleteIcon={false}
         keepAdding={false}
         showHeader={false}
+        showCloseSession={true}
+        onCloseSession={handleLogoff}
       />
     </SafeAreaProvider>
   );
 }
+

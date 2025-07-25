@@ -1,4 +1,4 @@
-import { profileEditConfig, UserProfile } from "@/components/config/profileConfig";
+import { getProfileEditConfig, UserProfile } from "@/components/config/profileConfig";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { useLocalSearchParams } from "expo-router";
@@ -8,7 +8,7 @@ import EditCardFromList from "./cards/editCardFromList";
 export default function EditProfile() {
   const token = useUserLogInStore((state) => state.token);
   const { editing } = useLocalSearchParams();
-  
+  const userType = useUserLogInStore((state) => state.userType); 
   const convertDateToISO = (dateStr: string): string => {
     console.log("Converting date:", dateStr);
     
@@ -32,7 +32,7 @@ export default function EditProfile() {
           const day = parts[0].padStart(2, "0");
           const month = parts[1].padStart(2, "0");
           const year = parts[2];
-          const isoDate = `${year}-${month}-${day}`;
+          const isoDate = year + "-" + month + "-" + day;
           return isoDate;
         }
       }
@@ -65,7 +65,9 @@ export default function EditProfile() {
     });
 
     if (!response.ok) {
-      throw new Error(await response.text());
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
     }
   };
 
@@ -75,7 +77,7 @@ export default function EditProfile() {
       goBackTo="/profile"
       createFunct={async () => {}}
       updateFunct={updateProfile}
-      editConfig={profileEditConfig}
+      editConfig={getProfileEditConfig(userType ?? "")}
       editing={editing as string | undefined}
     />
   );

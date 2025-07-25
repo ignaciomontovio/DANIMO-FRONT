@@ -1,10 +1,10 @@
+import CardsList from "@/app/cards/cardsList";
 import { medicationCardConfig, medicationNavigationConfig, MedicationType } from "@/components/config/medicationConfig";
 import { URL_BASE, URL_MEDICATION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import React from "react";
 import { Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import CardsList from "./cards/cardsList";
 
 export default function Medication() {
   const token = useUserLogInStore((state) => state.token);
@@ -24,8 +24,9 @@ export default function Medication() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
     } catch (error) {
       console.error("Error al eliminar contacto:", error);
@@ -36,9 +37,9 @@ export default function Medication() {
   
   const getMedication = async (): Promise<MedicationType[]> => {
     const endpoint = URL_BASE + "/medication";
-    
-    // Obtener lista de medicaciones
-    const response = await fetch(endpoint + "/obtain", {
+    try {
+      // Obtener lista de medicaciones
+      const response = await fetch(endpoint + "/obtain", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -46,10 +47,19 @@ export default function Medication() {
       },
     });
   
-    if (!response.ok) throw new Error(await response.text());
+    if (!response.ok) {
+      const errorText = await response.json();
+      console.error("Error:", errorText.error);
+      throw new Error(errorText.error);
+    }
   
     const data = await response.json();
     return Array.isArray(data) ? data : (data.data || [])
+    } catch (error) {
+      console.error("Error al obtener medicaciones:", error);
+      Alert.alert("Error", "No se pudo obtener la lista de medicaciones.");
+      return [];
+    }
   };
   return (
     <SafeAreaProvider>

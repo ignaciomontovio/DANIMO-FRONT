@@ -6,16 +6,13 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 
 // import { GoogleSignin, statusCodes } from "react-native-google-signin";}
 // import { makeRedirectUri } from "expo-auth-session";
-import { colors } from "@/stores/colors";
 import LoaderDanimo from "@/components/LoaderDanimo";
-import { URL_AUTH, URL_BASE } from "@/stores/consts";
-import { makeRedirectUri } from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
+import { colors } from "@/stores/colors";
+import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ButtonAccept } from "../../components/buttons";
 import Input from "../../components/input";
-import { useUserStore } from "../../stores/userType";
 
 export default function LoginRegisterScreen() {
   const [tab, setTab] = useState<"login" | "signup">("login");
@@ -23,51 +20,18 @@ export default function LoginRegisterScreen() {
   const [passw, setPassw] = useState("");
   const [passw2, setPassw2] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const userType = useUserStore((state) => state.userType);
+  const userType = useUserLogInStore((state) => state.userType);
   const UserLogIn = useUserLogInStore((state) => state.userLogIn);
   const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
   const setUserSession= useUserLogInStore((state) => state.setUserSession);
   const token = useUserLogInStore((state) => state.token);
   const mail = useUserLogInStore((state) => state.mail);
-
-  const redirectUri = makeRedirectUri({
-    scheme: 'com.danimo.app',
-  });
-
-  // useEffect(() => {
-  //   console.log("Redirect URI:", redirectUri);
-  // }, []);
-
-
-  const [request, response, promtAsync] = Google.useAuthRequest({
-    androidClientId: '889596207544-ftgc2j4tr6nsi90bfs66ctoqnvjot5de.apps.googleusercontent.com',
-    redirectUri: redirectUri,
-    // clientId_old: '889596207544-irhl04qjt7t03t6e004iuk55afrb0tot.apps.googleusercontent.com',
-  })
-
-  const sendTokenGoogle = async (token:string) => {
-    console.log(token)
-    // send to back
-  }
-
-  useEffect(() => {
-    console.log(response);
-    
-    if (response?.type === 'success') {
-      console.log("Login Google exitoso:", response);
-      const token = response.authentication?.idToken || '';
-      sendTokenGoogle(token);
-      setUserLogIn(true);
-    } else if (response?.type === 'error') {
-      console.error("Error autenticación Google:", response);
-    }
-  }, [response, setUserLogIn]);
-
+  let url_auth = userType === "profesional" ? URL_AUTH_PROF : URL_AUTH
 
   useEffect(() => {
     const validateToken = async (token: string | null, email: string | null) => {
       try {
-        const response = await fetch(URL_BASE + URL_AUTH + "/token-email", {
+        const response = await fetch(URL_BASE + url_auth + "/token-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -92,9 +56,9 @@ export default function LoginRegisterScreen() {
           throw new Error("Registrese Nuevamente por falla de token");
         }
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error:", errorText); 
-          throw new Error("Error: " + errorText);
+          const errorText = await response.json();
+          console.error("Error:", errorText.error); 
+          throw new Error("Error: " + errorText.error);
         }
 
         return true;
@@ -109,6 +73,7 @@ export default function LoginRegisterScreen() {
 
     const checkLogin = async () => {
       console.log("UserLogIn:", UserLogIn);
+      console.log("userType:", userType);
       if (UserLogIn) {
         const valid = await validateToken(token, mail);
         if (valid) {
@@ -124,20 +89,20 @@ export default function LoginRegisterScreen() {
     checkLogin();
 
 
-  }, [UserLogIn, mail, setUserLogIn, setUserSession, token, userType]);
+  }, [UserLogIn, mail, setUserLogIn, setUserSession, token, url_auth, userType]);
 
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(URL_BASE + URL_AUTH + "/login", {
+      const response = await fetch(URL_BASE + url_auth + "/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), password: passw.trim() }),});
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error:", errorText);
-        throw new Error("Error al iniciar sesión");
+        const errorText = await response.json();
+        console.error("Error:", errorText.error);
+        throw new Error(errorText.error);
       }
 
       const data = await response.json();
@@ -150,9 +115,6 @@ export default function LoginRegisterScreen() {
       alert("Email o contraseña incorrecta");
     }
   };
-  const handleLoginGoogle = async () => {
-    promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);})
-  }
   
   const handleRegister = async () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
@@ -176,15 +138,31 @@ export default function LoginRegisterScreen() {
     });
   };
 
-
-  // const handleGoogleSignIn = async () => {
-  //     setEmail("ignaciomontovio@gmail.com")
-  //     setPassw("abcd123")
-  //     handleLogin()
-  // }
-
   if (UserLogIn) {
       return <LoaderDanimo />;
+  }
+  function renderPasswordInput(value: string, onChange: (text: string) => void, showPassword: boolean, setShowPassword: (v: boolean) => void) {
+    return (
+      <View className="relative">
+        <Input
+          icon="lock"
+          placeholder="Contraseña"
+          secureTextEntry={!showPassword}
+          value={value}
+          onChangeText={onChange}
+        />
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: "absolute", right: 12, top: 12 }}
+        >
+          <FontAwesome
+            name={showPassword ? "eye" : "eye-slash"}
+            size={20}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
+    );
   }
   return (
     <SafeAreaProvider>
@@ -205,42 +183,14 @@ export default function LoginRegisterScreen() {
                   <Text className="font-semibold">Sign Up</Text>
                 </TouchableOpacity>
               </View>
-
+              
               <Input icon="envelope" placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
-              {/* <Input icon="lock" placeholder="Contraseña" secureTextEntry value={passw} onChangeText={setPassw} /> */}
-              <View className="relative mb-4">
-                <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw} onChangeText={setPassw}/>
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={{ position: "absolute", right: 12, top: 12 }}
-                >
-                  <FontAwesome
-                    name={showPassword ? "eye" : "eye-slash"}
-                    size={20}
-                    color="gray"
-                  />
-                </TouchableOpacity>
-              </View>
+              {renderPasswordInput(passw, setPassw, showPassword, setShowPassword)}
+              
               {tab === "signup" ? (
                 <>
-                  {userType === "profesional" && (
-                    <Input icon="info" placeholder="Matrícula profesional" />
-                  )}
-                  {/* <Input icon="lock" placeholder="Repita Contraseña" secureTextEntry value={passw2} onChangeText={setPassw2} /> */}
-                  <View className="relative mb-4">
-                    <Input icon="lock" placeholder="Contraseña" secureTextEntry={!showPassword} value={passw2} onChangeText={setPassw2}/>
-                    <TouchableOpacity
-                      onPress={() => setShowPassword(!showPassword)}
-                      style={{ position: "absolute", right: 12, top: 12 }}
-                    >
-                      <FontAwesome
-                        name={showPassword ? "eye" : "eye-slash"}
-                        size={20}
-                        color="gray"
-                      />
-                    </TouchableOpacity>
-                  </View>
-
+                  {renderPasswordInput(passw2, setPassw2, showPassword, setShowPassword)}
+                  
                   <ButtonAccept text="Sign Up" onPress={handleRegister} />
                   
                 </>
@@ -253,16 +203,6 @@ export default function LoginRegisterScreen() {
                 </>
               )}
 
-              <Text className="text-center mt-6 mb-4">Continuar con</Text>
-              <View className="flex-row justify-center space-x-4">
-                <SocialButton 
-                  bg="bg-red-600" 
-                  icon="google" 
-                  text="Google" 
-                  // onPress={() => promtAsync().catch((e)=> {console.error("Error inicio sesion google:",e);} )} 
-                  onPress={handleLoginGoogle} 
-                />
-              </View>
             </View>
           </View>
         </View>

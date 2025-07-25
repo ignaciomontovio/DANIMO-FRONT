@@ -24,6 +24,12 @@ export default function TabsLayout() {
         },
         headerShown: false,
       })}
-    />
+    >
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="stats" /> 
+      <Tabs.Screen name="rutines" />
+      <Tabs.Screen name="profile" />
+    </Tabs>
+    
   );
 }

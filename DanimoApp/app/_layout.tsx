@@ -10,13 +10,6 @@ export default function Layout() {
   }
   
   return (
-    // <LinearGradient
-    //       colors={[colors.color5, colors.fondo]}
-    //       start={{ x: 0, y: -1 }}
-    //       end={{ x: 0, y: 1 }}
-    //       className="w-full h-full"
-    //     >
-      <Stack />
-    // </LinearGradient>
+    <Stack screenOptions={{ headerShown: false }} />
   );
 }

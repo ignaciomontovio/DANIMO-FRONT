@@ -1,5 +1,6 @@
 import ButtonCamera from "@/components/buttonCamera";
 import { ButtonDark } from "@/components/buttons";
+import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { ALL_EMOTIONS, URL_ACTIVITY, URL_BASE, URL_EMOTION } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
@@ -26,9 +27,9 @@ export default function DetailEmotionScreen() {
         const response = await fetch(URL_BASE + URL_ACTIVITY + "/types");
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error:", errorText);
-          throw new Error(errorText);
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
         }
 
         const data = await response.json();
@@ -116,12 +117,13 @@ export default function DetailEmotionScreen() {
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText);
-      }
+          const errorText = await response.json();
+          console.error("Error:", errorText.error);
+          throw new Error(errorText.error);
+        }
 
       console.log("Registro exitoso");
-      router.push({ pathname: "/prechat", params: { sleepEmotionNum: value, detailType: "Emotion"} });
+      router.push({ pathname: "/screensOnlyUser/prechat", params: { sleepEmotionNum: value, detailType: "Emotion", extraData: activitiesToSend  } });
     } catch (error) {
       console.error("Error al registrar emoción:", error);
       Alert.alert("Error al registrar la emoción");
@@ -207,6 +209,7 @@ export default function DetailEmotionScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
+      <HeaderGoBack text="Emocion" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1">
         <ScrollView className="flex-1 px-6 pt-10 pb-20">
           {loading ? (
