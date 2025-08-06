@@ -10,17 +10,17 @@ export default function EditProfile() {
   const { editing } = useLocalSearchParams();
   const userType = useUserLogInStore((state) => state.userType); 
   const convertDateToISO = (dateStr: string): string => {
-    console.log("Converting date:", dateStr);
+    // console.log("Converting date:", dateStr);
     
     if (!dateStr || dateStr.trim() === "") {
-      console.log("Empty date, returning empty string");
+      // console.log("Empty date, returning empty string");
       return "";
     }
     
     try {
       // Si ya está en formato ISO (YYYY-MM-DD), devolverla tal como está
       if (dateStr.includes("-") && dateStr.length === 10) {
-        console.log("Already in ISO format:", dateStr);
+        // console.log("Already in ISO format:", dateStr);
         return dateStr;
       }
       
@@ -37,7 +37,7 @@ export default function EditProfile() {
         }
       }
       
-      console.log("Could not convert, returning original:", dateStr);
+      // console.log("Could not convert, returning original:", dateStr);
       return dateStr; // Si no se puede convertir, devolver original
     } catch (error) {
       console.error("Error converting date:", error);
@@ -46,7 +46,7 @@ export default function EditProfile() {
   };
   // Función específica para actualizar contacto
   const updateProfile = async (data: UserProfile, original: UserProfile) => {
-    console.log("Updating profile with data:", data, "and original:", original);
+    // console.log("Updating profile with data:", data, "and original:", original);
     const bodyData = {
         firstName: data.name,
         lastName: data.lastName,
@@ -54,7 +54,7 @@ export default function EditProfile() {
         occupation: data.occupation,
         livesWith: data.livesWith,
       };
-    console.log("Sending updated profile data:", bodyData);
+    // console.log("Sending updated profile data:", bodyData);
     const response = await fetch(URL_BASE + URL_AUTH + "/update-profile" , {
       method: "PATCH",
       headers: {

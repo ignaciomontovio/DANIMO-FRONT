@@ -32,9 +32,9 @@ export type Rutine = {
 type PropsCard = {
   element: Rutine;
   pov: "profesional" | "user";
-  delIcon: (item: Rutine) => void;
-  addIcon: (item: Rutine) => void;
-  onButton: () => void;
+  delIcon?: (item: Rutine) => void;
+  addIcon?: (item: Rutine) => void;
+  onButton?: () => void;
 };
 
 export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: PropsCard) {
@@ -76,6 +76,8 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
       );
     } catch (error) {
       // Si no es JSON válido, tratarlo como texto plano (rutinas del sistema)
+      console.log(error);
+      
       const pasosTexto = body.split('\n').filter(paso => paso.trim() !== '');
       
       if (pasosTexto.length === 0) {
@@ -118,7 +120,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
       <View className="py-3 bg-color1 rounded-t-2xl px-4">
         <View className="flex-row items-center justify-between">
           {pov === "profesional" && element.Users && (
-            <TouchableOpacity onPress={() => addIcon(element)} className="p-2">
+            <TouchableOpacity onPress={() => addIcon?.(element)} className="p-2">
                 <FontAwesome name="plus" size={20} color="white" />
             </TouchableOpacity>
           )}
@@ -126,7 +128,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
               <Text className="text-2xl font-bold text-white text-center">{element.name}</Text>
           </TouchableOpacity>
           {pov === "profesional" && (
-            <TouchableOpacity onPress={() => delIcon(element)} className="p-2">
+            <TouchableOpacity onPress={() => delIcon?.(element)} className="p-2">
               <FontAwesome name="trash" size={20} color="white" />
             </TouchableOpacity>
           )}
@@ -154,7 +156,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
           <ShowInfo text={content.body} icon="file-text" />
         )}
 
-        <ButtonDark text="Editar" onPress={onButton} />
+        {pov === "profesional" && <ButtonDark text="Editar" onPress={onButton} />}
       </View>
       )}
     </View>

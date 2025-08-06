@@ -57,7 +57,7 @@ export default function Rutines() {
       ...rutina,
       Users: Array.isArray(rutina.Users)
         ? rutina.Users.map((user) => user.email)
-        : [], // o undefined si preferís
+        : [], 
     }));
 
 

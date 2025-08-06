@@ -68,10 +68,10 @@ export default function EditCardFromList<T extends Record<string, string | undef
   };
 
   const save = async () => {
-    console.log("-------------");
-    console.log("formData: ", formData);
-    console.log("initialData: ", initialData);
-    console.log("-------------");
+    // console.log("-------------");
+    // console.log("formData: ", formData);
+    // console.log("initialData: ", initialData);
+    // console.log("-------------");
     
     try {
       if (isEditing) {

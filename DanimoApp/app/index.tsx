@@ -45,7 +45,7 @@ export default function Index() {
       const messaging = getMessaging(app);
       await registerDeviceForRemoteMessages(messaging);
       const notifToken = await getToken(messaging);
-      console.log("token**", notifToken);
+      // console.log("token**", notifToken);
       await fetch(URL_BASE + URL_NOTIFICATION + "/token", {
         method: "POST",
         headers: {
