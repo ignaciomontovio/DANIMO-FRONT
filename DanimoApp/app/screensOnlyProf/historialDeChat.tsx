@@ -34,6 +34,7 @@ export default function HistorialDeChat() {
             
             <View className="justify-end mt-8 space-y-4">
               <ButtonDark text="Detalle" onPress={() => console.log("Ver detalles")} />
+              <ButtonDark text="Personalizado" onPress={() => console.log("Ver detalles")} />
               <ButtonDark text="Historico" onPress={() => console.log("Ver historico")} />
             </View>
           </ScrollView>

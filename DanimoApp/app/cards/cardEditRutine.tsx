@@ -1,5 +1,5 @@
 import { Rutine, RutineTypes } from "@/app/cards/cardRutine";
-import { ButtonDark } from "@/components/buttons";
+import { ButtonDark, ButtonDark_small } from "@/components/buttons";
 import HeaderGoBack from "@/components/headerGoBack";
 import { ShowInfo_edit } from "@/components/showInfo";
 import { colors } from "@/stores/colors";
@@ -9,6 +9,7 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
+
 import {
   Alert,
   ScrollView,
@@ -42,7 +43,7 @@ export default function CardRutineEdit() {
     const emptyRutine: Rutine = {
       body: "",
       createdBy: "",
-      emotion: "",
+      emotion: [""],
       id: "",
       name: "",
       type: "",
@@ -77,8 +78,8 @@ export default function CardRutineEdit() {
     return emptyRutine;
   });
 
-  console.log("Rutina cargada:", rutine);
-  console.log("Pasos:", pasos);
+  // console.log("Rutina cargada:", rutine);
+  // console.log("Pasos:", pasos);
 
   const save = async () => {
     // Validar que si es tipo "Pasos" tenga al menos un paso
@@ -98,8 +99,8 @@ export default function CardRutineEdit() {
       return;
     }
 
-    console.log("Rutina guardada:", rutine);
-    console.log("Pasos guardados:", pasos);
+    // console.log("Rutina guardada:", rutine);
+    // console.log("Pasos guardados:", pasos);
     
     const url_edit = editMode ? "/update" : "/create";
     let bodyJson = "";
@@ -114,14 +115,8 @@ export default function CardRutineEdit() {
 
     if (editMode) {
       // Convertir emotion string a número para el servidor
-      let emotionNumber = 1; // Default
-      if (typeof rutine.emotion === "string") {
-        const emotionObj = emotions.find(e => e.name === rutine.emotion);
-        emotionNumber = emotionObj ? emotionObj.number : 1;
-      } else {
-        emotionNumber = parseInt(rutine.emotion) || 1;
-      }
-
+      let emotionNumber = [1]; // Default
+      
       bodyJson = JSON.stringify({ 
         body: rutineBody,
         name: rutine.name,
@@ -130,15 +125,9 @@ export default function CardRutineEdit() {
         currentName: originalName,
       });
     } else {
-      // Para crear también convertir emotion
-      let emotionNumber = 1;
-      if (typeof rutine.emotion === "string") {
-        const emotionObj = emotions.find(e => e.name === rutine.emotion);
-        emotionNumber = emotionObj ? emotionObj.number : 1;
-      } else {
-        emotionNumber = parseInt(rutine.emotion) || 1;
-      }
-
+      let emotionNumber = [1]; // Default
+      // console.log("EMOCIONES: ", rutine.emotion);
+      emotionNumber = rutine.emotion.map((e: string) => emotions.find(em => em.name === e)?.number ?? 1)
       bodyJson = JSON.stringify({ 
         body: rutineBody,
         name: rutine.name,
@@ -148,6 +137,7 @@ export default function CardRutineEdit() {
     }
 
     try {
+
       const response = await fetch(URL_BASE + URL_RUTINE + url_edit, {
         method: editMode ? "PATCH" : "POST",
         headers: {
@@ -224,7 +214,7 @@ export default function CardRutineEdit() {
                 className="text-2xl font-bold text-white text-center"
                 value={rutine.name || ""}
                 onChangeText={(text) => {
-                  console.log("Cambiando nombre a:", text);
+                  // console.log("Cambiando nombre a:", text);
                   setRutine({ ...rutine, name: text });
                 }}
                 placeholder="Título"
@@ -247,7 +237,35 @@ export default function CardRutineEdit() {
                 picklistOptions={RutineTypes}
               />
               {/* Selector de EMOCIONES */}
-              <ShowInfo_edit
+
+              {rutine.emotion.map((emo, idx) => (
+                <ShowInfo_edit
+                  key={idx}
+                  icon="smile-o"
+                  text={
+                    emotions.find((e) => e.number.toString() === emo)?.name || emo
+                  }
+                  onChangeText={(text) => {
+                    const updated = [...rutine.emotion];
+                    updated[idx] = text; // Guardamos el nombre directamente
+                    setRutine({ ...rutine, emotion: updated });
+                  }}
+                  placeholder={`Emoción ${idx + 1}`}
+                  type="picklist"
+                  picklistOptions={emotions.map((e) => e.name)}
+                />
+              ))}
+
+              {/* Botón para agregar nueva emoción */}
+              <ButtonDark_small
+                text="+ Agregar emoción"
+                onPress={() => {
+                  setRutine({ ...rutine, emotion: [...rutine.emotion, ""] });
+                }}
+              />
+                
+
+              {/* <ShowInfo_edit
                 icon="smile-o"
                 text={
                   // Siempre mostrar el nombre de la emoción
@@ -262,7 +280,7 @@ export default function CardRutineEdit() {
                 placeholder="Emoción asociada"
                 type="picklist"
                 picklistOptions={emotions.map((e) => e.name)}
-              />
+              /> */}
               {/* Contenido */}
               {rutine.type === "Pasos" ? (
                 <View className="mt-4">

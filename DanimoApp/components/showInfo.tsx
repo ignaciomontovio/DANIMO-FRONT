@@ -38,7 +38,7 @@ export function ShowInfo_edit({
   type,
   picklistOptions,
 }: ShowInfoEditProps) {
-  console.log("ShowInfo_edit: " + text + " type " + type);
+  // console.log("ShowInfo_edit: " + text + " type " + type);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => setModalVisible(!isModalVisible);

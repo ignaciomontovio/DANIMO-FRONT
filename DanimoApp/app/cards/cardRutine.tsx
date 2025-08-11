@@ -22,7 +22,7 @@ interface Paso {
 export type Rutine = {
   body: string; // JSON con estructura
   createdBy: string;
-  emotion: string;
+  emotion: string[];
   id: string;
   name: string;
   type: "Video"| "Pasos" | "Texto" | "";
@@ -32,9 +32,9 @@ export type Rutine = {
 type PropsCard = {
   element: Rutine;
   pov: "profesional" | "user";
-  delIcon: (item: Rutine) => void;
-  addIcon: (item: Rutine) => void;
-  onButton: () => void;
+  delIcon?: (item: Rutine) => void;
+  addIcon?: (item: Rutine) => void;
+  onButton?: () => void;
 };
 
 export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: PropsCard) {
@@ -76,6 +76,8 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
       );
     } catch (error) {
       // Si no es JSON válido, tratarlo como texto plano (rutinas del sistema)
+      console.log(error);
+      
       const pasosTexto = body.split('\n').filter(paso => paso.trim() !== '');
       
       if (pasosTexto.length === 0) {
@@ -117,16 +119,16 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
     >
       <View className="py-3 bg-color1 rounded-t-2xl px-4">
         <View className="flex-row items-center justify-between">
-          {pov === "profesional" && element.Users && (
-            <TouchableOpacity onPress={() => addIcon(element)} className="p-2">
+          {pov === "profesional" && element.createdBy !== "system" && element.Users && (
+            <TouchableOpacity onPress={() => addIcon?.(element)} className="p-2">
                 <FontAwesome name="plus" size={20} color="white" />
             </TouchableOpacity>
           )}
           <TouchableOpacity onPress={() => setShowFullContent(!showFullContent)} className="flex-1 items-center max-w-20">
               <Text className="text-2xl font-bold text-white text-center">{element.name}</Text>
           </TouchableOpacity>
-          {pov === "profesional" && (
-            <TouchableOpacity onPress={() => delIcon(element)} className="p-2">
+          {pov === "profesional" && element.createdBy !== "system" && (
+            <TouchableOpacity onPress={() => delIcon?.(element)} className="p-2">
               <FontAwesome name="trash" size={20} color="white" />
             </TouchableOpacity>
           )}
@@ -136,7 +138,16 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
       {showFullContent && (
       <View className="p-6 bg-fondo rounded-b-2xl">
         <ShowInfo text={element.type} icon="link" />
-        <ShowInfo text={element.emotion} icon="smile-o" />
+        {/* <ShowInfo text={element.emotion} icon="smile-o" /> */}
+        <View className="flex-col mb-2">
+          {Array.isArray(element.emotion) && element.emotion.length > 0 ? (
+            element.emotion.map((emo, idx) => (
+              <ShowInfo key={idx} text={emo} icon="smile-o" />
+            ))
+          ) : (
+            <ShowInfo text="Sin emoción asociada" icon="smile-o" />
+          )}
+        </View>
         
         {/* Debug temporal */}
         
@@ -154,7 +165,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
           <ShowInfo text={content.body} icon="file-text" />
         )}
 
-        <ButtonDark text="Editar" onPress={onButton} />
+        {pov === "profesional" && element.createdBy !== "system" && <ButtonDark text="Editar" onPress={onButton} />}
       </View>
       )}
     </View>

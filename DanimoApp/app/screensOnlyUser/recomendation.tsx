@@ -3,7 +3,7 @@ import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Animated,
@@ -19,9 +19,9 @@ import { WebView } from "react-native-webview";
 
 export default function RecomendacionScreen() {
   
-  const floatAnim = React.useRef(new Animated.Value(0)).current;
-  const [currentLocation, setCurrentLocation] = React.useState<{lat: number, lng: number} | null>(null);
-  const [mapUrl, setMapUrl] = React.useState<string>("");
+  const floatAnim = useRef(new Animated.Value(0)).current;
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [mapUrl, setMapUrl] = useState<string>("");
 
   // Función para obtener la ubicación actual
   const getCurrentLocation = async () => {
@@ -55,11 +55,11 @@ export default function RecomendacionScreen() {
   };
 
   // Efecto para obtener ubicación inicial
-  React.useEffect(() => {
+  useEffect(() => {
     getCurrentLocation();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const startFloating = () => {
       Animated.loop(
         Animated.sequence([

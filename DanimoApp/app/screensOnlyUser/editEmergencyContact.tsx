@@ -54,7 +54,7 @@ export default function EditEmergencyContact() {
   return (
     <EditCardFromList<Contact>
       screenTitle="Editar contacto"
-      goBackTo="/emergencyContacts"
+      goBackTo="/screensOnlyUser/emergencyContacts"
       createFunct={createContact}
       updateFunct={updateContact}
       editConfig={contactEditConfig}

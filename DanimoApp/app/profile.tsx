@@ -20,7 +20,6 @@ export default function Profile() {
    
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
-      console.log(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile",);
       
 
       try {

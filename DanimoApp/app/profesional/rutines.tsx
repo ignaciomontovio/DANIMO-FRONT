@@ -50,20 +50,20 @@ export default function Rutines() {
     }
 
     const data = await response.json();
-    const rutinasBack = Array.isArray(data) ? data : data.data || [];
+    console.log("rutinesBack_raw:", data);
+    const rutinesBack_raw = Array.isArray(data) ? data : data.data || [];
 
-    // Transformamos las rutinas para que Users sea un array de emails
-    const rutinasConEmails = rutinasBack.map((rutina: { Users: any[]; }) => ({
+    const rutinesBack = rutinesBack_raw.map((rutina: { Users: any[]; }) => ({
       ...rutina,
       Users: Array.isArray(rutina.Users)
         ? rutina.Users.map((user) => user.email)
-        : [], // o undefined si preferís
+        : [], 
     }));
 
 
-    setRutines(rutinasConEmails);
+    setRutines(rutinesBack);
 
-    console.log("Rutinas con emails:", JSON.stringify(rutinasConEmails, null, 2));
+    // console.log("Rutinas con emails:", JSON.stringify(rutinesBack, null, 2));
 
     } catch (error) {
       console.error("Error al obtener rutinas:", error);
@@ -175,7 +175,6 @@ export default function Rutines() {
         body: JSON.stringify({
           name: selectedRutine?.name,
           emails: selectedPatients.map(p => p.email),
-          // emails: ["test1@email.com", "test2@email.com"],
         }),
       });
       if (!response.ok) {

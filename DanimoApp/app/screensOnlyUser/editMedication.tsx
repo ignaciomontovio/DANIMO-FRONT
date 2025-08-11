@@ -116,7 +116,7 @@ export default function EditMedication() {
   return (
     <EditCardFromList<MedicationType>
       screenTitle="Medicación"
-      goBackTo="/medications"
+      goBackTo="/screensOnlyUser/medications"
       createFunct={createMedication}
       updateFunct={updateMedication}
       editConfig={medicationEditConfig}
