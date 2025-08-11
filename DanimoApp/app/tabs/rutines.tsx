@@ -142,7 +142,7 @@ export default function Rutines() {
             {loading ? (
               <ActivityIndicator size="large" color="#000" />
             ) : rutines.length > 0 ? (
-              rutines.filter((rutines) => emotions[rutines.emotion]).map((el, index) => (
+              rutines.filter((rutines) => emotions[rutines.emotion[0]]).map((el, index) => (
                 <CardRutine
                   key={index}
                   element={el}
