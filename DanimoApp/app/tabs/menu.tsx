@@ -232,7 +232,7 @@ export function ProfileWithDiscreetSwitcher() {
               }}>
                 <FontAwesome name="refresh" size={12} color={colors.oscuro} style={{ marginRight: 4 }} />
                 <Text style={{ fontSize: 11, color: colors.oscuro, fontWeight: '500' }}>
-                  {userType === "profesional" ? "Psicólogo" : "Usuario"}
+                  {userType === "profesional" ? "Profesional" : "Usuario"}
                 </Text>
               </View>
             </TouchableOpacity>

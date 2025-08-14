@@ -196,7 +196,7 @@ export default function LoginRegisterScreen() {
                 marginBottom: 12,
                 fontWeight: '500'
               }}>
-                {currentUserType === "usuario" ? "¿Eres psicólogo?" : "¿Eres paciente?"}
+                {currentUserType === "usuario" ? "¿Eres profesional?" : "¿Eres paciente?"}
               </Text>
               <TouchableOpacity 
                 onPress={toggleUserType}
@@ -228,7 +228,7 @@ export default function LoginRegisterScreen() {
                   fontSize: 14,
                   textAlign: 'center'
                 }}>
-                  {currentUserType === "usuario" ? "Soy psicólogo" : "Soy paciente"}
+                  {currentUserType === "usuario" ? "Soy profesional" : "Soy paciente"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -242,7 +242,7 @@ export default function LoginRegisterScreen() {
                 marginBottom: 16, 
                 color: colors.oscuro || '#2D3748' 
               }}>
-                {tab === "login" ? "Iniciar sesión" : "Registrarse"} como {currentUserType === "profesional" ? "Psicólogo" : "Paciente"}
+                {tab === "login" ? "Iniciar sesión" : "Registrarse"} como {currentUserType === "profesional" ? "Profesional" : "Paciente"}
               </Text>
 
               <View className="flex-row justify-center mb-6">
@@ -286,8 +286,8 @@ export default function LoginRegisterScreen() {
                   color: colors.oscuro || '#2D3748'
                 }}>
                   {currentUserType === "profesional" 
-                    ? "Acceso a herramientas profesionales y gestión de pacientes" 
-                    : "Encuentra tu bienestar con apoyo profesional"
+                    ? "Acompañá y guiá el bienestar emocional de tus pacientes" 
+                    : "Explorá y comprendé tus emociones cada día"
                   }
                 </Text>
               </View>
