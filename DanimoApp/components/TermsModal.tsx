@@ -27,18 +27,16 @@ const TermsModal: React.FC<TermsModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <View style={[styles.header, isReadOnlyMode && styles.headerAccepted]}>
+          {/* Header sin botón X */}
+          <View style={styles.header}>
             <Text style={styles.title}>Términos y Condiciones</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeText}>×</Text>
-            </TouchableOpacity>
           </View>
 
-          {/* BANNER DE ACEPTADO */}
+          {/* BANNER DE ACEPTADO (sin tilde verde) */}
           {isReadOnlyMode && (
             <View style={styles.acceptedBanner}>
               <Text style={styles.acceptedText}>
-                ✅ Ya has aceptado estos términos y condiciones
+                Ya has aceptado estos términos y condiciones
               </Text>
               <Text style={styles.acceptedDate}>
                 No es necesario aceptar nuevamente
@@ -46,6 +44,7 @@ const TermsModal: React.FC<TermsModalProps> = ({
             </View>
           )}
           
+          {/* Contenido con opacidad si ya está aceptado */}
           <ScrollView 
             style={[styles.content, isReadOnlyMode && styles.contentGrayed]} 
             showsVerticalScrollIndicator={false}
@@ -73,10 +72,10 @@ const TermsModal: React.FC<TermsModalProps> = ({
             </Text>
           </ScrollView>
           
-          {/* Botones según el modo */}
+          {/* Solo cambia la sección de botones */}
           {isReadOnlyMode ? (
-            // MODO LECTURA: Solo botón "Entendido" + botón grisado
-            <View style={styles.actionsReadOnly}>
+            // MODO YA ACEPTADO: Botón deshabilitado + botón Cerrar
+            <View style={styles.actions}>
               <TouchableOpacity 
                 style={styles.buttonDisabled}
                 disabled={true}
@@ -89,11 +88,11 @@ const TermsModal: React.FC<TermsModalProps> = ({
                 onPress={onClose}
                 activeOpacity={0.7}
               >
-                <Text style={styles.primaryButtonText}>Entendido</Text>
+                <Text style={styles.primaryButtonText}>Cerrar</Text>
               </TouchableOpacity>
             </View>
           ) : (
-            // MODO ACEPTACIÓN: Botones normales
+            // MODO NORMAL: Botones "Cerrar" y "Acepto"
             <View style={styles.actions}>
               <TouchableOpacity 
                 style={styles.secondaryButton}
@@ -116,7 +115,7 @@ const TermsModal: React.FC<TermsModalProps> = ({
             </View>
           )}
           
-          {/* Texto informativo */}
+          {/* Texto informativo solo en modo normal */}
           {!isReadOnlyMode && (
             <Text style={styles.reminderInfo}>
               Este modal aparecerá cada vez que abras la app hasta que aceptes
@@ -156,9 +155,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.color4,
   },
-  headerAccepted: {
-    backgroundColor: colors.color4,
-  },
   title: {
     fontSize: 20,
     fontWeight: '600',
@@ -179,11 +175,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   acceptedBanner: {
-    backgroundColor: colors.color2,
+    backgroundColor: colors.color4,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderBottomWidth: 1,
     borderBottomColor: colors.color4,
+    opacity: 0.6,
   },
   acceptedText: {
     fontSize: 16,
@@ -221,13 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   actions: {
-    flexDirection: 'row',
-    padding: 24,
-    gap: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.color4,
-  },
-  actionsReadOnly: {
     flexDirection: 'row',
     padding: 24,
     gap: 16,
