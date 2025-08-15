@@ -1,5 +1,6 @@
 import { colors } from "@/stores/colors";
-import { URL_AUTH, URL_BASE } from "@/stores/consts";
+import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { StatusBar, Text, View } from "react-native";
@@ -13,11 +14,11 @@ import Input from "../../components/input";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-
+  const userType = useUserLogInStore((state) => state.userType); 
 
   const sendCode = async () => {
     try {
-      const response = await fetch(URL_BASE + URL_AUTH + "/forgot-password", {
+      const response = await fetch(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase()}),});
@@ -38,7 +39,7 @@ export default function ForgotPassword() {
   }
   const validateCode = async () => {
     try {
-      const response = await fetch(URL_BASE + URL_AUTH +"/validate-token", {
+      const response = await fetch(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) +"/validate-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tokenId:code.trim().toUpperCase(), email: email.trim().toLowerCase()}),});

@@ -57,7 +57,7 @@ export default function EmotionStatsScreen() {
       />
       <SafeAreaView className="flex-1">
         <ScrollView className="px-4 pt-6 pb-24 space-y-8">
-          {/* Gráfico mensual */}
+          {/* Gráfico SEMANAL */}
           <View className="bg-fondo rounded-2xl p-4 shadow-md" style={{ elevation: 5 }}>
             <Text className="text-xl font-bold text-center mb-2 text-oscuro">Este Mes</Text>
             ---

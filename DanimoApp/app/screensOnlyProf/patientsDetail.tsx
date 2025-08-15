@@ -115,7 +115,12 @@ export default function PatientDetailScreen() {
               {/* Botones de acción */}
               <View className="space-y-3">
                 <ButtonAccept text="Estadisticas"  />
-                <ButtonAccept text="Historial chat" onPress={()=>router.push("/screensOnlyProf/historialDeChat")} />
+                <ButtonAccept text="Historial chat" onPress={()=>{ 
+                    router.push({
+                        pathname: "/screensOnlyProf/historialDeChat",
+                        params: { patientId },
+                      });
+                    }} />
                 <ButtonDark text="Desvincular" onPress={unlinkPatient} />
               </View>
             </View>
