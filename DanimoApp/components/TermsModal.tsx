@@ -1,4 +1,3 @@
-// app/components/TermsModal.tsx
 import { colors } from '@/stores/colors';
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -27,12 +26,12 @@ const TermsModal: React.FC<TermsModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          {/* Header sin botón X */}
+          {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Términos y Condiciones</Text>
           </View>
 
-          {/* BANNER DE ACEPTADO (sin tilde verde) */}
+          {/* BANNER DE ACEPTADO */}
           {isReadOnlyMode && (
             <View style={styles.acceptedBanner}>
               <Text style={styles.acceptedText}>

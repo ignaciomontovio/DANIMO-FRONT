@@ -1,4 +1,3 @@
-// app/hooks/useTermsAndConditions.ts
 import { URL_AUTH, URL_BASE } from '@/stores/consts';
 import { useUserLogInStore } from '@/stores/userLogIn';
 import { useEffect, useState } from 'react';
