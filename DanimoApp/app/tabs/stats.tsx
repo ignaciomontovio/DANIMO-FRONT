@@ -138,6 +138,18 @@ export default function EmotionStatsScreen() {
     return emotionMap[emotion.toLowerCase()] || emotion.toLowerCase();
   };
 
+  // Función para asegurar que todas las emociones estén presentes
+  const ensureAllEmotions = (data: Record<string, number> | null): Record<string, number> => {
+    const allEmotions = ['felicidad', 'tristeza', 'enojo', 'miedo', 'ansiedad'];
+    const result: Record<string, number> = {};
+    
+    allEmotions.forEach(emotion => {
+      result[emotion] = data?.[emotion] || 0;
+    });
+    
+    return result;
+  };
+
   // Procesar datos semanales para el componente
   const processedWeeklyData = weeklyStats ? 
     Object.keys(weeklyStats).reduce((acc, emotion) => {
@@ -145,7 +157,7 @@ export default function EmotionStatsScreen() {
       acc[mappedEmotion] = weeklyStats[emotion];
       return acc;
     }, {} as Record<string, number>) 
-    : weeklyData; // fallback a datos mock
+    : {};
 
   // Procesar datos mensuales
   const processedMonthlyData = monthlyStats ? 
@@ -154,7 +166,7 @@ export default function EmotionStatsScreen() {
       acc[mappedEmotion] = monthlyStats[emotion];
       return acc;
     }, {} as Record<string, number>) 
-    : monthlyData;
+    : {};
 
   // Procesar datos anuales
   const processedYearlyData = yearlyStats ? 
@@ -163,12 +175,17 @@ export default function EmotionStatsScreen() {
       acc[mappedEmotion] = yearlyStats[emotion];
       return acc;
     }, {} as Record<string, number>) 
-    : yearlyData;
+    : {};
 
-  // Verificar si hay datos
-  const hasWeeklyData = weeklyStats && Object.keys(weeklyStats).length > 0;
-  const hasMonthlyData = monthlyStats && Object.keys(monthlyStats).length > 0;
-  const hasYearlyData = yearlyStats && Object.keys(yearlyStats).length > 0;
+  // Asegurar que todas las emociones estén presentes (incluyendo las de valor 0)
+  const completeWeeklyData = ensureAllEmotions(processedWeeklyData);
+  const completeMonthlyData = ensureAllEmotions(processedMonthlyData);
+  const completeYearlyData = ensureAllEmotions(processedYearlyData);
+
+  // Verificar si hay datos (al menos una emoción > 0)
+  const hasWeeklyData = weeklyStats && Object.values(weeklyStats).some(value => value > 0);
+  const hasMonthlyData = monthlyStats && Object.values(monthlyStats).some(value => value > 0);
+  const hasYearlyData = yearlyStats && Object.values(yearlyStats).some(value => value > 0);
 
   // Función para generar calendario del mes actual
   const generateCalendar = () => {
@@ -188,7 +205,7 @@ export default function EmotionStatsScreen() {
     const calendar: (string | null)[][] = [];
     let currentWeek: (string | null)[] = [];
     
-    // Llenar días vacíos al inicio
+    // Llenar días vacíos al inicio (antes del primer día del mes)
     for (let i = 0; i < firstDayWeek; i++) {
       currentWeek.push(null);
     }
@@ -198,18 +215,18 @@ export default function EmotionStatsScreen() {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       currentWeek.push(dateStr);
       
-      // Si completamos una semana, la agregamos al calendario
+      // Si completamos una semana (7 días), la agregamos al calendario
       if (currentWeek.length === 7) {
         calendar.push([...currentWeek]);
         currentWeek = [];
       }
     }
     
-    // Llenar días vacíos al final si es necesario
-    while (currentWeek.length < 7 && currentWeek.length > 0) {
-      currentWeek.push(null);
-    }
+    // Si queda una semana incompleta, llenar con días vacíos y agregarla
     if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push(null);
+      }
       calendar.push(currentWeek);
     }
     
@@ -270,7 +287,7 @@ export default function EmotionStatsScreen() {
               <EmotionChart 
                 title="Últimos 7 días"
                 subtitle="(todas)"
-                data={processedWeeklyData}
+                data={completeWeeklyData}
               />
             )}
           </View>
@@ -299,7 +316,7 @@ export default function EmotionStatsScreen() {
             ) : (
               <EmotionChart 
                 title="Este Mes"
-                data={processedMonthlyData}
+                data={completeMonthlyData}
               />
             )}
           </View>
@@ -444,7 +461,7 @@ export default function EmotionStatsScreen() {
               <EmotionChart 
                 title="Este Año"
                 subtitle="(predominantes)"
-                data={processedYearlyData}
+                data={completeYearlyData}
               />
             )}
           </View>
