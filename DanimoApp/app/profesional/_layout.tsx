@@ -34,7 +34,6 @@ const ProfessionalUserSwitcher = () => {
         paddingVertical: 8,
       }}
     >
-      {/* Solo la flecha circular con FontAwesome */}
       <FontAwesome 
         name="refresh" 
         size={24} 
@@ -82,8 +81,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="home" />
       <Tabs.Screen name="stats" /> 
       <Tabs.Screen name="rutines" />
-      
-      {/* SWITCHER: Mismo sistema que en usuario */}
+
+      {/* SWITCHER */}
       <Tabs.Screen
         name="user-switcher"
         options={{
