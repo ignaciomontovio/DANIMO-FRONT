@@ -4,6 +4,7 @@ import TermsModal from "@/components/TermsModal";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import { useTermsAndConditions } from "@/stores/useTermsAndConditions";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -76,26 +77,33 @@ const UserSwitcher = () => {
 };
 
 export default function Profile() {
+
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
   const userType = useUserLogInStore((state) => state.userType);
   const token = useUserLogInStore((state) => state.token);
   const [name, setName] = useState("");
-  const [showTermsModal, setShowTermsModal] = useState(false);
+
+  // Hook externo de términos
+  const {
+    showTermsModal,
+    hasAcceptedTerms,
+    loading,
+    isReadOnlyMode,
+    handleAcceptTerms,
+    handleCloseModal,
+    showTermsManually,
+  } = useTermsAndConditions();
 
   const handleLogoff = () => {
     setUserLogIn(false);
     router.replace("../auth/LoginRegisterScreen");
   };
 
-  const handleShowTerms = () => {
-    setShowTermsModal(true);
-  };
-
-  const handleCloseTermsModal = () => {
-    setShowTermsModal(false);
-  };
-
   useEffect(() => {
+    if (!token) {
+      return;
+    }
+    
     const getProfile = async () => {
       try {
         const response = await fetch(URL_BASE + URL_AUTH + "/profile", {
@@ -110,14 +118,13 @@ export default function Profile() {
           setName(userData.firstName || "Sin nombre")
         } else {
           console.error("Error al cargar perfil:", response.status);
-          Alert.alert("Error", "No se pudieron cargar los datos del perfil");
         }
 
       } catch (error) {
         console.error("Error loading profile data:", error);
-        Alert.alert("Error", "Error de conexión al cargar el perfil");
       }
     };
+    
     getProfile();
   }, [token]);
 
@@ -160,7 +167,7 @@ export default function Profile() {
         
         {userType === 'usuario' && (
           <ButtonLight_small 
-            onPress={handleShowTerms} 
+            onPress={showTermsManually}
             text="Términos y Condiciones" 
           />
         )}
@@ -170,8 +177,10 @@ export default function Profile() {
 
       <TermsModal
         isVisible={showTermsModal}
-        onAccept={handleCloseTermsModal} 
-        onClose={handleCloseTermsModal}
+        onAccept={handleAcceptTerms}
+        onClose={handleCloseModal}
+        loading={loading}
+        isReadOnlyMode={isReadOnlyMode}
       />
     </LinearGradient>
   );
