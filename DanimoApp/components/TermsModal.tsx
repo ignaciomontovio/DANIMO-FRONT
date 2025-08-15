@@ -1,3 +1,4 @@
+// app/components/TermsModal.tsx
 import { colors } from '@/stores/colors';
 import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -5,15 +6,17 @@ import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 interface TermsModalProps {
   isVisible: boolean;
   onAccept: () => void;
-  onRemindLater: () => void;
   onClose: () => void;
+  loading?: boolean;
+  isReadOnlyMode?: boolean;
 }
 
 const TermsModal: React.FC<TermsModalProps> = ({ 
   isVisible, 
   onAccept, 
-  onRemindLater, 
-  onClose 
+  onClose,
+  loading = false,
+  isReadOnlyMode = false
 }) => {
   return (
     <Modal
@@ -24,15 +27,30 @@ const TermsModal: React.FC<TermsModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <View style={styles.header}>
+          <View style={[styles.header, isReadOnlyMode && styles.headerAccepted]}>
             <Text style={styles.title}>Términos y Condiciones</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Text style={styles.closeText}>×</Text>
             </TouchableOpacity>
           </View>
+
+          {/* BANNER DE ACEPTADO */}
+          {isReadOnlyMode && (
+            <View style={styles.acceptedBanner}>
+              <Text style={styles.acceptedText}>
+                ✅ Ya has aceptado estos términos y condiciones
+              </Text>
+              <Text style={styles.acceptedDate}>
+                No es necesario aceptar nuevamente
+              </Text>
+            </View>
+          )}
           
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            <Text style={styles.termsText}>
+          <ScrollView 
+            style={[styles.content, isReadOnlyMode && styles.contentGrayed]} 
+            showsVerticalScrollIndicator={false}
+          >
+            <Text style={[styles.termsText, isReadOnlyMode && styles.termsTextGrayed]}>
               Al utilizar nuestra plataforma médica Danimo, usted acepta los siguientes términos y condiciones:
               {'\n\n'}
               <Text style={styles.sectionTitle}>1. Uso de la Plataforma</Text>
@@ -55,27 +73,55 @@ const TermsModal: React.FC<TermsModalProps> = ({
             </Text>
           </ScrollView>
           
-          <View style={styles.actions}>
-            <TouchableOpacity 
-              style={styles.secondaryButton}
-              onPress={onRemindLater}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.secondaryButtonText}>Recordar más tarde</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.primaryButton}
-              onPress={onAccept}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.primaryButtonText}>Acepto los términos</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Botones según el modo */}
+          {isReadOnlyMode ? (
+            // MODO LECTURA: Solo botón "Entendido" + botón grisado
+            <View style={styles.actionsReadOnly}>
+              <TouchableOpacity 
+                style={styles.buttonDisabled}
+                disabled={true}
+              >
+                <Text style={styles.buttonDisabledText}>Ya aceptado ✓</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.primaryButton}
+                onPress={onClose}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.primaryButtonText}>Entendido</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            // MODO ACEPTACIÓN: Botones normales
+            <View style={styles.actions}>
+              <TouchableOpacity 
+                style={styles.secondaryButton}
+                onPress={onClose}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.secondaryButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.primaryButton, loading && { opacity: 0.6 }]}
+                onPress={onAccept}
+                disabled={loading}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.primaryButtonText}>
+                  {loading ? 'Guardando...' : 'Acepto'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
           
-          <Text style={styles.reminderInfo}>
-            Si no aceptas ahora, te recordaremos en 7 días
-          </Text>
+          {/* Texto informativo */}
+          {!isReadOnlyMode && (
+            <Text style={styles.reminderInfo}>
+              Este modal aparecerá cada vez que abras la app hasta que aceptes
+            </Text>
+          )}
         </View>
       </View>
     </Modal>
@@ -97,10 +143,7 @@ const styles = StyleSheet.create({
     maxHeight: '85%',
     alignSelf: 'center',
     shadowColor: colors.oscuro,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
@@ -112,6 +155,9 @@ const styles = StyleSheet.create({
     padding: 24,
     borderBottomWidth: 1,
     borderBottomColor: colors.color4,
+  },
+  headerAccepted: {
+    backgroundColor: colors.color4,
   },
   title: {
     fontSize: 20,
@@ -132,15 +178,42 @@ const styles = StyleSheet.create({
     color: colors.oscuro,
     fontWeight: '500',
   },
+  acceptedBanner: {
+    backgroundColor: colors.color2,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.color4,
+  },
+  acceptedText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.oscuro,
+    textAlign: 'center',
+  },
+  acceptedDate: {
+    fontSize: 13,
+    color: colors.oscuro,
+    textAlign: 'center',
+    marginTop: 4,
+    opacity: 0.8,
+  },
   content: {
     maxHeight: 350,
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
+  contentGrayed: {
+    opacity: 0.7,
+  },
   termsText: {
     lineHeight: 24,
     color: colors.oscuro,
     fontSize: 15,
+  },
+  termsTextGrayed: {
+    color: colors.oscuro,
+    opacity: 0.6,
   },
   sectionTitle: {
     fontWeight: '600',
@@ -148,6 +221,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   actions: {
+    flexDirection: 'row',
+    padding: 24,
+    gap: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.color4,
+  },
+  actionsReadOnly: {
     flexDirection: 'row',
     padding: 24,
     gap: 16,
@@ -187,6 +267,24 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     textAlign: 'center',
+  },
+  buttonDisabled: {
+    flex: 1,
+    backgroundColor: colors.color4,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 50,
+    opacity: 0.6,
+  },
+  buttonDisabledText: {
+    color: colors.oscuro,
+    fontWeight: '500',
+    fontSize: 16,
+    textAlign: 'center',
+    opacity: 0.7,
   },
   reminderInfo: {
     textAlign: 'center',

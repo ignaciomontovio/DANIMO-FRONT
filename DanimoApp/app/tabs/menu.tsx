@@ -77,17 +77,16 @@ const UserSwitcher = () => {
 
 export default function Profile() {
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
-  const userType = useUserLogInStore((state) => state.userType); // ← Nuevo
+  const userType = useUserLogInStore((state) => state.userType);
   const token = useUserLogInStore((state) => state.token);
   const [name, setName] = useState("");
-  const [showTermsModal, setShowTermsModal] = useState(false); // ← Estado para el modal
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const handleLogoff = () => {
     setUserLogIn(false);
     router.replace("../auth/LoginRegisterScreen");
   };
 
-  //función para mostrar términos
   const handleShowTerms = () => {
     setShowTermsModal(true);
   };
@@ -108,8 +107,6 @@ export default function Profile() {
 
         if (response.ok) {
           const userData = await response.json();
-          console.log("Datos del perfil recibidos:", userData);
-          console.log("Todos los campos:", Object.keys(userData));
           setName(userData.firstName || "Sin nombre")
         } else {
           console.error("Error al cargar perfil:", response.status);
@@ -132,18 +129,15 @@ export default function Profile() {
       className="w-full h-full"
     >
       <View className="flex-1 items-center justify-start space-y-15 px-6 py-10">
-        {/* SWITCHER DE USUARIO */}
         <UserSwitcher />
 
         <View className="w-full flex-row items-center justify-center gap-2 px-2 py-6">
-          {/* Foto de perfil */}
           <View className="rounded-full bg-color2 shadow-md w-16 h-16 items-center justify-center">
             <View style={{ transform: [{ scale: 1.3 }] }}>
               <ProfilePhoto />
             </View>
           </View>
 
-          {/* Info del usuario */}
           <View className="flex-1">
             <View className="bg-fondo px-4 py-2 rounded-full border border-oscuro shadow-sm">
               <Text className="text-oscuro text-center font-bold text-lg">{name}</Text>
@@ -164,7 +158,6 @@ export default function Profile() {
         <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/ascociatedProf"))} text="Profesionales Ascociados" />
         <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/medications"))} text="Medicación" />
         
-        {/*BOTÓN PARA TÉRMINOS Y CONDICIONES */}
         {userType === 'usuario' && (
           <ButtonLight_small 
             onPress={handleShowTerms} 
@@ -175,18 +168,11 @@ export default function Profile() {
         <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
       </View>
 
-      {/*MODAL DE TÉRMINOS Y CONDICIONES */}
       <TermsModal
         isVisible={showTermsModal}
         onAccept={handleCloseTermsModal} 
-        onRemindLater={handleCloseTermsModal} 
         onClose={handleCloseTermsModal}
       />
     </LinearGradient>
   );
-}
-
-
-export function ProfileWithDiscreetSwitcher() {
-
 }

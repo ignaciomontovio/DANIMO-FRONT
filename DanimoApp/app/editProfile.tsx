@@ -10,10 +10,8 @@ export default function EditProfile() {
   const { editing } = useLocalSearchParams();
   const userType = useUserLogInStore((state) => state.userType); 
   const convertDateToISO = (dateStr: string): string => {
-    // console.log("Converting date:", dateStr);
     
     if (!dateStr || dateStr.trim() === "") {
-      // console.log("Empty date, returning empty string");
       return "";
     }
     

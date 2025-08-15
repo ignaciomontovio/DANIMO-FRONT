@@ -3,8 +3,8 @@ import { Stack } from "expo-router";
 import * as SystemUI from 'expo-system-ui';
 import React, { useEffect } from "react";
 import { BackHandler, Platform } from "react-native";
+import { useTermsAndConditions } from '../stores/useTermsAndConditions';
 import { useUserLogInStore } from '../stores/userLogIn';
-import { useTermsAndConditions } from './hooks/useTermsAndConditions';
 
 export default function Layout() {
   //hook personalizado
@@ -12,7 +12,6 @@ export default function Layout() {
     showTermsModal,
     hasAcceptedTerms,
     handleAcceptTerms,
-    handleRemindLater,
     handleCloseModal
   } = useTermsAndConditions();
 
@@ -46,7 +45,6 @@ export default function Layout() {
       <TermsModal
         isVisible={!!shouldShowTerms}
         onAccept={handleAcceptTerms}
-        onRemindLater={handleRemindLater}
         onClose={handleCloseModal}
       />
     </>

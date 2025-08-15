@@ -52,7 +52,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Esta app necesita acceso a la ubicación para mostrar centros médicos cercanos."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
