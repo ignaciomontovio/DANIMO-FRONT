@@ -19,34 +19,38 @@ export default function PersonaliseResume() {
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   
   const getResume = async () => {
-    
-      try {
-        const response = await fetch(URL_BASE + URL_DANI + "/summary", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: JSON.stringify({ 
-            userId: patientId, 
-            startDate: start?.toISOString().split("T")[0], 
-            endDate: end?.toISOString().split("T")[0] }
-          ),
-        });
-        
-        if (!response.ok && response.status !== 500) {
-          const errorText = await response.json();          
-          // const errorText = await response.text();          
-          throw new Error(errorText.error);
-        }
-  
-        const data = await response.json();
-        setFullResume(data.summary)
-      } catch (error) {       
-        console.error("Error al obtener pacientes:", error);
-        Alert.alert("Error", "No se pudo obtener la lista de pacientes.");
-      } 
+    // Validar que ambas fechas estén seleccionadas
+    if (!start || !end) {
+      Alert.alert("Error", "Por favor selecciona tanto la fecha de inicio como la fecha de fin.");
+      return;
     }
+
+    try {
+      const response = await fetch(URL_BASE + URL_DANI + "/summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ 
+          userId: patientId, 
+          startDate: start.toISOString().split("T")[0], 
+          endDate: end.toISOString().split("T")[0] 
+        }),
+      });
+      
+      if (!response.ok && response.status !== 500) {
+        const errorText = await response.json();          
+        throw new Error(errorText.error);
+      }
+
+      const data = await response.json();
+      setFullResume(data.summary)
+    } catch (error) {       
+      console.error("Error al obtener resumen:", error);
+      Alert.alert("Error", "No se pudo obtener el resumen.");
+    } 
+  }
   
   return (
     <SafeAreaProvider>
@@ -85,9 +89,6 @@ export default function PersonaliseResume() {
               <Text className="text-center text-xl font-bold text-pink-500 mb-2">
                 Resumen
               </Text>
-              {/* <Text className="text-sm text-black text-left">
-                {fullResume}
-              </Text> */}
 
               <Markdown style={{
                 body: { color: 'black', fontSize: 14 },
