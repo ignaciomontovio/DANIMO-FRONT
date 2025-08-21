@@ -27,12 +27,7 @@ const ProfessionalUserSwitcher = () => {
   return (
     <TouchableOpacity
       onPress={handleChangeUser}
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 8,
-      }}
+      className="flex-1 items-center justify-center py-8"
     >
       <FontAwesome 
         name="refresh" 
@@ -41,12 +36,7 @@ const ProfessionalUserSwitcher = () => {
       />
       
       {/* Texto mostrando el tipo actual */}
-      <Text style={{ 
-        fontSize: 10, 
-        color: colors?.fondo || 'white',
-        marginTop: 2,
-        opacity: 0.8
-      }}>
+      <Text className="mt-2 text-xs text-fondo opacity-80">
         profesional
       </Text>
     </TouchableOpacity>

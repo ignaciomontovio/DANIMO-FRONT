@@ -209,7 +209,7 @@ export default function CardRutineEdit() {
               elevation: 10,
             }}
           >
-            <View className="py-3 rounded-t-2xl" style={{ backgroundColor: colors.color1 }}>
+            <View className="py-3 rounded-t-2xl bg-color1">
               <TextInput
                 className="text-2xl font-bold text-white text-center"
                 value={rutine.name || ""}
@@ -288,8 +288,7 @@ export default function CardRutineEdit() {
                   {pasos.map((paso, index) => (
                     <View 
                       key={paso.id}
-                      className="mb-3 p-4 rounded-xl"
-                      style={{ backgroundColor: colors.color1 }}
+                      className="mb-3 p-4 rounded-xl bg-color1"
                     >
                       <View className="flex-row items-center justify-between mb-2">
                         <TextInput

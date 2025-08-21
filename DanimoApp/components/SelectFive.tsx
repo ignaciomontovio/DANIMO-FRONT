@@ -53,10 +53,7 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
   }
   return (
     <View
-      className="w-full mb-5 rounded-2xl p-6"
-      style={{
-          backgroundColor: '#F4E1E680',
-          }}
+      className="w-full mb-5 rounded-2xl p-6 bg-[#F4E1E680]"
     >
       <Text className="text-oscuro text-xl font-bold text-center">
         {message}

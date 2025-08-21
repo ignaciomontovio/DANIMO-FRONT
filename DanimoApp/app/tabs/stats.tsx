@@ -77,12 +77,10 @@ const EmotionChart = ({ title, data, subtitle }: {
           return (
             <View key={index} className="flex-row items-center space-x-2">
               <View className="flex-1 h-6 bg-gray-200 rounded-full">
-                <View
+                <View className="h-full rounded-full"
                   style={{
                     width: barWidth,
                     backgroundColor: color,
-                    height: "100%",
-                    borderRadius: 12,
                   }}
                 />
               </View>
@@ -357,25 +355,15 @@ export default function EmotionStatsScreen() {
                   {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((dayLetter, index) => (
                     <View
                       key={index}
-                      style={{
-                        width: 30,
-                        height: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
+                      className="w-7 h-5 justify-center items-center" 
                     >
-                      <Text 
-                        style={{
-                          color: colors.oscuro,
-                          fontSize: 12,
-                          fontWeight: 'bold',
-                        }}
-                      >
+                      <Text className="text-[12px] font-bold text-oscuro">
                         {dayLetter}
                       </Text>
                     </View>
                   ))}
                 </View>
+
                 
                 {/* Calendario */}
                 <View className="flex flex-col space-y-1">
@@ -387,12 +375,7 @@ export default function EmotionStatsScreen() {
                           return (
                             <View
                               key={j}
-                              style={{
-                                width: 30,
-                                height: 30,
-                                backgroundColor: 'transparent',
-                                borderRadius: 4,
-                              }}
+                              className="w-7 h-7 bg-transparent rounded"
                             />
                           );
                         }
@@ -408,22 +391,10 @@ export default function EmotionStatsScreen() {
                         return (
                           <View
                             key={j}
-                            style={{
-                              width: 30,
-                              height: 30,
-                              backgroundColor,
-                              borderRadius: 4,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}
+                            className="w-7 h-7 justify-center items-center rounded-sm" 
+                            style={{ backgroundColor }}
                           >
-                            <Text 
-                              style={{
-                                color: '#000',
-                                fontSize: 10,
-                                fontWeight: 'bold',
-                              }}
-                            >
+                            <Text className="text-[10px] font-bold text-black">
                               {dayNumber}
                             </Text>
                           </View>
