@@ -58,8 +58,15 @@ export default function LoginRegisterScreen() {
         }
 
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Login error:", error);
+
+        if (error.message.includes("Network request failed")) {
+          alert("No hay conexión a internet. Verifique su conexión.");
+        } else {
+          alert("Error al validar el token: " + error.message);
+        }
+
         alert("Error al validar el token: " + error);
         setUserLogIn(false);
         setUserSession("", "");
