@@ -72,7 +72,7 @@ export default function Rutines() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const handleEdit = (rutine: Rutine) => {
     // Redirigir a pantalla de edición con datos

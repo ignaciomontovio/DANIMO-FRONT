@@ -46,14 +46,19 @@ export default function Index() {
       await registerDeviceForRemoteMessages(messaging);
       const notifToken = await getToken(messaging);
       // console.log("token**", notifToken);
-      await fetch(URL_BASE + URL_NOTIFICATION + "/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({ token: notifToken }),
-      });
+      
+      // Solo registrar token si es usuario (paciente)
+      const userType = useUserLogInStore.getState().userType;
+      if (userType === 'usuario') {
+        await fetch(URL_BASE + URL_NOTIFICATION + "/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({ token: notifToken }),
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -67,11 +72,15 @@ export default function Index() {
     const app = getApp();
     const messaging = getMessaging(app);
 
-    const unsubscribe = onMessage(messaging, async (remoteMessage) => {
-      Alert.alert("Nuevo mensaje FCM!", JSON.stringify(remoteMessage));
-    });
+    // Solo configurar listener de mensajes si es usuario (paciente)
+    const userType = useUserLogInStore.getState().userType;
+    if (userType === 'usuario') {
+      const unsubscribe = onMessage(messaging, async (remoteMessage) => {
+        Alert.alert("Nuevo mensaje FCM!", JSON.stringify(remoteMessage));
+      });
 
-    return unsubscribe;
+      return unsubscribe;
+    }
   }, []);
 
   const fetchEmotions = async () => {
