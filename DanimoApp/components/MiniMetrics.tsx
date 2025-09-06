@@ -132,12 +132,10 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
                 <View key={index} className="flex-row items-center space-x-2">
                   {/* Barra */}
                   <View className="flex-1 h-3 bg-gray-200 rounded-full">
-                    <View
+                    <View className="h-full rounded-xl"
                       style={{
                         width: `${barWidth}%`,
                         backgroundColor: color,
-                        height: "100%",
-                        borderRadius: 12,
                         minWidth: value > 0 ? '10%' : '0%', // Mínimo visible si tiene valor
                       }}
                     />

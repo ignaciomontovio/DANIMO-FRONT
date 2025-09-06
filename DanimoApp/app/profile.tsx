@@ -68,11 +68,11 @@ export default function Profile() {
       // Retornar como array, aunque solo haya un perfil
       return profile ? [profile] : [];
     };
-  const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
-  const handleLogoff = () => {
-    setUserLogIn(false);
-    router.replace("../auth/LoginRegisterScreen");
-    };
+    const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
+    const handleLogoff = () => {
+      setUserLogIn(false);
+      router.replace("../auth/LoginRegisterScreen");
+      };
 
   return(
     <SafeAreaProvider>

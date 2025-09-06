@@ -1,4 +1,3 @@
-// IMPORTS COMPLETOS - Reemplaza tus imports existentes con estos:
 import e1 from "@/assets/Emojis/emojis/mios/alegria.svg";
 import e2 from "@/assets/Emojis/emojis/mios/ansiedad.svg";
 import e3 from "@/assets/Emojis/emojis/mios/enojo.svg";
@@ -234,8 +233,7 @@ return (
           <View className="flex-row items-center space-x-4">
             {Icon && <Icon width={60} height={60} />}
             <Text 
-              className="text-3xl font-bold flex-1"
-              style={{ color: colors.oscuro }}
+              className="text-3xl font-bold flex-1 text-oscuro"
             >
               {emotionSleep?.name}
             </Text>
@@ -257,8 +255,7 @@ return (
           }}
         >
           <Text 
-            className="text-base leading-relaxed"
-            style={{ color: colors.oscuro }}
+            className="text-base leading-relaxed text-oscuro"
           >
             {emotionSleep?.description || "No hay descripción disponible para esta emoción."}
           </Text>
@@ -285,9 +282,8 @@ return (
       <View className="px-6 pb-6">
         {/* Burbuja de chat mejorada */}
         <View 
-          className="w-full rounded-3xl px-5 py-4 shadow-lg mb-4"
+          className="w-full rounded-3xl px-5 py-4 shadow-lg mb-4 bg-color5"
           style={{
-            backgroundColor: colors.color5,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.2,

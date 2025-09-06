@@ -1,6 +1,5 @@
 import { ButtonDark } from "@/components/buttons";
 import ShowInfo from "@/components/showInfo";
-import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -61,8 +60,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
           {pasos.map((paso, index) => (
             <View 
               key={paso.id || index}
-              className="mb-3 p-4 rounded-xl"
-              style={{ backgroundColor: colors.color1 }}
+              className="mb-3 p-4 rounded-xl bg-color1"
             >
               <Text className="text-white font-bold text-lg mb-2">
                 {paso.titulo || `Paso ${index + 1}`}
@@ -90,8 +88,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
           {pasosTexto.map((paso, index) => (
             <View 
               key={index}
-              className="mb-3 p-4 rounded-xl"
-              style={{ backgroundColor: colors.color1 }}
+              className="mb-3 p-4 rounded-xl bg-color1"
             >
               <Text className="text-white font-bold text-lg mb-2">
                 {`Paso ${index + 1}`}

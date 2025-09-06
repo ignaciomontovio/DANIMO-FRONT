@@ -45,15 +45,11 @@ export function ShowInfo_edit({
   return (
     <View className="mb-3">
       {label && (
-        <Text style={{ 
-          color: colors.oscuro, 
-          fontSize: 14, 
-          marginBottom: 4,
-          fontWeight: '500'
-        }}>
+        <Text className="text-[14px] font-medium mb-1 text-oscuro">
           {label}
         </Text>
       )}
+
       {type === "date" && (        
         <Input_date_big
           setDate={(newDate: Date | undefined) => {
@@ -120,12 +116,7 @@ export function ShowInfo_edit({
             <TouchableOpacity
               activeOpacity={1}
               onPress={toggleModal}
-              style={{
-                flex: 1,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              className="flex-1 justify-center items-center bg-black/50"
             >
               <View
                 className="bg-fondo rounded-xl p-4"

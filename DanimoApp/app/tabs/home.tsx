@@ -75,7 +75,7 @@ export default function Home() {
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
             <SelectFive goto="/screensOnlyUser/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
             <SelectFive goto="/screensOnlyUser/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
-            <ButtonDark text="Registrar evento importante" onPress={()=>{}} />
+            <ButtonDark text="Profesionales Asociados" onPress={()=>{router.replace("/screensOnlyUser/ascociatedProf")}} />
             <View className="flex-row justify-center items-center">
               <QuoteCard/>   
               <MiniMetrics onPress={() => router.push("/tabs/stats")}/>

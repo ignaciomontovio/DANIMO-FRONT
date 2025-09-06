@@ -8,7 +8,7 @@ import { useTermsAndConditions } from "@/stores/useTermsAndConditions";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 // Componente para el switcher de usuario
@@ -43,33 +43,24 @@ const UserSwitcher = () => {
   return (
     <TouchableOpacity
       onPress={handleChangeUserType}
+      className=" bg-fondo px-4 py-3 rounded-full flex-row items-center justify-center "
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 25,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 20,
-        shadowColor: '#000',
+        shadowColor: "#000", 
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3,
+        elevation: 3, // Android
       }}
     >
-      <FontAwesome 
-        name="refresh" 
-        size={16} 
+      <FontAwesome
+        name="refresh"
+        size={16}
         color={colors.oscuro}
         style={{ marginRight: 8 }}
       />
-      <Text style={{
-        color: colors.oscuro,
-        fontSize: 14,
-        fontWeight: '600'
-      }}>
+      <Text
+        className="text-sm font-semibold text-oscuro"
+      >
         Cambiar a {userType === "profesional" ? "Usuario" : "Profesional"}
       </Text>
     </TouchableOpacity>
@@ -135,46 +126,48 @@ export default function Profile() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
-      <View className="flex-1 items-center justify-start space-y-15 px-6 py-10">
-        <UserSwitcher />
+      {/* <ScrollView className="flex-1 px-5 py-5"> */}
+      <ScrollView>
+        <View className="flex-1 items-center justify-start space-y-15 px-6 py-10">
+          <UserSwitcher />
 
-        <View className="w-full flex-row items-center justify-center gap-2 px-2 py-6">
-          <View className="rounded-full bg-color2 shadow-md w-16 h-16 items-center justify-center">
-            <View style={{ transform: [{ scale: 1.3 }] }}>
-              <ProfilePhoto />
+          <View className="w-full flex-row items-center justify-center gap-2 px-2 py-6">
+            <View className="rounded-full bg-color2 shadow-md w-16 h-16 items-center justify-center">
+              <View style={{ transform: [{ scale: 1.3 }] }}>
+                <ProfilePhoto />
+              </View>
+            </View>
+
+            <View className="flex-1">
+              <View className="bg-fondo px-4 py-2 rounded-full border border-oscuro shadow-sm">
+                <Text className="text-oscuro text-center font-bold text-lg">{name}</Text>
+              </View>
+              <Pressable onPress={() => router.replace("/profile")}>
+                <Text className="text-right text-oscuro font-bold mt-1 text-xl">
+                  Perfil &gt;
+                </Text>
+              </Pressable>
             </View>
           </View>
 
-          <View className="flex-1">
-            <View className="bg-fondo px-4 py-2 rounded-full border border-oscuro shadow-sm">
-              <Text className="text-oscuro text-center font-bold text-lg">{name}</Text>
-            </View>
-            <Pressable onPress={() => router.replace("/profile")}>
-              <Text className="text-right text-oscuro font-bold mt-1 text-xl">
-                Perfil &gt;
-              </Text>
-            </Pressable>
-          </View>
+          <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/recomendation"))} text="Recomendación" />
+          <ButtonLight_small onPress={() => (router.replace("/tabs/rutines"))} text="Rutinas" />
+          <ButtonLight_small onPress={() => (router.replace("/tabs/stats"))} text="Estadísticas" />
+          <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
+          <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/emergencyContacts"))} text="Contactos de Emergencia" />
+          <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/ascociatedProf"))} text="Profesionales Asociados" />
+          <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/medications"))} text="Medicación" />
+          
+          {userType === 'usuario' && (
+            <ButtonLight_small 
+              onPress={showTermsManually}
+              text="Términos y Condiciones" 
+            />
+          )}
+          
+          <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
         </View>
-
-        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/recomendation"))} text="Recomendación" />
-        <ButtonLight_small onPress={() => (router.replace("/tabs/rutines"))} text="Rutinas" />
-        <ButtonLight_small onPress={() => (router.replace("/tabs/stats"))} text="Estadísticas" />
-        <ButtonLight_small onPress={() => ("")} text="Eventos Significativos" />
-        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/emergencyContacts"))} text="Contactos de Emergencia" />
-        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/ascociatedProf"))} text="Profesionales Ascociados" />
-        <ButtonLight_small onPress={() => (router.replace("/screensOnlyUser/medications"))} text="Medicación" />
-        
-        {userType === 'usuario' && (
-          <ButtonLight_small 
-            onPress={showTermsManually}
-            text="Términos y Condiciones" 
-          />
-        )}
-        
-        <ButtonDark_small onPress={handleLogoff} text="Cerrar Sesión" />
-      </View>
-
+      </ScrollView>
       <TermsModal
         isVisible={showTermsModal}
         onAccept={handleAcceptTerms}
