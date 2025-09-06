@@ -6,42 +6,6 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 // Componente del switcher de usuario para el navbar profesional
-const ProfessionalUserSwitcher = () => {
-  const userType = useUserLogInStore((state) => state.userType);
-  const setUserLogIn = useUserLogInStore((state) => state.setUserLogIn);
-  const setUserSession = useUserLogInStore((state) => state.setUserSession);
-  const setUserType = useUserLogInStore((state) => state.setUserType);
-
-  const handleChangeUser = () => {
-    try {
-      // Logout completo y volver al inicio
-      setUserLogIn(false);
-      setUserSession("", "");
-      setUserType(null);
-      router.replace("/");
-    } catch (error) {
-      console.error("Error en cambio de usuario:", error);
-    }
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={handleChangeUser}
-      className="flex-1 items-center justify-center py-8"
-    >
-      <FontAwesome 
-        name="refresh" 
-        size={24} 
-        color={colors?.fondo || 'white'} 
-      />
-      
-      {/* Texto mostrando el tipo actual */}
-      <Text className="mt-2 text-xs text-fondo opacity-80">
-        profesional
-      </Text>
-    </TouchableOpacity>
-  );
-};
 
 export default function TabsLayout() {
   return (
@@ -53,8 +17,6 @@ export default function TabsLayout() {
           else if (route.name === "stats") iconName = "bar-chart";
           else if (route.name === "rutines") iconName = "medkit";
           else if (route.name === "profile") iconName = "user";
-
-          if (route.name === "user-switcher") return null;
 
           return <FontAwesome name={iconName} size={size} color={color} />;
         },
@@ -70,20 +32,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="home" />
       <Tabs.Screen name="stats" /> 
-      <Tabs.Screen name="rutines" />
-
-      {/* SWITCHER */}
-      <Tabs.Screen
-        name="user-switcher"
-        options={{
-          tabBarButton: () => (
-            <ProfessionalUserSwitcher />
-          ),
-          tabBarStyle: { display: "none" },
-        }}
-        
-      />
-      
+      <Tabs.Screen name="rutines" />  
       <Tabs.Screen name="profile" />
     </Tabs>
     
