@@ -79,7 +79,9 @@ export default function TabsLayout() {
           tabBarButton: () => (
             <ProfessionalUserSwitcher />
           ),
+          tabBarStyle: { display: "none" },
         }}
+        
       />
       
       <Tabs.Screen name="profile" />
