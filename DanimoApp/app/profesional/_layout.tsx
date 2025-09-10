@@ -68,9 +68,24 @@ export default function TabsLayout() {
         headerShown: false,
       })}
     >
-      <Tabs.Screen name="home" />
-      <Tabs.Screen name="stats" /> 
-      <Tabs.Screen name="rutines" />
+      <Tabs.Screen 
+        name="home" 
+        options={{
+          title: "Inicio"
+        }}
+      />
+      <Tabs.Screen 
+        name="stats" 
+        options={{
+          title: "Reportes"
+        }}
+      /> 
+      <Tabs.Screen 
+        name="rutines" 
+        options={{
+          title: "Rutinas"
+        }}
+      />
 
       {/* SWITCHER */}
       <Tabs.Screen
@@ -82,7 +97,12 @@ export default function TabsLayout() {
         }}
       />
       
-      <Tabs.Screen name="profile" />
+      <Tabs.Screen 
+        name="profile" 
+        options={{
+          title: "Perfil"
+        }}
+      />
     </Tabs>
     
   );
