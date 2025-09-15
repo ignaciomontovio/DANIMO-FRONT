@@ -10,12 +10,13 @@ import s2 from "@/assets/Emojis/emojis sueño/mios/sueño2.svg";
 import s3 from "@/assets/Emojis/emojis sueño/mios/sueño3.svg";
 import s4 from "@/assets/Emojis/emojis sueño/mios/sueño4.svg";
 import s5 from "@/assets/Emojis/emojis sueño/mios/sueño5.svg";
-import { Animated, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Animated, Text, TouchableWithoutFeedback, View , Image, SafeAreaView, TouchableOpacity} from "react-native";
 
+import { useLocalSearchParams, useRouter , router} from 'expo-router';
 
-import { router } from "expo-router";
-import React, { useRef } from "react";
-
+import React, { useRef , useEffect, useState } from "react";
+import { useEmotionStore } from "@/stores/emotions";
+import { useSleepStore } from "@/stores/sleeps";
 
 type AllowedRoutes = "/screensOnlyUser/detailEmotion" | "/screensOnlyUser/detailSleep"
 
@@ -33,6 +34,13 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const scales = Array(5).fill(0).map(() => useRef(new Animated.Value(1)).current);
 
+  // Get the emotion store hook result once
+  const emotionGetter = useEmotionStore((state) => state.getEmotionByNumber);
+  const sleepGetter = useSleepStore((state) => state.getSleepByNumber);
+
+  // Decidir cuál usar
+  const getByNumber = type === "Emocion" ? emotionGetter : sleepGetter;
+
   const animatePress = (index: number, num: number) => {
     Animated.sequence([
       Animated.spring(scales[index], {
@@ -45,6 +53,17 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
       }),
     ]).start(() => goToDetail(num, goto));
   };
+  const showInfoModal = (num: number) => {
+    console.log("log");
+
+    Alert.alert(
+      `${getByNumber(num)?.name ?? num}`,
+      `Significado: ${getByNumber(num)?.description ?? 'No hay descripción disponible.'}`,
+      [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+      { cancelable: true }
+    );
+    
+  }
   let icons;
   if (type === "Emocion") {
     icons = [Alegria, Ansiedad, Enojo, Miedo, Tristeza];
@@ -61,13 +80,19 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
       <View className="flex-row justify-center space-x-10">
         {[1, 2, 3, 4, 5].map((num, idx) => {
           const Icon = icons[idx];
+          // Get the emotion object and show its name or number as fallback
+          const emotion = getByNumber(num);
+          const label = typeof emotion === "string"
+            ? emotion
+            : emotion?.name ?? num.toString();
           return (
-            <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)}>
+            <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)} onLongPress={() => showInfoModal(num)}>
               <Animated.View 
-                className="mr-2"
+                className="mr-2 items-center"
                 style={{ transform: [{ scale: scales[idx] },] }}
                 >
                 <Icon width={45} height={45} />
+                <Text className="text-xs justify-center items-center text-oscuro font-bold">{label}</Text>
               </Animated.View>
             </TouchableWithoutFeedback>
           );
