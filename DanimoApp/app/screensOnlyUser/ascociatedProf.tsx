@@ -42,6 +42,25 @@ export default function AsocociatedProf() {
     }));
   };
 
+  const confirmDeleteProf = (profToDelete: Profesional) => {
+    Alert.alert(
+      "Confirmar desvinculación",
+      `¿Estás seguro de que deseas desvincular a ${profToDelete.name}?\n\nEsta acción no se puede deshacer.`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Desvincular",
+          style: "destructive",
+          onPress: () => deleteProf(profToDelete),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const deleteProf = async (profToDelete: Profesional) => {
     try {
       const response = await fetch(URL_BASE + URL_AUTH + "/unlink-professional", {
@@ -60,9 +79,16 @@ export default function AsocociatedProf() {
 
       setProfesionales((prev) => prev.filter(p => p.id !== profToDelete.id));
 
+      // Confirmación de éxito
+      Alert.alert(
+        "Desvinculación exitosa",
+        `${profToDelete.name} ha sido desvinculado correctamente.`,
+        [{ text: "OK" }]
+      );
+
     } catch (error) {
       console.error("Error al sacar permisos:", error);
-      Alert.alert("Error", "No se pudo sacar los permisos.");
+      Alert.alert("Error", "No se pudo desvincular al profesional. Inténtalo nuevamente.");
     }
   };
 
@@ -111,7 +137,7 @@ export default function AsocociatedProf() {
                   type="text"
                 />
 
-                <ButtonDark text="Sacar permisos" onPress={() => deleteProf(prof)} />
+                <ButtonDark text="Sacar permisos" onPress={() => confirmDeleteProf(prof)} />
               </View>
             </View>
           ))}
