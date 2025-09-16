@@ -1,7 +1,11 @@
 import { colors } from "@/stores/colors";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import React from "react";
+import { Text, TouchableOpacity } from "react-native";
+
+// Componente del switcher de usuario para el navbar profesional
 
 export default function TabsLayout() {
   return (
@@ -26,30 +30,10 @@ export default function TabsLayout() {
         headerShown: false,
       })}
     >
-      <Tabs.Screen 
-        name="home" 
-        options={{
-          title: "Inicio"
-        }}
-      />
-      <Tabs.Screen 
-        name="stats" 
-        options={{
-          title: "Estadísticas"
-        }}
-      /> 
-      <Tabs.Screen 
-        name="rutines" 
-        options={{
-          title: "Rutinas"
-        }}
-      />  
-      <Tabs.Screen 
-        name="profile" 
-        options={{
-          title: "Perfil"
-        }}
-      />
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="stats" /> 
+      <Tabs.Screen name="rutines" />  
+      <Tabs.Screen name="profile" />
     </Tabs>
     
   );

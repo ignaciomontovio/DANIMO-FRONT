@@ -23,26 +23,6 @@ export default function PatientDetailScreen() {
       </View>
     );
   }
-
-  const confirmUnlinkPatient = () => {
-    Alert.alert(
-      "Confirmar desvinculación",
-      `¿Estás seguro de que deseas desvincular a ${patient.firstName} ${patient.lastName}?\n\nPerderás acceso a toda la información e historial de este paciente. Esta acción no se puede deshacer.`,
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Desvincular",
-          style: "destructive",
-          onPress: () => unlinkPatient(),
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
   const unlinkPatient = async () => {
     try {
       const response = await fetch(URL_BASE + URL_AUTH_PROF + "/unlink-user" , {
@@ -58,22 +38,10 @@ export default function PatientDetailScreen() {
         const errorText = await response.json();
         throw new Error(errorText.error);
       }
-
-      // Confirmación de éxito
-      Alert.alert(
-        "Paciente desvinculado",
-        `${patient.firstName} ${patient.lastName} ha sido desvinculado exitosamente.`,
-        [
-          {
-            text: "OK",
-            onPress: () => router.replace("/profesional/home")
-          }
-        ]
-      );
-
+      router.replace("/profesional/home");
     } catch (error) {
       console.error("Error al desvincular:", error);
-      Alert.alert("Error", "No se pudo desvincular al paciente. Inténtalo nuevamente.");
+      Alert.alert("Error", "No se pudo desvincular paciente.");
     };
   }
 
@@ -91,44 +59,53 @@ export default function PatientDetailScreen() {
       
       <SafeAreaView className="flex-1">
         <View className="flex-1 justify-center items-center px-6">
-          <View className="w-full max-w-md rounded-2xl shadow-xl shadow-black/20">
+          <View
+            className="w-full max-w-md rounded-2xl shadow-xl"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 10,
+            }}
+          >
             {/* Header de la card */}
-            <View className="py-6 bg-color1 rounded-t-2xl">
+            <View className="py-6 rounded-t-2xl" style={{ backgroundColor: colors.color1 }}>
               <Text className="text-3xl font-bold text-white text-center">
                 {"Paciente"}
               </Text>
             </View>
 
             {/* Contenido de la card */}
-            <View className="p-6 bg-fondo rounded-b-2xl">
+            <View className="p-6 rounded-b-2xl" style={{ backgroundColor: colors.fondo }}>
               
               {/* Información básica */}
               {patient && (
                 <View className="space-y-4 mb-6">
                   <View className="flex-row items-center bg-white/60 rounded-xl p-4">
                     <FontAwesome name="user" size={20} color={colors.oscuro} />
-                    <Text className="ml-3 text-base text-oscuro">
+                    <Text className="ml-3 text-base" style={{ color: colors.oscuro }}>
                       {patient.firstName} {patient.lastName}
                     </Text>
                   </View>
 
                   <View className="flex-row items-center bg-white/60 rounded-xl p-4">
                     <FontAwesome name="envelope" size={20} color={colors.oscuro} />
-                    <Text className="ml-3 text-base text-oscuro">
+                    <Text className="ml-3 text-base" style={{ color: colors.oscuro }}>
                       {patient.email}
                     </Text>
                   </View>
 
                   <View className="flex-row items-center bg-white/60 rounded-xl p-4">
                     <FontAwesome name="birthday-cake" size={20} color={colors.oscuro} />
-                    <Text className="ml-3 text-base text-oscuro">
+                    <Text className="ml-3 text-base" style={{ color: colors.oscuro }}>
                       {patient.birthDate.split("T")[0]} 
                     </Text>
                   </View>
 
                   <View className="flex-row items-center bg-white/60 rounded-xl p-4">
                     <FontAwesome name="venus-mars" size={20} color={colors.oscuro} />
-                    <Text className="ml-3 text-base text-oscuro">
+                    <Text className="ml-3 text-base" style={{ color: colors.oscuro }}>
                       {patient.gender}
                     </Text>
                   </View>
@@ -144,7 +121,7 @@ export default function PatientDetailScreen() {
                         params: { patientId },
                       });
                     }} />
-                <ButtonDark text="Desvincular" onPress={confirmUnlinkPatient} />
+                <ButtonDark text="Desvincular" onPress={unlinkPatient} />
               </View>
             </View>
           </View>
