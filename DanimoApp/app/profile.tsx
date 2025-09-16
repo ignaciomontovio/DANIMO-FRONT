@@ -9,19 +9,18 @@ import React from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-
-
 export default function Profile() {
     const token = useUserLogInStore((state) => state.token);
     const userEmail = useUserLogInStore((state) => state.mail); 
-    const userType = useUserLogInStore((state) => state.userType); 
+    const userType = useUserLogInStore((state) => state.userType);
+    const setUserProfile = useUserLogInStore((state) => state.setUserProfile); // NUEVO
+    
     const homePath = userType === "profesional"? "/profesional/home" : "/tabs/home"
     const profileCardConfig = userType === "profesional"? profileCardConfigProfesional : profileCardConfigUsuario
    
     const getProfile = async (): Promise<UserProfile[]> => {
       let profile: UserProfile | null = null;
       
-
       try {
         const response = await fetch(URL_BASE + (userType === "profesional" ? URL_AUTH_PROF : URL_AUTH) + "/profile", {
           method: "GET",
@@ -34,6 +33,8 @@ export default function Profile() {
           const userData = await response.json();
           console.log("Datos del perfil recibidos:", userData);
           console.log("Todos los campos:", Object.keys(userData));
+
+          setUserProfile(userData.firstName || "", userData.lastName || "");
 
           profile = {
             name: userData.firstName || "Sin nombre",
@@ -68,11 +69,12 @@ export default function Profile() {
       // Retornar como array, aunque solo haya un perfil
       return profile ? [profile] : [];
     };
+    
     const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
     const handleLogoff = () => {
       setUserLogIn(false);
       router.replace("../auth/LoginRegisterScreen");
-      };
+    };
 
   return(
     <SafeAreaProvider>
@@ -81,15 +83,7 @@ export default function Profile() {
         <HeaderGoBack text="Perfil" onPress={() => router.replace(homePath)} />
         
         {/* Foto de perfil posicionada absolutamente */}
-        <View 
-          style={{ 
-            position: 'absolute', 
-            right: 16, 
-            top: 30,
-            zIndex: 10, 
-            elevation: 10 
-          }}
-        >
+        <View className="absolute right-4 top-8 z-10">
           <ProfilePhoto />
         </View>
       </View>
