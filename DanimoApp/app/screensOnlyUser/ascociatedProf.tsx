@@ -110,19 +110,12 @@ export default function AsocociatedProf() {
           {profesionales.map((prof) => (
             <View
               key={prof.id}
-              className="w-full max-w-md rounded-2xl shadow-xl mb-4"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
-                elevation: 10,
-              }}
+              className="w-full max-w-md rounded-2xl shadow-xl shadow-black/20 mb-4"
             >
               <View className="py-3 bg-color1 rounded-t-2xl">
                 <TextInput
                   className="text-2xl font-bold text-white text-center"
-                  value={"Psicologo"}
+                  value={"Psicólogo"}
                   editable={false}
                   placeholder="Nombre del profesional"
                   placeholderTextColor="rgba(255,255,255,0.7)"
