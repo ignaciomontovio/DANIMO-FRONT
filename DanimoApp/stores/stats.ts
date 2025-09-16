@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { URL_BASE, URL_STATS } from "./consts";
 import { useUserLogInStore } from "./userLogIn";
+import { useState } from "react";
+
 
 type EmotionCount = {
   [emotion: string]: number;
@@ -29,6 +31,10 @@ type StatsState = {
   errorWeekly: string | null;
   errorMonthly: string | null;
   errorYearly: string | null;
+
+  // User ID state
+  userId: string | null;
+  setUserId: (id: string | null) => void;
   
   // Actions
   fetchWeeklyStats: () => Promise<void>;
@@ -42,7 +48,7 @@ type StatsState = {
 };
 
 // Función helper para procesar la respuesta de la API
-const processStatsData = (data: Array<{ date: string; emotionName: string }>): EmotionCount => {
+const processStatsData = (data: { date: string; emotionName: string }[]): EmotionCount => {
   const emotionCount: EmotionCount = {};
   
   data.forEach(item => {
@@ -56,7 +62,11 @@ const processStatsData = (data: Array<{ date: string; emotionName: string }>): E
 // Función helper para hacer requests autenticados
 const makeAuthenticatedRequest = async (endpoint: string, bodyData: object = {}) => {
   const token = useUserLogInStore.getState().token;
-  
+  const userType = useUserLogInStore.getState().userType;
+  const userId = useStatsStore.getState().userId;
+  if (userType !== 'usuario') {
+    bodyData = { ...bodyData, userId: userId };
+  }
   if (!token) {
     throw new Error('No hay token de autenticación');
   }
@@ -80,6 +90,10 @@ const makeAuthenticatedRequest = async (endpoint: string, bodyData: object = {})
 };
 
 export const useStatsStore = create<StatsState>((set, get) => ({
+  
+  userId: null,
+  setUserId: (id) => set({ userId: id }),
+  
   // Initial state
   weeklyStats: null,
   monthlyStats: null,
@@ -150,4 +164,5 @@ export const useStatsStore = create<StatsState>((set, get) => ({
   clearWeeklyStats: () => set({ weeklyStats: null, errorWeekly: null }),
   clearMonthlyStats: () => set({ monthlyStats: null, monthlyRawData: null, errorMonthly: null }),
   clearYearlyStats: () => set({ yearlyStats: null, errorYearly: null }),
+  clearUserStats: () => set({ userId: null }),
 }));

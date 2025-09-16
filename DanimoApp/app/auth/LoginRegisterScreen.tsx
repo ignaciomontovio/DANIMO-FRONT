@@ -63,11 +63,12 @@ export default function LoginRegisterScreen() {
 
         if (error.message.includes("Network request failed")) {
           alert("No hay conexión a internet. Verifique su conexión.");
-        } else {
-          alert("Error al validar el token: " + error.message);
-        }
+        } 
+        // else {
+        //   alert("Error al validar el token: " + error.message);
+        // }
 
-        alert("Error al validar el token: " + error);
+        alert("Se ha cerrado su sesion vuelva a logearse: " + error.message);
         setUserLogIn(false);
         setUserSession("", "");
         return false;

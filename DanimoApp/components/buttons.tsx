@@ -35,6 +35,13 @@ export function ButtonLight_small({ text, onPress }: ButtonProps) {
     </TouchableOpacity>
   );
 }
+export function ButtonLight_small_center({ text, onPress }: ButtonProps) {
+  return (
+    <TouchableOpacity onPress = {onPress} className="w-full bg-fondo py-2 rounded-md mt-2 shadow-2xl opacity-80 border border-oscuro">
+      <Text className="text-oscuro text-center font-bold text-xl">{text}</Text>
+    </TouchableOpacity>
+  );
+}
 export function ButtonDark_small({ text, onPress }: ButtonProps) {
   return (
     <TouchableOpacity onPress = {onPress} className="w-full bg-oscuro py-2 rounded-md mt-2 shadow-2xl opacity-80 border border-oscuro">

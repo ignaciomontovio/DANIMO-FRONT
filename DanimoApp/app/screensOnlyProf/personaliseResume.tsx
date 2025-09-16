@@ -14,9 +14,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function PersonaliseResume() {
   const token = useUserLogInStore((state) => state.token);
   const [fullResume, setFullResume] = useState("Ingrese fecha de inicio y fin para obtener un resumen.");
-  const [start, setStart] = useState<Date | undefined>(undefined);
-  const [end, setEnd] = useState<Date | undefined>(undefined);
+  const [start, setStart] = useState<Date | undefined>(new Date());
+  const [end, setEnd] = useState<Date | undefined>(new Date());
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
+
   
   const getResume = async () => {
     // Validar que ambas fechas estén seleccionadas

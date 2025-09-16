@@ -1,11 +1,13 @@
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { useStatsStore } from "@/stores/stats";
-import { router } from "expo-router";
+import { useUserLogInStore } from "@/stores/userLogIn";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -107,9 +109,17 @@ export default function EmotionStatsScreen() {
     yearlyStats,
     loadingYearly,
     errorYearly,
-    fetchYearlyStats
+    fetchYearlyStats,
+    setUserId
   } = useStatsStore();
-
+  const { patientId } = useLocalSearchParams<{ patientId: string }>();
+  const userType = useUserLogInStore.getState().userType;
+  useEffect(() => {
+    if (patientId) {
+      setUserId(patientId);
+      console.log("patientId: " + patientId);
+    }
+  }, [patientId, setUserId]);
   // Cargar datos al entrar a la pantalla
   useEffect(() => {
     const now = new Date();
@@ -235,7 +245,6 @@ export default function EmotionStatsScreen() {
   const getEmotionForDate = (dateStr: string): string | null => {
     if (!monthlyRawData) return null;
     
-    // Buscar en los datos raw la emoción de esta fecha
     const emotionForDate = monthlyRawData.find(record => record.date === dateStr);
     
     if (emotionForDate) {
@@ -256,7 +265,7 @@ export default function EmotionStatsScreen() {
     >
       <HeaderGoBack
         text="Estadisticas"
-        onPress={() => router.push("/tabs/home")}
+        onPress={() => userType === "usuario" ? router.push("/tabs/home") : router.push("/profesional/home")}
       />
       <SafeAreaView className="flex-1">
         <ScrollView className="px-4 pt-6 pb-40">

@@ -4,24 +4,33 @@ import { URL_BASE, URL_DANI } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { Alert, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Markdown from 'react-native-markdown-display';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
+import { ButtonLight_small_center } from "@/components/buttons";
 
 export default function HistoricPatient() {
   const token = useUserLogInStore((state) => state.token);
   const [fullResume, setFullResume] = useState("");
   const [caches, setCaches] = useState(false);
+  const [year, setYear] = useState(2025);
+  const [posibleYears, setPosibleYears] = useState([2020,2021,2022,2023,2024,2025]);
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => setModalVisible((prev) => !prev);
   
   const fetchData = useCallback(async () => {
-      caches && setFullResume("");  
+      caches && year && setFullResume(""); 
       console.log("Fetching data with refreshCache:", caches);
 
       try {
-        const response = await fetch(URL_BASE + URL_DANI + "/historicalSummary", {
+        const start = new Date(`${year}-01-01T00:00:00.000Z`);
+        const end = new Date(`${year}-12-31T23:59:59.999Z`);
+
+        const response = await fetch(URL_BASE + URL_DANI + "/summary", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -29,7 +38,9 @@ export default function HistoricPatient() {
           },
           body: JSON.stringify({ 
             userId: patientId,
-            refreshCache: caches
+            // refreshCache: caches,
+            startDate: start.toISOString().split("T")[0], 
+            endDate: end.toISOString().split("T")[0] 
           }),
         });
         
@@ -44,11 +55,41 @@ export default function HistoricPatient() {
         console.error("Error al obtener histórico:", error);
         Alert.alert("Error", "No se pudo obtener el histórico del paciente.");
       } 
-    }, [patientId, token, caches]);
+    }, [caches, year, token, patientId]);
 
   useEffect(() => {
       fetchData();
     }, [fetchData]);
+  
+  const ModalYear = <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={toggleModal}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}
+            onPress={toggleModal}
+          >
+            <View className="bg-fondo rounded-xl p-4" style={{ minWidth: 250 }} onStartShouldSetResponder={() => true}>
+              <Text className="text-lg font-bold mb-2">Selecciona un año</Text>
+              {posibleYears.map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  onPress={() => {
+                    setYear(option as number);
+                    setModalVisible(false);
+                    setCaches(true);
+                  } }
+                  className="py-2"
+                >
+                  <Text className="text-base">{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>;
   
   return (
     <SafeAreaProvider>
@@ -66,8 +107,16 @@ export default function HistoricPatient() {
                 params: { patientId },
               });}}
           />
-          
+          <View className="px-20 items-center justify-center">
+            <ButtonLight_small_center onPress={toggleModal} text={year.toString()}/>
+            {/* <ButtonDark_small onPress={()=>""} text={year.toString()}/> */}
+          </View>
+
+          {ModalYear}
+
           <ScrollView className="flex-1 px-5 py-5">
+
+
             <View className="bg-fondo rounded-2xl p-4 shadow-md mb-10">
               
               <View className="flex-row items-center justify-center mb-2">

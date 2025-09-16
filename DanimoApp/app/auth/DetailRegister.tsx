@@ -25,7 +25,7 @@ export default function DetailRegister() {
   const [userName, setUserName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userSex, setUserSex] = useState<"Masculino" | "Femenino" | "Otro" | undefined>(undefined);
-  const [userBirth, setUserBirth] = useState<Date | undefined>(undefined);
+  const [userBirth, setUserBirth] = useState<Date | undefined>(new Date());
   const [userDNI, setUserDNI] = useState("");
   const [userLicence, setUserLicence] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
