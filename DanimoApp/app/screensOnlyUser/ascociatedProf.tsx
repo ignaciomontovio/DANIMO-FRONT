@@ -42,6 +42,25 @@ export default function AsocociatedProf() {
     }));
   };
 
+  const confirmDeleteProf = (profToDelete: Profesional) => {
+    Alert.alert(
+      "Confirmar desvinculación",
+      `¿Estás seguro de que deseas desvincular a ${profToDelete.name}?\n\nEsta acción no se puede deshacer.`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Desvincular",
+          style: "destructive",
+          onPress: () => deleteProf(profToDelete),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const deleteProf = async (profToDelete: Profesional) => {
     try {
       const response = await fetch(URL_BASE + URL_AUTH + "/unlink-professional", {
@@ -60,9 +79,16 @@ export default function AsocociatedProf() {
 
       setProfesionales((prev) => prev.filter(p => p.id !== profToDelete.id));
 
+      // Confirmación de éxito
+      Alert.alert(
+        "Desvinculación exitosa",
+        `${profToDelete.name} ha sido desvinculado correctamente.`,
+        [{ text: "OK" }]
+      );
+
     } catch (error) {
       console.error("Error al sacar permisos:", error);
-      Alert.alert("Error", "No se pudo sacar los permisos.");
+      Alert.alert("Error", "No se pudo desvincular al profesional. Inténtalo nuevamente.");
     }
   };
 
@@ -84,19 +110,12 @@ export default function AsocociatedProf() {
           {profesionales.map((prof) => (
             <View
               key={prof.id}
-              className="w-full max-w-md rounded-2xl shadow-xl mb-4"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
-                elevation: 10,
-              }}
+              className="w-full max-w-md rounded-2xl shadow-xl shadow-black/20 mb-4"
             >
               <View className="py-3 bg-color1 rounded-t-2xl">
                 <TextInput
                   className="text-2xl font-bold text-white text-center"
-                  value={"Psicologo"}
+                  value={"Psicólogo"}
                   editable={false}
                   placeholder="Nombre del profesional"
                   placeholderTextColor="rgba(255,255,255,0.7)"
@@ -111,7 +130,7 @@ export default function AsocociatedProf() {
                   type="text"
                 />
 
-                <ButtonDark text="Sacar permisos" onPress={() => deleteProf(prof)} />
+                <ButtonDark text="Sacar permisos" onPress={() => confirmDeleteProf(prof)} />
               </View>
             </View>
           ))}
