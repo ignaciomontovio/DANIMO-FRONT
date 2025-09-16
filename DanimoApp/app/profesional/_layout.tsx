@@ -1,9 +1,21 @@
 import { colors } from "@/stores/colors";
+import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 
 export default function TabsLayout() {
+  const firstName = useUserLogInStore((state) => state.firstName);
+  const lastName = useUserLogInStore((state) => state.lastName);
+  const userMail = useUserLogInStore((state) => state.mail);
+  
+  // Priorizar nombre completo, luego firstName, luego email, luego fallback
+  const displayName = firstName 
+    ? `${firstName}${lastName ? ` ${lastName}` : ''}`
+    : userMail 
+      ? userMail.split('@')[0] 
+      : "Perfil";
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
@@ -35,7 +47,7 @@ export default function TabsLayout() {
       <Tabs.Screen 
         name="stats" 
         options={{
-          title: "Estadísticas"
+          title: "Reportes"
         }}
       /> 
       <Tabs.Screen 
@@ -47,7 +59,7 @@ export default function TabsLayout() {
       <Tabs.Screen 
         name="profile" 
         options={{
-          title: "Perfil"
+          title: displayName
         }}
       />
     </Tabs>

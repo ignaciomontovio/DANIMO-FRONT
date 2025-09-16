@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
 type UserType = 'usuario' | 'profesional' | null;
 
 type UserLogIn = {
@@ -9,10 +10,13 @@ type UserLogIn = {
   token: string | null;
   expoPushToken: string | null; 
   userType: UserType;
+  firstName?: string;
+  lastName?: string;
   setUserLogIn: (userLogIn: boolean | null) => void;
   setUserSession: (mail: string, token: string) => void;
   setPushToken: (token: string) => void; 
   setUserType: (userType: UserType) => void;
+  setUserProfile: (firstName: string, lastName?: string) => void;
   clearUserSession: () => void;
 };
 
@@ -24,12 +28,22 @@ export const useUserLogInStore = create<UserLogIn>()(
       token: null,
       expoPushToken: null, 
       userType: 'usuario',
+      firstName: undefined,
+      lastName: undefined,
       setUserLogIn: (userLogIn) => set({ userLogIn }),
       setUserSession: (mail, token) => set({ mail, token }),
       setPushToken: (expoPushToken) => set({ expoPushToken }), 
       setUserType: (userType) => set({ userType }),
+      setUserProfile: (firstName, lastName) => set({ firstName, lastName }),
       clearUserSession: () =>
-        set({ userLogIn: false, mail: null, token: null, expoPushToken: null }), 
+        set({ 
+          userLogIn: false, 
+          mail: null, 
+          token: null, 
+          expoPushToken: null,
+          firstName: undefined,
+          lastName: undefined 
+        }),
     }),
     {
       name: "user-login-storage",
@@ -52,6 +66,8 @@ export const useUserLogInStore = create<UserLogIn>()(
           token: state.token,
           expoPushToken: state.expoPushToken, 
           userType: state.userType,
+          firstName: state.firstName,
+          lastName: state.lastName,
         } as UserLogIn),
     }
   )
