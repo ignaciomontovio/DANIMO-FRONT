@@ -310,7 +310,7 @@ const LineChart = ({ monthlyRawData, mapEmotionName }: {
       <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
         <View className="mb-4">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-lg font-bold text-oscuro">Gráfica de Estados de Ánimo</Text>
+            <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
             
             {/* Selector rotativo de días */}
             <TouchableOpacity 
@@ -364,7 +364,7 @@ const LineChart = ({ monthlyRawData, mapEmotionName }: {
     <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
       <View className="mb-4">
         <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-lg font-bold text-oscuro">Gráfica de Estados de Ánimo</Text>
+          <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
           
           {/* Selector rotativo de días */}
           <TouchableOpacity 
@@ -875,19 +875,20 @@ export default function EmotionStatsScreen() {
       <SafeAreaView className="flex-1">
         <ScrollView className="px-4 pt-4 pb-40" showsVerticalScrollIndicator={false}>
           
-          {/* 1. Contador de Estados (Resumen General con Gráfico Circular) */}
+          {/* 1. Resumen General con Gráfico Circular */}
           {loadingMonthly ? (
             <LoadingCard message="Cargando resumen..." />
           ) : errorMonthly ? (
             <ErrorCard message={errorMonthly} />
           ) : !hasMonthlyData ? (
             <EmptyStateCard 
-              title="Contador de Estados" 
+              title="Círculo Emocional" 
               subtitle="Registra tus emociones para ver tu resumen"
             />
           ) : (
             <View className="bg-fondo bg-opacity-80 rounded-2xl p-5 mb-3">
-              <Text className="text-lg font-bold text-oscuro mb-1">Contador de Estados</Text>
+              <Text className="text-lg font-bold text-oscuro mb-1">Círculo Emocional
+              </Text>
               <Text className="text-sm text-oscuro opacity-70 mb-4">
                 {currentMonth} {currentYear}
               </Text>
