@@ -665,7 +665,8 @@ export default function EmotionStatsScreen() {
   } = useStatsStore();
 
   // Estado para controlar el mes del calendario - siempre resetear al mes actual
-  const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
+  const now = new Date();
+  const [calendarDate, setCalendarDate] = useState({ month: now.getMonth() + 1, year: now.getFullYear() });
 
   // Resetear al mes actual cada vez que se entra a la pantalla
   useFocusEffect(
@@ -752,17 +753,19 @@ export default function EmotionStatsScreen() {
 
   // Cargar datos específicos para el mes del calendario
   useEffect(() => {
-    if (calendarDate.month === 0) return; // Evitar carga inicial con valores por defecto
-    
+    if (calendarDate.month === 0) return;
     if (isCurrentMonth()) {
-      // Si es el mes actual, usar los datos ya cargados
+      // Esperar a que los datos mensuales estén listos
+      if (loadingMonthly) {
+        setLoadingCalendar(true);
+        return;
+      }
       setCalendarData(monthlyRawData);
-      setLoadingCalendar(loadingMonthly);
+      setLoadingCalendar(false);
     } else {
-      // Si es un mes diferente, cargar datos específicos sin afectar monthlyRawData
       fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
     }
-  }, [calendarDate]);
+  }, [calendarDate, monthlyRawData, loadingMonthly]);
 
   const mapEmotionName = (emotion: string): EmotionType => {
     const emotionMap: Record<string, EmotionType> = {
