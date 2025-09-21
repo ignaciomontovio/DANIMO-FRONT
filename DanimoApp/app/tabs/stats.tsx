@@ -507,7 +507,9 @@ const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: {
     const dayStats: Record<number, Record<EmotionType, number>> = {};
     
     monthlyRawData.forEach(record => {
-      const date = new Date(record.date);
+      // Crear fecha sin problemas de timezone
+      const [year, month, day] = record.date.split('-').map(Number);
+      const date = new Date(year, month - 1, day); // month - 1 porque JavaScript usa 0-based months
       const dayOfWeek = date.getDay(); // 0 = domingo
       const emotion = mapEmotionName(record.emotionName);
       
@@ -665,8 +667,7 @@ export default function EmotionStatsScreen() {
   } = useStatsStore();
 
   // Estado para controlar el mes del calendario - siempre resetear al mes actual
-  const now = new Date();
-  const [calendarDate, setCalendarDate] = useState({ month: now.getMonth() + 1, year: now.getFullYear() });
+  const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
 
   // Resetear al mes actual cada vez que se entra a la pantalla
   useFocusEffect(
@@ -684,6 +685,10 @@ export default function EmotionStatsScreen() {
     fetchWeeklyStats();
     fetchMonthlyStats(currentMonth, currentYear);
     fetchYearlyStats(currentYear);
+    
+    // Inicializar calendario para el mes actual
+    setCalendarData(null);
+    setLoadingCalendar(true);
   }, []);
 
   // Función para navegar meses en el calendario
@@ -755,13 +760,10 @@ export default function EmotionStatsScreen() {
   useEffect(() => {
     if (calendarDate.month === 0) return;
     if (isCurrentMonth()) {
-      // Esperar a que los datos mensuales estén listos
-      if (loadingMonthly) {
-        setLoadingCalendar(true);
-        return;
+      setLoadingCalendar(loadingMonthly);
+      if (!loadingMonthly && monthlyRawData) {
+        setCalendarData(monthlyRawData);
       }
-      setCalendarData(monthlyRawData);
-      setLoadingCalendar(false);
     } else {
       fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
     }
