@@ -30,9 +30,9 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
   // Función para mapear nombres de emociones
   const mapEmotionName = (emotion: string): string => {
     const emotionMap: Record<string, string> = {
-      'alegría': 'felicidad',
-      'alegria': 'felicidad',
-      'felicidad': 'felicidad',
+      'alegría': 'alegria',
+      'alegria': 'alegria',
+      'felicidad': 'alegria',
       'tristeza': 'tristeza',
       'enojo': 'enojo',
       'ira': 'enojo',
@@ -44,7 +44,7 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
 
   // Colores de las emociones
   const emotionColors: Record<string, string> = {
-    felicidad: "#FDE846",
+    alegria: "#FDE846",
     tristeza: "#057BC4", 
     enojo: "#EA2718",
     miedo: "#d150da",
@@ -60,7 +60,7 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
     }, {} as Record<string, number>) : null;
 
   // Crear datos completos con todas las emociones (incluyendo las que están en 0)
-  const allEmotions = ['felicidad', 'tristeza', 'enojo', 'miedo', 'ansiedad'];
+  const allEmotions = ['alegria', 'tristeza', 'enojo', 'miedo', 'ansiedad'];
   const completeData = processedData 
     ? allEmotions.reduce((acc, emotion) => {
         acc[emotion] = processedData[emotion] || 0;

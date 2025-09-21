@@ -71,7 +71,7 @@ export default function Rutines() {
     fetchData();
     const initialEmotions = Object.fromEntries(
       ALL_EMOTIONS
-        .filter(emotion => emotion !== "Alegria")
+        .filter(emotion => emotion !== "Alegría")
         .map(emotion => [emotion, false])
     );
     initialEmotions["Tristeza"] = true

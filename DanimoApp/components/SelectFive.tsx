@@ -10,13 +10,13 @@ import s2 from "@/assets/Emojis/emojis sueño/mios/sueño2.svg";
 import s3 from "@/assets/Emojis/emojis sueño/mios/sueño3.svg";
 import s4 from "@/assets/Emojis/emojis sueño/mios/sueño4.svg";
 import s5 from "@/assets/Emojis/emojis sueño/mios/sueño5.svg";
-import { Alert, Animated, Text, TouchableWithoutFeedback, View , Image, SafeAreaView, TouchableOpacity} from "react-native";
+import { Alert, Animated, Text, TouchableWithoutFeedback, View } from "react-native";
 
-import { useLocalSearchParams, useRouter , router} from 'expo-router';
+import { router } from 'expo-router';
 
-import React, { useRef , useEffect, useState } from "react";
 import { useEmotionStore } from "@/stores/emotions";
 import { useSleepStore } from "@/stores/sleeps";
+import React, { useRef } from "react";
 
 type AllowedRoutes = "/screensOnlyUser/detailEmotion" | "/screensOnlyUser/detailSleep"
 
@@ -40,6 +40,15 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
 
   // Decidir cuál usar
   const getByNumber = type === "Emocion" ? emotionGetter : sleepGetter;
+
+  // Mapeo local para asegurar que las emociones se muestren con la ortografía correcta
+  const emotionLabels: Record<number, string> = {
+    1: "Alegría",
+    2: "Ansiedad", 
+    3: "Enojo",
+    4: "Miedo",
+    5: "Tristeza"
+  };
 
   const animatePress = (index: number, num: number) => {
     Animated.sequence([
@@ -82,9 +91,9 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
           const Icon = icons[idx];
           // Get the emotion object and show its name or number as fallback
           const emotion = getByNumber(num);
-          const label = typeof emotion === "string"
-            ? emotion
-            : emotion?.name ?? num.toString();
+          const label = type === "Emocion" 
+            ? emotionLabels[num] 
+            : (typeof emotion === "string" ? emotion : emotion?.name ?? num.toString());
           return (
             <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)} onLongPress={() => showInfoModal(num)}>
               <Animated.View 
