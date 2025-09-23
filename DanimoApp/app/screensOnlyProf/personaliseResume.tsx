@@ -35,7 +35,8 @@ export default function PersonaliseResume() {
         body: JSON.stringify({ 
           userId: patientId, 
           startDate: start.toISOString().split("T")[0], 
-          endDate: end.toISOString().split("T")[0] 
+          endDate: end.toISOString().split("T")[0],
+          size:"300" 
         }),
       });
       
