@@ -7,6 +7,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Alert, Animated, Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
+import { URL_BASE, URL_EMOTION } from "@/stores/consts";
+import { useUserLogInStore } from "@/stores/userLogIn";
 
 const { width } = Dimensions.get('window');
 const MAX_CARD_WIDTH = Math.min(width - 48, 400);
@@ -180,13 +182,6 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
               style={{ width: '100%', height: '100%', borderRadius: 18 }}
               resizeMode="cover"
             />
-            {/* Botón de retomar foto */}
-            <TouchableOpacity
-              onPress={retakePhoto}
-              style={{ position: 'absolute', top: 8, right: 8, backgroundColor: '#0008', borderRadius: 16, padding: 4 }}
-            >
-              <FontAwesome name="times" size={16} color="#fff" />
-            </TouchableOpacity>
           </View>
 
           {/* Resultado de emoción detectada */}
@@ -227,10 +222,6 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
                       height: 80,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      shadowColor: '#000',
-                      shadowOpacity: 0.10,
-                      shadowRadius: 6,
-                      elevation: 3,
                     }}
                   >
                     {React.createElement(
