@@ -211,7 +211,11 @@ export default function DetailEmotionScreen() {
     >
       <HeaderGoBack text="Emocion" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6 pt-10 pb-20">
+        <ScrollView 
+          className="flex-1 px-6 pt-10" 
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
           {loading ? (
             <Text className="text-center text-lg text-oscuro">Cargando datos...</Text>
           ) : (
@@ -228,9 +232,11 @@ export default function DetailEmotionScreen() {
                 setList: setHobbies,
               })}
 
-              <View className="mb-20">
+              <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 20, paddingHorizontal: 8 }}>
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
-                <ButtonDark text="Registrar" onPress={handleRegister} />
+                <View style={{ marginTop: 16, width: '100%', maxWidth: 300, paddingHorizontal: 16 }}>
+                  <ButtonDark text="Registrar" onPress={handleRegister} />
+                </View>
               </View>
             </>
           )}
