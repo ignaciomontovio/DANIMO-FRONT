@@ -6,9 +6,10 @@ import { colors } from "@/stores/colors";
 import { URL_BASE, URL_CHAT } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   ScrollView,
@@ -18,6 +19,9 @@ import {
   View
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+
+
+
 
 // 🎤 imports de speech
 import {
@@ -33,11 +37,18 @@ export default function Chat() {
   const [chat, setChat] = useState<
     { type: "sent" | "received" | "system"; text: string }[]
   >([]);
+  const { 
+    EmotionSleep, 
+    activities,
+    type 
+    } = useLocalSearchParams<{ 
+      EmotionSleep: string; 
+      activities:string[];
+      type: string  }>();
 
-  // 🎤 estados para speech
   const [recognizing, setRecognizing] = useState(false);
 
-  // hooks de speech
+
   useSpeechRecognitionEvent("start", () => {
     setRecognizing(true);
   });
@@ -106,13 +117,87 @@ export default function Chat() {
         ...prev,
         { type: "received", text: data.message || JSON.stringify(data) },
       ]);
+      console.log(data);
+      
     } catch (error: any) {
       console.error("Chat error:", error);
       alert(error.message || "Error al enviar el mensaje");
     }
   };
 
-  // ... tus useEffect existentes
+  useEffect(() => {
+    const sendFirstMessage = async () => {
+      console.log("type: " + type);
+      console.log("EmotionSleep: " + EmotionSleep);
+      console.log("activities: " + activities);
+      
+      let msjInit = "";
+      if (type === "Emotion") {
+        msjInit = `Hola, me siento con ${EmotionSleep}.`;
+      } else {
+        msjInit = `Dormí ${EmotionSleep}`;
+      }
+      console.log("msjInit: ", msjInit);
+
+      setChat([{ type: "system", text: "Dani está escribiendo..." }]);
+
+      try {
+        const response = await fetch(URL_BASE + URL_CHAT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify({ message: msjInit }),
+        });
+
+        const data = await response.json();
+        console.log("respuesta del backend:", data);
+
+        if (!response.ok) {
+          throw new Error(data.error || "Error desconocido");
+        }
+
+        // Reemplazamos el mensaje "Dani está escribiendo..." por la respuesta real
+        setChat([
+          { type: "received", text: data.message || JSON.stringify(data) },
+        ]);
+        
+        setShowWarning(data.warningConversationLimit)
+
+      } catch (error: any) {
+        console.error("Chat error:", error);
+        alert(error.message || "Error al enviar el mensaje");
+      }
+    };
+    console.log("first mesaje");
+    
+    sendFirstMessage();
+  }, []);
+
+
+
+
+  useEffect(() => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  }, [chat]);
+
+  useEffect(() => {
+    const showSubs = Keyboard.addListener("keyboardDidShow", handleKeyboardShow);
+    const hideSubs = Keyboard.addListener("keyboardDidHide", handleKeyboardHide);// no hace falta pero esta por las dudas
+    console.log("entra a chat");
+    return () => {
+      showSubs.remove();
+      hideSubs.remove();
+    }
+  }, []);
+
+  const handleKeyboardShow = (event: any) => {
+    setIsKeyboarVisible(true);
+  }
+  const handleKeyboardHide = (event: any) => {
+    setIsKeyboarVisible(false);
+  }
 
   return (
     <LinearGradient
