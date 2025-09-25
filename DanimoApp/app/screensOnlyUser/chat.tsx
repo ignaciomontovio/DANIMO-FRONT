@@ -1,3 +1,4 @@
+import { ButtonDark } from "@/components/buttons";
 import { ChatBubble } from "@/components/chatBubble";
 import HeaderGoBack from "@/components/headerGoBack";
 import Navbar from "@/components/navbar";
@@ -7,14 +8,35 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Keyboard, KeyboardAvoidingView, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+
+
+
+
+// 🎤 imports de speech
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
+
 export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
+  const [showWarning, setShowWarning] = useState(false);
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
-  const [chat, setChat] = useState<{ type: "sent" | "received" | "system"; text: string }[]>([]);
-
+  const [chat, setChat] = useState<
+    { type: "sent" | "received" | "system"; text: string }[]
+  >([]);
   const { 
     EmotionSleep, 
     activities,
@@ -23,6 +45,46 @@ export default function Chat() {
       EmotionSleep: string; 
       activities:string[];
       type: string  }>();
+
+  const [recognizing, setRecognizing] = useState(false);
+
+
+  useSpeechRecognitionEvent("start", () => {
+    setRecognizing(true);
+  });
+
+  useSpeechRecognitionEvent("end", () => {
+    setRecognizing(false);
+  });
+
+  useSpeechRecognitionEvent("result", (event) => {
+    if (event.results && event.results.length > 0) {
+      setMessage(event.results[0].transcript); // 👈 texto directo al input
+    }
+  });
+
+  useSpeechRecognitionEvent("error", (event) => {
+    console.error("Speech recognition error:", event.error, event.message);
+    setRecognizing(false);
+  });
+
+  const startRecognition = async () => {
+    const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+    if (!perm.granted) {
+      console.warn("Permiso micrófono denegado");
+      return;
+    }
+
+    ExpoSpeechRecognitionModule.start({
+      lang: "es-AR",
+      interimResults: true,
+      continuous: false,
+    });
+  };
+
+  const stopRecognition = () => {
+    ExpoSpeechRecognitionModule.stop();
+  };
 
   const token = useUserLogInStore((state) => state.token);
 
@@ -38,9 +100,9 @@ export default function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer " + token,
+          Authorization: "Bearer " + token,
         },
-        body: JSON.stringify({ message: message }), 
+        body: JSON.stringify({ message: message }),
       });
 
       if (!response.ok) {
@@ -53,9 +115,10 @@ export default function Chat() {
 
       setChat((prev) => [
         ...prev,
-        { type: "received", text: data.message || JSON.stringify(data) }, 
+        { type: "received", text: data.message || JSON.stringify(data) },
       ]);
-
+      console.log(data);
+      
     } catch (error: any) {
       console.error("Chat error:", error);
       alert(error.message || "Error al enviar el mensaje");
@@ -70,7 +133,7 @@ export default function Chat() {
       
       let msjInit = "";
       if (type === "Emotion") {
-        msjInit = `Hola, me siento con ${EmotionSleep}. Hice estas actividades: ${activities}`;
+        msjInit = `Hola, me siento con ${EmotionSleep}.`;
       } else {
         msjInit = `Dormí ${EmotionSleep}`;
       }
@@ -99,6 +162,8 @@ export default function Chat() {
         setChat([
           { type: "received", text: data.message || JSON.stringify(data) },
         ]);
+        
+        setShowWarning(data.warningConversationLimit)
 
       } catch (error: any) {
         console.error("Chat error:", error);
@@ -141,18 +206,14 @@ export default function Chat() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
-      <KeyboardAvoidingView
-        style={{flex:1}}
-        behavior={"height"}
-        keyboardVerticalOffset={0}
-      >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={"height"}>
         <HeaderGoBack
           text="DANI.AI"
           onPress={() => router.push("/tabs/home")}
           img={require("../../assets/images/logo.png")}
         />
 
-        {/* Chat scrollable */}
+        {/* Mensajes */}
         <ScrollView
           ref={scrollRef}
           className="flex-1 px-4 pt-4"
@@ -163,22 +224,57 @@ export default function Chat() {
           ))}
         </ScrollView>
 
-        {/* Input de mensaje */}
-        {/* <View className= "flex-end"> */}
-          <View className="flex-row items-center p-3 pb-8 bg-white text-white border-t border-gray-300">
-            <TextInput
-              className="flex-1 bg-oscuro rounded-full px-4 py-2 text-white font-bold"
-              placeholder="Escribe un mensaje..."
-              value={message}
-              onChangeText={setMessage}
+        {/* Input + micrófono */}
+        <View className="flex-row items-center p-3 pb-8 bg-white border-t border-gray-300">
+          <TextInput
+            className="flex-1 bg-oscuro rounded-full px-4 py-2 text-white font-bold"
+            placeholder="Escribe un mensaje..."
+            placeholderTextColor="#aaa"
+            value={message}
+            onChangeText={setMessage}
+          />
+
+          {/* Botón micrófono */}
+          <TouchableOpacity
+            onPressIn={startRecognition}
+            onPressOut={stopRecognition}
+            className="ml-2"
+          >
+            <FontAwesome
+              name="microphone"
+              size={24}
+              color={recognizing ? "red" : colors.color1}
             />
-            <TouchableOpacity onPress={sendMessage} className="ml-2">
-              <FontAwesome name="send" size={24} color={colors.color1} />
-            </TouchableOpacity>
+          </TouchableOpacity>
+
+          {/* Botón enviar */}
+          <TouchableOpacity onPress={sendMessage} className="ml-2">
+            <FontAwesome name="send" size={24} color={colors.color1} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Modal warning */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showWarning}
+          onRequestClose={() => setShowWarning(false)}
+        >
+          <View className="flex-1 justify-center items-center bg-black/60 px-6">
+            <View className="bg-fondo rounded-2xl p-6 w-full shadow-2xl">
+              <Text className="text-xl font-extrabold text-center text-gray-800 mb-3">
+                Alerta SOS
+              </Text>
+              <Text className="text-base text-center text-gray-700 mb-6">
+                Registramos un uso excesivo, de la aplicacion.
+              </Text>
+              <ButtonDark onPress={() => setShowWarning(false)} text="Cerrar" />
+            </View>
           </View>
-        {/* </View>   */}
+        </Modal>
       </KeyboardAvoidingView>
-      {/* Navbar fijo */}
+
+      {/* Navbar */}
       <Navbar
         tabs={[
           { name: "home", icon: "home", label: "Inicio" },

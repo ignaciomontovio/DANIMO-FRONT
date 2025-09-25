@@ -2,36 +2,42 @@ import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_DANI } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
+import { FontAwesome } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Markdown from 'react-native-markdown-display';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { FontAwesome } from "@expo/vector-icons";
 
 export default function HistoricPatient() {
   const token = useUserLogInStore((state) => state.token);
   const [fullResume, setFullResume] = useState("");
   const [caches, setCaches] = useState(false);
+  const [years, setYears] = useState([2025,2024]);
+  const [selectedYear, setSelectedYear] = useState(years[0]);
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   
   const fetchData = useCallback(async () => {
       caches && setFullResume("");  
       console.log("Fetching data with refreshCache:", caches);
-
+      let start = new Date(`${selectedYear}-01-01T00:00:00`);
+      let end = new Date(`${selectedYear}-12-31T23:59:59`);
       try {
-        const response = await fetch(URL_BASE + URL_DANI + "/historicalSummary", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: JSON.stringify({ 
-            userId: patientId,
-            refreshCache: caches
-          }),
-        });
+        const response = await fetch(URL_BASE + URL_DANI + "/summary", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({ 
+                  userId: patientId, 
+                  startDate: start.toISOString().split("T")[0], 
+                  endDate: end.toISOString().split("T")[0],
+                  refreshCache: caches,
+                }),
+              });
         
         if (!response.ok && response.status !== 500) {
           const errorText = await response.json();          
@@ -44,11 +50,40 @@ export default function HistoricPatient() {
         console.error("Error al obtener histórico:", error);
         Alert.alert("Error", "No se pudo obtener el histórico del paciente.");
       } 
-    }, [patientId, token, caches]);
+    }, [patientId, token, caches,selectedYear]);
+  
+
+  const fetchYears = useCallback(async () => {
+    try {
+      const response = await fetch(URL_BASE + URL_DANI + "/summary/availableYears", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ 
+          userId: patientId, 
+        }),
+      });
+      
+      if (!response.ok && response.status !== 500) {
+        const errorText = await response.json();          
+        throw new Error(errorText.error);
+      }
+
+      const data = await response.json();
+      
+      setYears(data.availableYears)
+    } catch (error) {       
+      console.error("Error al obtener histórico:", error);
+      Alert.alert("Error", "No se pudo obtener el histórico del paciente.");
+    } 
+  }, [patientId, token]);
 
   useEffect(() => {
       fetchData();
-    }, [fetchData]);
+      fetchYears();
+    }, [fetchData,fetchYears]);
   
   return (
     <SafeAreaProvider>
@@ -67,6 +102,18 @@ export default function HistoricPatient() {
               });}}
           />
           
+          <View className="bg-oscuro rounded-full my-2 mx-20 items-center justify-center">
+            <Picker
+              selectedValue={selectedYear}
+              onValueChange={(itemValue) => setSelectedYear(itemValue)}
+              style={{ height: 50, width: 150}}
+            >
+              {years.map((year) => (
+                <Picker.Item key={year} label={year.toString()} value={year} />
+              ))}
+            </Picker>
+          </View>
+
           <ScrollView className="flex-1 px-5 py-5">
             <View className="bg-fondo rounded-2xl p-4 shadow-md mb-10">
               
