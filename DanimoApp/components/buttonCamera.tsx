@@ -82,7 +82,7 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
       scaleAnim.setValue(0.8);
       pulseAnim.setValue(1);
     }
-  }, [detectedEmotion]);
+  }, [detectedEmotion, fadeAnim, pulseAnim, scaleAnim]);
 
   // Detección de emoción con fallback (real + simulación si falla)
   const uploadImage = async (uri: string) => {
@@ -137,6 +137,7 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
         result = JSON.parse(responseText);
       } catch (parseError) {
         // Si no puede parsear como JSON, probablemente es HTML (servidor caído)
+        Alert.alert('Error', String(parseError));
         throw new Error('SERVER_DOWN');
       }
       const detectedEmotionName = result.emotion || result.detectedEmotion || result.emotionName;
@@ -174,6 +175,9 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
   };
 
   const openCamera = async () => {
+    setImageUri(null);
+    setDetectedEmotion(null);
+    setIsProcessing(false);
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permiso denegado", "Necesitamos acceso a la cámara.");
@@ -210,6 +214,9 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
   };
 
   const openGallery = async () => {
+    setImageUri(null);
+    setDetectedEmotion(null);
+    setIsProcessing(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permiso denegado", "Necesitamos acceso a la galería de fotos.");
