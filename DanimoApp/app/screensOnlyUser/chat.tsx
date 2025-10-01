@@ -20,10 +20,6 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-
-
-
-// 🎤 imports de speech
 import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
@@ -33,6 +29,8 @@ export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
   const [showWarning, setShowWarning] = useState(false);
+  const [showRutina, setShowRutina] = useState(false);
+  const [predominantEmotion, setPredominantEmotion] = useState("");
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
   const [chat, setChat] = useState<
     { type: "sent" | "received" | "system"; text: string }[]
@@ -118,6 +116,10 @@ export default function Chat() {
         { type: "received", text: data.message || JSON.stringify(data) },
       ]);
       console.log(data);
+      if(data.recommendRoutine === "true" || data.recommendRoutine === true ){
+        setPredominantEmotion(data.predominantEmotion)
+        setShowRutina(true)
+      }
       
     } catch (error: any) {
       console.error("Chat error:", error);
@@ -162,8 +164,9 @@ export default function Chat() {
         setChat([
           { type: "received", text: data.message || JSON.stringify(data) },
         ]);
-        
-        setShowWarning(data.warningConversationLimit)
+        if (data.warningConversationLimit === "true" || data.warningConversationLimit === true){
+          setShowWarning(true)
+        }
 
       } catch (error: any) {
         console.error("Chat error:", error);
@@ -199,6 +202,24 @@ export default function Chat() {
     setIsKeyboarVisible(false);
   }
 
+  const modalWarning = <Modal
+    animationType="fade"
+    transparent={true}
+    visible={showWarning}
+    onRequestClose={() => setShowWarning(false)}
+  >
+    <View className="flex-1 justify-center items-center bg-black/60 px-6">
+      <View className="bg-fondo rounded-2xl p-6 w-full shadow-2xl">
+        <Text className="text-xl font-extrabold text-center text-gray-800 mb-3">
+          Alerta SOS
+        </Text>
+        <Text className="text-base text-center text-gray-700 mb-6">
+          Registramos un uso excesivo, de la aplicacion.
+        </Text>
+        <ButtonDark onPress={() => setShowWarning(false)} text="Cerrar" />
+      </View>
+    </View>
+  </Modal>;
   return (
     <LinearGradient
       colors={[colors.color5, colors.fondo]}
@@ -253,25 +274,26 @@ export default function Chat() {
           </TouchableOpacity>
         </View>
 
-        {/* Modal warning */}
+        {modalWarning}
+        {/* modal rutina */}
         <Modal
           animationType="fade"
           transparent={true}
-          visible={showWarning}
-          onRequestClose={() => setShowWarning(false)}
+          visible={showRutina}
+          onRequestClose={() => setShowRutina(false)}
         >
           <View className="flex-1 justify-center items-center bg-black/60 px-6">
             <View className="bg-fondo rounded-2xl p-6 w-full shadow-2xl">
               <Text className="text-xl font-extrabold text-center text-gray-800 mb-3">
-                Alerta SOS
+                Dani te recomienda esta rutina
               </Text>
               <Text className="text-base text-center text-gray-700 mb-6">
-                Registramos un uso excesivo, de la aplicacion.
+                Tu emocion predominante es {predominantEmotion}
               </Text>
-              <ButtonDark onPress={() => setShowWarning(false)} text="Cerrar" />
+              <ButtonDark onPress={() => setShowRutina(false)} text="Ir a rutina" />
             </View>
           </View>
-        </Modal>
+        </Modal>;
       </KeyboardAvoidingView>
 
       {/* Navbar */}
