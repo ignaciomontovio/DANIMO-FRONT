@@ -11,9 +11,15 @@ import LinearGradient from "react-native-linear-gradient";
 import Markdown from 'react-native-markdown-display';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+export interface riskMessagesType {
+    date: Date;
+    message: string;
+}
+
 export default function HistoricPatient() {
   const token = useUserLogInStore((state) => state.token);
   const [fullResume, setFullResume] = useState("");
+  const [riskMessages, setRiskMessages] = useState<riskMessagesType[]>([]);
   const [caches, setCaches] = useState(false);
   const [years, setYears] = useState([2025,2024]);
   const [selectedYear, setSelectedYear] = useState(years[0]);
@@ -46,11 +52,13 @@ export default function HistoricPatient() {
   
         const data = await response.json();
         setFullResume(data.summary);
+        setRiskMessages(Array.isArray(data.riskMessages) ? data.riskMessages : []);
+
       } catch (error) {       
         console.error("Error al obtener histórico:", error);
         Alert.alert("Error", "No se pudo obtener el histórico del paciente.");
       } 
-    }, [patientId, token, caches,selectedYear]);
+    }, [patientId, token, caches, selectedYear]);
   
 
   const fetchYears = useCallback(async () => {
@@ -115,8 +123,11 @@ export default function HistoricPatient() {
           </View>
 
           <ScrollView className="flex-1 px-5 py-5">
+
+            {cardRiskMsj(riskMessages)}
+
+            {/* TARJETA Historico */}
             <View className="bg-fondo rounded-2xl p-4 shadow-md mb-10">
-              
               <View className="flex-row items-center justify-center mb-2">
                 <Text className="text-xl font-bold text-pink-500">
                   Historico
@@ -135,7 +146,7 @@ export default function HistoricPatient() {
                 <View className="self-center bg-gray-200 px-4 py-2 rounded-full my-2">
                   <Text className="text-gray-600 italic">Generando Resumen ...</Text>
                 </View>
-              }
+              }           
 
               <Markdown style={{
                 body: { color: 'black', fontSize: 14 },
@@ -151,3 +162,31 @@ export default function HistoricPatient() {
     </SafeAreaProvider>
   );
 }
+export function cardRiskMsj(riskMessages: riskMessagesType[]) {
+  return <View className="bg-fondo rounded-2xl p-4 shadow-md mb-10">
+    <View className="flex-row items-center justify-center mb-2">
+      <Text className="text-xl font-bold text-pink-500">
+        Mensajes de Riesgo
+      </Text>
+    </View>
+
+    {riskMessages.length === 0 ? (
+      <View className="self-center bg-gray-100 px-4 py-2 rounded-full my-2">
+        <Text className="text-gray-600 italic">No hay mensajes de riesgo para este periodo</Text>
+      </View>
+    ) : (
+      <Markdown style={{
+        body: { color: 'black', fontSize: 14 },
+        heading1: { fontSize: 22, fontWeight: 'bold', color: '#E91E63' },
+        heading2: { fontSize: 20, fontWeight: 'bold' },
+        bullet_list: { marginVertical: 5 },
+      }}>
+        {riskMessages
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .map(({ date, message }) => `## ${new Date(date).toLocaleDateString()}\n${message}`)
+          .join("\n\n")}
+      </Markdown>
+    )}
+  </View>;
+}
+
