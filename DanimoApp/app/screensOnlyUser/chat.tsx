@@ -1,5 +1,5 @@
-import { ButtonDark } from "@/components/buttons";
 import { ChatBubble } from "@/components/chatBubble";
+import { CustomModal } from "@/components/CustomModal";
 import HeaderGoBack from "@/components/headerGoBack";
 import Navbar from "@/components/navbar";
 import { colors } from "@/stores/colors";
@@ -11,19 +11,13 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
-  Modal,
   ScrollView,
-  Text,
   TextInput,
   TouchableOpacity,
   View
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-
-
-
-// 🎤 imports de speech
 import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
@@ -33,6 +27,9 @@ export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
   const [showWarning, setShowWarning] = useState(false);
+  const [showRutina, setShowRutina] = useState(false);
+  const [showContactProf, setShowContactProf] = useState(false);
+  const [predominantEmotion, setPredominantEmotion] = useState("");
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
   const [chat, setChat] = useState<
     { type: "sent" | "received" | "system"; text: string }[]
@@ -118,6 +115,10 @@ export default function Chat() {
         { type: "received", text: data.message || JSON.stringify(data) },
       ]);
       console.log(data);
+      if(data.recommendRoutine === "true" || data.recommendRoutine === true ){
+        setPredominantEmotion(data.predominantEmotion)
+        setShowRutina(true)
+      }
       
     } catch (error: any) {
       console.error("Chat error:", error);
@@ -162,8 +163,12 @@ export default function Chat() {
         setChat([
           { type: "received", text: data.message || JSON.stringify(data) },
         ]);
-        
-        setShowWarning(data.warningConversationLimit)
+        if (data.warningConversationLimit === "true" || data.warningConversationLimit === true){
+          setShowWarning(true)
+        }
+        if (data.contactProfessional=== true || data.contactProfessional=== "true") {
+          setShowContactProf(true);
+        }
 
       } catch (error: any) {
         console.error("Chat error:", error);
@@ -253,25 +258,36 @@ export default function Chat() {
           </TouchableOpacity>
         </View>
 
-        {/* Modal warning */}
-        <Modal
-          animationType="fade"
-          transparent={true}
+        <CustomModal
           visible={showWarning}
-          onRequestClose={() => setShowWarning(false)}
-        >
-          <View className="flex-1 justify-center items-center bg-black/60 px-6">
-            <View className="bg-fondo rounded-2xl p-6 w-full shadow-2xl">
-              <Text className="text-xl font-extrabold text-center text-gray-800 mb-3">
-                Alerta SOS
-              </Text>
-              <Text className="text-base text-center text-gray-700 mb-6">
-                Registramos un uso excesivo, de la aplicacion.
-              </Text>
-              <ButtonDark onPress={() => setShowWarning(false)} text="Cerrar" />
-            </View>
-          </View>
-        </Modal>
+          onClose={() => setShowWarning(false)}
+          title="Alerta SOS"
+          message="Registramos un uso excesivo de la aplicación."
+        />
+
+        <CustomModal
+          visible={showRutina}
+          onClose={() => setShowRutina(false)}
+          title="Dani te recomienda esta rutina"
+          message={`Tu emoción predominante es ${predominantEmotion}`}
+          buttonText="Ir a rutina"
+          onConfirm={() => {
+            setShowRutina(false);
+            // router.push("/tabs/rutines"); 
+          }}
+        />
+
+        <CustomModal
+          visible={showContactProf}
+          onClose={() => setShowContactProf(false)}
+          title="Contactá a un profesional"
+          message="Dani detectó que sería útil que hables con un profesional."
+          buttonText="Contactar"
+          onConfirm={() => {
+            setShowContactProf(false);
+            // router.push("/screensOnlyProf/contact"); // 
+          }}
+        />
       </KeyboardAvoidingView>
 
       {/* Navbar */}

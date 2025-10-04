@@ -151,6 +151,8 @@ export default function DetailEmotionScreen() {
     
     
     try {
+
+      
       const checkResponse = await fetch(URL_BASE + URL_EMOTION + "/predominant", {
         method: "GET",
         headers: {
@@ -161,11 +163,26 @@ export default function DetailEmotionScreen() {
       
       if (!checkResponse.ok) {
         const errorText = await checkResponse.text();
-        console.error("Error: ", errorText);
-        throw new Error(errorText);
+
+        
+        // Manejo específico para errores del servidor
+        if (checkResponse.status >= 500) {
+          throw new Error('El servidor no está disponible en este momento.');
+        } else if (checkResponse.status === 401) {
+          throw new Error('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+        } else {
+          throw new Error(`Error del servidor (${checkResponse.status})`);
+        }
       }
       
-      const alreadyRegistered = await checkResponse.json();
+      const responseText = await checkResponse.text();
+      
+      let alreadyRegistered;
+      try {
+        alreadyRegistered = JSON.parse(responseText);
+      } catch (parseError) {
+        throw new Error('El servidor está experimentando problemas.');
+      }
 
       if (alreadyRegistered.emotion !== null) {        
         if(alreadyRegistered.emotion.emotionName === ALL_EMOTIONS[Number(value) - 1]) {
@@ -198,7 +215,17 @@ export default function DetailEmotionScreen() {
       }
     } catch (error) {
       console.error("Error al consultar emoción predominante:", error);
-      Alert.alert("Error al consultar emoción previa");
+      
+      const errorMessage = error instanceof Error ? error.message : 'Error al consultar emoción previa';
+      
+      Alert.alert(
+        "Error de conexión", 
+        errorMessage,
+        [
+          { text: "Continuar sin consultar", onPress: () => submitEmotion(true, token, activitiesToSend) },
+          { text: "Cancelar", style: "cancel" }
+        ]
+      );
     }
   };
 
@@ -211,7 +238,11 @@ export default function DetailEmotionScreen() {
     >
       <HeaderGoBack text="Emocion" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1 px-6 pt-10 pb-20">
+        <ScrollView 
+          className="flex-1 px-6 pt-10" 
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
           {loading ? (
             <Text className="text-center text-lg text-oscuro">Cargando datos...</Text>
           ) : (
@@ -228,9 +259,11 @@ export default function DetailEmotionScreen() {
                 setList: setHobbies,
               })}
 
-              <View className="mb-20">
+              <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 20, paddingHorizontal: 8 }}>
                 <ButtonCamera onImageTaken={(uri) => console.log("Imagen tomada:", uri)} />
-                <ButtonDark text="Registrar" onPress={handleRegister} />
+                <View style={{ marginTop: 16, width: '100%', maxWidth: 300, paddingHorizontal: 16 }}>
+                  <ButtonDark text="Registrar" onPress={handleRegister} />
+                </View>
               </View>
             </>
           )}

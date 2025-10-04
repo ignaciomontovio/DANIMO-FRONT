@@ -86,22 +86,56 @@ export default function Index() {
   const fetchEmotions = async () => {
     try {
       const response = await fetch(URL_BASE + URL_EMOTION + "/types");
-      if (!response.ok) throw new Error(await response.text());
-      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        // Si el servidor está caído, usar datos por defecto
+        if (response.status >= 500 || errorText.includes('Web App - Unavailable')) {
+          return;
+        }
+        throw new Error(errorText);
+      }
+      
+      const responseText = await response.text();
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        return;
+      }
       useEmotionStore.getState().setEmotions(data);
     } catch (error) {
       console.error("Error al obtener emociones:", error);
+      // La app puede funcionar sin estos datos del servidor
     }
   };
 
   const fetchSleeps = async () => {
     try {
       const response = await fetch(URL_BASE + URL_SLEEP + "/types");
-      if (!response.ok) throw new Error(await response.text());
-      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        // Si el servidor está caído, usar datos por defecto
+        if (response.status >= 500 || errorText.includes('Web App - Unavailable')) {
+          return;
+        }
+        throw new Error(errorText);
+      }
+      
+      const responseText = await response.text();
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        return;
+      }
       useSleepStore.getState().setEmotions(data);
     } catch (error) {
       console.error("Error al obtener sueños:", error);
+      // La app puede funcionar sin estos datos del servidor
     }
   };
 
