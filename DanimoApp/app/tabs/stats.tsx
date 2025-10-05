@@ -1309,7 +1309,7 @@ export default function EmotionStatsScreen() {
                 )}
                 
                 <Text className="text-sm text-oscuro opacity-70 mt-2">
-                  Tus actividades más realizadas este mes
+                  Tus actividades más frecuentes este mes
                 </Text>
               </View>
               

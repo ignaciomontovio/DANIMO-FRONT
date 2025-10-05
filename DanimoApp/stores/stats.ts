@@ -92,11 +92,19 @@ const processStatsData = (data: Array<{ date: string; emotionName: string }>): E
 };
 
 const getUserId = async (): Promise<string> => {
+  // Intentar obtener userId del store
+  const storedUserId = useUserLogInStore.getState().userId;
+  
+  if (storedUserId) {
+    return storedUserId;
+  }
+  
+  // Fallback: Si no está en el store, intentar desde el profile
   const token = useUserLogInStore.getState().token;
   const userType = useUserLogInStore.getState().userType;
   
   if (!token) {
-    console.error('No hay token de autenticación');
+    console.error('No hay token disponible');
     return "U-4f9c0ba9-2b20-4994-b55c-8fdc645fc8e9";
   }
   
@@ -117,20 +125,16 @@ const getUserId = async (): Promise<string> => {
       
       if (userId) {
         return userId;
-      } else {
-        console.log('Usando placeholder como fallback');
-        return "U-4f9c0ba9-2b20-4994-b55c-8fdc645fc8e9";
       }
-    } else {
-      console.log('Usando placeholder como fallback');
-      return "U-4f9c0ba9-2b20-4994-b55c-8fdc645fc8e9";
     }
+    
+    console.error('No se pudo obtener userId del profile');
+    return "U-4f9c0ba9-2b20-4994-b55c-8fdc645fc8e9";
   } catch (error) {
-    console.log('Usando placeholder como fallback');
+    console.error('Error al obtener userId:', error);
     return "U-4f9c0ba9-2b20-4994-b55c-8fdc645fc8e9";
   }
 };
-
 const parseActivityResponse = (response: ActivityResponse): ActivityCount => {
   const result: ActivityCount = {};
   
