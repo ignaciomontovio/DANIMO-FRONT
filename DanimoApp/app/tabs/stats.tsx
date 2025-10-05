@@ -49,13 +49,11 @@ const emotionSvgs: Record<EmotionType, React.ComponentType<any>> = {
 
 const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-// Colores para actividades
 const activityColors = [
   "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", 
   "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E9", "#F8C471"
 ];
 
-// Componente para gráfico circular de emociones (Donut Chart)
 const DonutChart = ({ data, size = 160 }: { data: Record<EmotionType, number>; size?: number }) => {
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
   if (total === 0) return null;
@@ -115,7 +113,6 @@ const DonutChart = ({ data, size = 160 }: { data: Record<EmotionType, number>; s
   );
 };
 
-// Componente para gráfico de barras detallado de emociones
 const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
   title: string;
   data: Record<EmotionType, number>;
@@ -181,7 +178,6 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
   );
 };
 
-// Componente para gráfico de barras compacto de emociones
 const CompactBarChart = ({ title, data, subtitle }: {
   title: string;
   data: Record<EmotionType, number>;
@@ -242,7 +238,6 @@ const CompactBarChart = ({ title, data, subtitle }: {
   );
 };
 
-// Componente para gráfico de líneas de evolución emocional
 const LineChart = ({ monthlyRawData, mapEmotionName }: {
   monthlyRawData: any[] | null;
   mapEmotionName: (emotion: string) => EmotionType;
@@ -476,7 +471,6 @@ const LineChart = ({ monthlyRawData, mapEmotionName }: {
   );
 };
 
-// Componente para patrones semanales
 const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: { 
   monthlyRawData: any[] | null;
   mapEmotionName: (emotion: string) => EmotionType;
@@ -626,7 +620,6 @@ const EmptyStateCard = ({ title, subtitle }: { title: string; subtitle: string }
   </View>
 );
 
-// Componente para gráfico circular de actividades
 const ActivityDonutChart = ({ data, size = 160 }: { data: Record<string, number>; size?: number }) => {
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
   if (total === 0) return null;
@@ -1360,7 +1353,64 @@ export default function EmotionStatsScreen() {
                   })}
               </View>
             </View>
-          ) : null}
+          ) : (
+            <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-oscuro mb-1">Actividades del Mes</Text>
+                
+                <View className="flex-row justify-center items-center space-x-4 mb-2">
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('prev')}
+                  >
+                    <FontAwesome name="chevron-left" size={16} color={colors.color1} />
+                  </TouchableOpacity>
+                  
+                  <Text className="text-sm text-center text-oscuro opacity-70 px-4">
+                    {new Date(activityMonthDate.year, activityMonthDate.month - 1).toLocaleDateString('es-ES', { 
+                      month: 'long', 
+                      year: 'numeric' 
+                    })}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('next')}
+                    disabled={isCurrentActivityMonth()}
+                    style={{ opacity: isCurrentActivityMonth() ? 0.3 : 1 }}
+                  >
+                    <FontAwesome 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isCurrentActivityMonth() ? colors.oscuro : colors.color1} 
+                    />
+                  </TouchableOpacity>
+                </View>
+                
+                {!isCurrentActivityMonth() && (
+                  <TouchableOpacity 
+                    className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
+                    style={{ backgroundColor: colors.color1 + '20' }}
+                    onPress={() => {
+                      const now = new Date();
+                      setActivityMonthDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                  >
+                    <Text className="text-xs font-medium" style={{ color: colors.color1 }}>
+                      Volver al mes actual
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              
+              <View className="items-center py-8">
+                <FontAwesome name="bar-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
+                <Text className="text-center text-oscuro opacity-70">
+                  No hay actividades registradas en este mes
+                </Text>
+              </View>
+            </View>
+          )}
 
         </ScrollView>
       </SafeAreaView>
