@@ -630,12 +630,14 @@ export default function EmotionStatsScreen() {
 
   const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
   const [activityMonthDate, setActivityMonthDate] = useState({ month: 0, year: 0 });
+  const [radarDate, setRadarDate] = useState({ month: 0, year: 0 });
 
   useFocusEffect(
     useCallback(() => {
       const now = new Date();
       setCalendarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
       setActivityMonthDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+      setRadarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
     }, [])
   );
 
@@ -717,8 +719,38 @@ export default function EmotionStatsScreen() {
     return activityMonthDate.month === now.getMonth() + 1 && activityMonthDate.year === now.getFullYear();
   };
 
+  const navigateRadarMonth = (direction: 'prev' | 'next') => {
+    setRadarDate(prev => {
+      let newMonth = prev.month;
+      let newYear = prev.year;
+      
+      if (direction === 'prev') {
+        newMonth--;
+        if (newMonth < 1) {
+          newMonth = 12;
+          newYear--;
+        }
+      } else {
+        newMonth++;
+        if (newMonth > 12) {
+          newMonth = 1;
+          newYear++;
+        }
+      }
+      
+      return { month: newMonth, year: newYear };
+    });
+  };
+
+  const isCurrentRadarMonth = () => {
+    const now = new Date();
+    return radarDate.month === now.getMonth() + 1 && radarDate.year === now.getFullYear();
+  };
+
   const [calendarData, setCalendarData] = useState<any[] | null>(null);
   const [loadingCalendar, setLoadingCalendar] = useState(false);
+  const [radarData, setRadarData] = useState<Record<string, number> | null>(null);
+  const [loadingRadar, setLoadingRadar] = useState(false);
 
   const fetchCalendarDataOnly = async (month: number, year: number) => {
     setLoadingCalendar(true);
@@ -750,6 +782,46 @@ export default function EmotionStatsScreen() {
     }
   };
 
+  const fetchRadarDataOnly = async (month: number, year: number) => {
+    setLoadingRadar(true);
+    try {
+      const token = useUserLogInStore.getState().token;
+      if (!token) throw new Error('No hay token de autenticación');
+      
+      const response = await fetch(URL_BASE + URL_STATS + '/month', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
+        },
+        body: JSON.stringify({ month, year }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.json();
+        throw new Error(errorText.error);
+      }
+      
+      const rawData = await response.json();
+      
+      // Procesar los datos para obtener el conteo de emociones
+      const emotionCounts: Record<string, number> = {};
+      if (Array.isArray(rawData)) {
+        rawData.forEach(record => {
+          const emotion = mapEmotionName(record.emotionName);
+          emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+        });
+      }
+      
+      setRadarData(emotionCounts);
+    } catch (error) {
+      console.error('Error loading radar data:', error);
+      setRadarData(null);
+    } finally {
+      setLoadingRadar(false);
+    }
+  };
+
   useEffect(() => {
     if (calendarDate.month === 0) return;
     if (isCurrentMonth()) {
@@ -761,6 +833,18 @@ export default function EmotionStatsScreen() {
       fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
     }
   }, [calendarDate, monthlyRawData, loadingMonthly]);
+
+  useEffect(() => {
+    if (radarDate.month === 0) return;
+    if (isCurrentRadarMonth()) {
+      setLoadingRadar(loadingMonthly);
+      if (!loadingMonthly && monthlyStats) {
+        setRadarData(monthlyStats);
+      }
+    } else {
+      fetchRadarDataOnly(radarDate.month, radarDate.year);
+    }
+  }, [radarDate, monthlyStats, loadingMonthly]);
 
   const mapEmotionName = (emotion: string): EmotionType => {
     const emotionMap: Record<string, EmotionType> = {
@@ -853,6 +937,11 @@ export default function EmotionStatsScreen() {
   ];
   const currentMonth = monthNames[new Date().getMonth()];
   const currentYear = new Date().getFullYear();
+
+  // Helper function to get capitalized month name
+  const getCapitalizedMonthYear = (month: number, year: number) => {
+    return `${monthNames[month - 1]} ${year}`;
+  };
 
   return (
     <LinearGradient
@@ -948,13 +1037,64 @@ export default function EmotionStatsScreen() {
           )}
 
           {/* 4. Gráfico de radar */}
-          {hasMonthlyData && (
+          {(hasMonthlyData || radarData) && (
             <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-              <Text className="text-lg font-bold text-oscuro mb-1">Radar Emocional</Text>
-              <Text className="text-sm text-oscuro opacity-70 mb-4">
-                {currentMonth} {currentYear}
-              </Text>
-              <RadarChart data={completeMonthlyData} size={280} />
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-oscuro mb-1">Radar Emocional</Text>
+                
+                <View className="flex-row justify-center items-center space-x-4 mb-2">
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateRadarMonth('prev')}
+                  >
+                    <FontAwesome name="chevron-left" size={16} color={colors.color1} />
+                  </TouchableOpacity>
+                  
+                  <Text className="text-sm text-center text-oscuro opacity-70 px-4">
+                    {getCapitalizedMonthYear(radarDate.month, radarDate.year)}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateRadarMonth('next')}
+                    disabled={isCurrentRadarMonth()}
+                    style={{ opacity: isCurrentRadarMonth() ? 0.3 : 1 }}
+                  >
+                    <FontAwesome 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isCurrentRadarMonth() ? colors.oscuro : colors.color1} 
+                    />
+                  </TouchableOpacity>
+                </View>
+                
+                {!isCurrentRadarMonth() && (
+                  <TouchableOpacity 
+                    className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
+                    style={{ backgroundColor: colors.color1 + '20' }}
+                    onPress={() => {
+                      const now = new Date();
+                      setRadarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                  >
+                    <Text className="text-xs font-medium" style={{ color: colors.color1 }}>
+                      Volver al mes actual
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              
+              {loadingRadar ? (
+                <View className="items-center py-8">
+                  <ActivityIndicator size="large" color={colors.color1} />
+                  <Text className="text-oscuro mt-4">Cargando radar emocional...</Text>
+                </View>
+              ) : (
+                <RadarChart 
+                  data={ensureAllEmotions(processData(isCurrentRadarMonth() ? monthlyStats : radarData))} 
+                  size={280} 
+                />
+              )}
             </View>
           )}
 
@@ -977,10 +1117,7 @@ export default function EmotionStatsScreen() {
                 </TouchableOpacity>
                 
                 <Text className="text-sm text-center text-oscuro opacity-70 px-4">
-                  {new Date(calendarDate.year, calendarDate.month - 1).toLocaleDateString('es-ES', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
+                  {getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}
                 </Text>
                 
                 <TouchableOpacity 
@@ -1022,10 +1159,7 @@ export default function EmotionStatsScreen() {
               <View className="items-center py-8">
                 <FontAwesome name="calendar-o" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
                 <Text className="text-base text-center text-oscuro opacity-70 mb-6">
-                  Sin registros en {new Date(calendarDate.year, calendarDate.month - 1).toLocaleDateString('es-ES', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
+                  Sin registros en {getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}
                 </Text>
                 {isCurrentMonth() && (
                   <TouchableOpacity 
@@ -1161,7 +1295,7 @@ export default function EmotionStatsScreen() {
                             {activity}
                           </Text>
                           <Text className="text-xs font-bold text-oscuro ml-2">
-                            {value} veces
+                          
                           </Text>
                         </View>
                         
@@ -1204,10 +1338,7 @@ export default function EmotionStatsScreen() {
                   </TouchableOpacity>
                   
                   <Text className="text-sm text-center text-oscuro opacity-70 px-4">
-                    {new Date(activityMonthDate.year, activityMonthDate.month - 1).toLocaleDateString('es-ES', { 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
+                    {getCapitalizedMonthYear(activityMonthDate.month, activityMonthDate.year)}
                   </Text>
                   
                   <TouchableOpacity 
@@ -1262,7 +1393,6 @@ export default function EmotionStatsScreen() {
                             {activity}
                           </Text>
                           <Text className="text-xs font-bold text-oscuro ml-2">
-                            {value} veces
                           </Text>
                         </View>
                         
@@ -1298,10 +1428,7 @@ export default function EmotionStatsScreen() {
                   </TouchableOpacity>
                   
                   <Text className="text-sm text-center text-oscuro opacity-70 px-4">
-                    {new Date(activityMonthDate.year, activityMonthDate.month - 1).toLocaleDateString('es-ES', { 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
+                    {getCapitalizedMonthYear(activityMonthDate.month, activityMonthDate.year)}
                   </Text>
                   
                   <TouchableOpacity 
