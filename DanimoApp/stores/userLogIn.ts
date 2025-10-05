@@ -10,11 +10,11 @@ type UserLogIn = {
   token: string | null;
   expoPushToken: string | null;
   userType: UserType;
-  userId?: string; // ✅ AGREGAR ESTO
+  userId?: string;
   firstName?: string;
   lastName?: string;
   setUserLogIn: (userLogIn: boolean | null) => void;
-  setUserSession: (mail: string, token: string, userId?: string) => void; // ✅ MODIFICAR
+  setUserSession: (mail: string, token: string, userId?: string) => void;
   setPushToken: (token: string) => void;
   setUserType: (userType: UserType) => void;
   setUserProfile: (firstName: string, lastName?: string) => void;
@@ -29,11 +29,11 @@ export const useUserLogInStore = create<UserLogIn>()(
       token: null,
       expoPushToken: null,
       userType: 'usuario',
-      userId: undefined, // ✅ AGREGAR ESTO
+      userId: undefined,
       firstName: undefined,
       lastName: undefined,
       setUserLogIn: (userLogIn) => set({ userLogIn }),
-      setUserSession: (mail, token, userId) => set({ mail, token, userId }), // ✅ MODIFICAR
+      setUserSession: (mail, token, userId) => set({ mail, token, userId }),
       setPushToken: (expoPushToken) => set({ expoPushToken }),
       setUserType: (userType) => set({ userType }),
       setUserProfile: (firstName, lastName) => set({ firstName, lastName }),
@@ -43,7 +43,7 @@ export const useUserLogInStore = create<UserLogIn>()(
           mail: null,
           token: null,
           expoPushToken: null,
-          userId: undefined, // ✅ AGREGAR ESTO
+          userId: undefined,
           firstName: undefined,
           lastName: undefined
         }),

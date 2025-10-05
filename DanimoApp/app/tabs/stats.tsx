@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Circle, Line, Path, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, Line, Path } from "react-native-svg";
 
 // Import SVG emotions
 import Alegria from "@/assets/Emojis/emojis/mios/alegria.svg";
@@ -238,231 +238,154 @@ const CompactBarChart = ({ title, data, subtitle }: {
   );
 };
 
-const LineChart = ({ monthlyRawData, mapEmotionName }: {
-  monthlyRawData: any[] | null;
-  mapEmotionName: (emotion: string) => EmotionType;
+const RadarChart = ({ data, size = 300 }: { 
+  data: Record<EmotionType, number>; 
+  size?: number;
 }) => {
-  const [selectedDays, setSelectedDays] = useState<number>(7);
-  const chartWidth = screenWidth - 80;
-  const chartHeight = 200;
-  const padding = 40;
+  const emotions: EmotionType[] = ['alegria', 'ansiedad', 'miedo', 'enojo', 'tristeza'];
+  const center = size / 2;
+  const maxRadius = (size / 2) - 50;
+  const levels = 5;
+  
+  // Normalizar los valores a un máximo de 5
+  const maxValue = Math.max(...Object.values(data), 1);
+  const normalizedData = emotions.map(emotion => ({
+    emotion,
+    value: data[emotion],
+    normalizedValue: (data[emotion] / maxValue) * 5
+  }));
 
-  const dayOptions = [
-    { value: 7, label: '7 días' },
-    { value: 15, label: '15 días' }, 
-    { value: 30, label: '30 días' }
-  ];
+  // Calcular puntos del polígono
+  const getPoint = (index: number, value: number) => {
+    const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+    const radius = (value / 5) * maxRadius;
+    return {
+      x: center + radius * Math.cos(angle),
+      y: center + radius * Math.sin(angle)
+    };
+  };
 
-  const getLastDaysData = () => {
-    if (!monthlyRawData || monthlyRawData.length === 0) return [];
+  // Calcular puntos para las etiquetas
+  const getLabelPoint = (index: number) => {
+    const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+    const labelRadius = maxRadius + 35;
+    return {
+      x: center + labelRadius * Math.cos(angle),
+      y: center + labelRadius * Math.sin(angle)
+    };
+  };
 
-    const dailyData: Record<string, Record<EmotionType, number>> = {};
-    
-    monthlyRawData.forEach(record => {
-      const date = record.date;
-      const emotion = mapEmotionName(record.emotionName);
-      
-      if (!dailyData[date]) {
-        dailyData[date] = {
-          alegria: 0,
-          tristeza: 0,
-          enojo: 0,
-          miedo: 0,
-          ansiedad: 0
-        };
-      }
-      
-      dailyData[date][emotion]++;
+  // Calcular puntos para las líneas de nivel
+  const getLevelPoints = (level: number) => {
+    return emotions.map((_, index) => {
+      const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+      const radius = (level / levels) * maxRadius;
+      return {
+        x: center + radius * Math.cos(angle),
+        y: center + radius * Math.sin(angle)
+      };
     });
-
-    const sortedData = Object.entries(dailyData)
-      .map(([date, emotions]) => {
-        const mostFrequent = Object.entries(emotions).reduce((max, [emotion, count]) => 
-          count > max.count ? { emotion: emotion as EmotionType, count } : max,
-          { emotion: 'alegria' as EmotionType, count: 0 }
-        );
-        
-        return {
-          date,
-          emotion: mostFrequent.emotion,
-          dayNumber: parseInt(date.split('-')[2])
-        };
-      })
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .slice(-selectedDays);
-
-    return sortedData;
   };
 
-  const data = getLastDaysData();
+  // Generar path del polígono de datos
+  const dataPath = normalizedData.map((item, index) => {
+    const point = getPoint(index, item.normalizedValue);
+    return `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
+  }).join(' ') + ' Z';
 
-  if (data.length === 0) {
-    return (
-      <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-        <View className="mb-4">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
-            
-            <TouchableOpacity 
-              className="bg-white rounded-lg px-3 py-2 flex-row items-center"
-              onPress={() => {
-                const currentIndex = dayOptions.findIndex(opt => opt.value === selectedDays);
-                const nextIndex = (currentIndex + 1) % dayOptions.length;
-                setSelectedDays(dayOptions[nextIndex].value);
-              }}
-            >
-              <Text className="text-xs font-medium text-oscuro mr-1">
-                {dayOptions.find(opt => opt.value === selectedDays)?.label}
-              </Text>
-              <Text className="text-xs text-oscuro">⌄</Text>
-            </TouchableOpacity>
-          </View>
-          <Text className="text-sm text-oscuro opacity-70">Últimos {selectedDays} días</Text>
-        </View>
-        
-        <View className="items-center py-8">
-          <FontAwesome name="line-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
-          <Text className="text-oscuro text-center opacity-70">Sin suficientes registros para mostrar la gráfica</Text>
-        </View>
-      </View>
-    );
-  }
-
-  const emotionValues: Record<EmotionType, number> = {
-    alegria: 5,
-    ansiedad: 4,
-    miedo: 3, 
-    enojo: 2,
-    tristeza: 1
-  };
-
-  const points = data.map((item, index) => {
-    const x = padding + (index * (chartWidth - 2 * padding)) / Math.max(data.length - 1, 1);
-    const y = chartHeight - padding - ((emotionValues[item.emotion] - 1) * (chartHeight - 2 * padding)) / 4;
-    return { x, y, emotion: item.emotion, dayNumber: item.dayNumber };
+  // Generar paths de los niveles
+  const levelPaths = Array.from({ length: levels }, (_, i) => {
+    const level = i + 1;
+    const points = getLevelPoints(level);
+    return points.map((point, index) => 
+      `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+    ).join(' ') + ' Z';
   });
 
-  const pathData = points.reduce((path, point, index) => {
-    const command = index === 0 ? 'M' : 'L';
-    return `${path} ${command} ${point.x} ${point.y}`;
-  }, '');
-
   return (
-    <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-      <View className="mb-4">
-        <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
-          
-          <TouchableOpacity 
-            className="bg-white rounded-lg px-3 py-2 flex-row items-center"
-            onPress={() => {
-              const currentIndex = dayOptions.findIndex(opt => opt.value === selectedDays);
-              const nextIndex = (currentIndex + 1) % dayOptions.length;
-              setSelectedDays(dayOptions[nextIndex].value);
-            }}
-          >
-            <Text className="text-xs font-medium text-oscuro mr-1">
-              {dayOptions.find(opt => opt.value === selectedDays)?.label}
-            </Text>
-            <Text className="text-xs text-oscuro">⌄</Text>
-          </TouchableOpacity>
-        </View>
-        <Text className="text-sm text-oscuro opacity-70">Últimos {selectedDays} días</Text>
-      </View>
-      
-      <View style={{ width: chartWidth, height: chartHeight }}>
-        <Svg width={chartWidth} height={chartHeight}>
-          {[1, 2, 3, 4, 5].map((level) => {
-            const y = chartHeight - padding - ((level - 1) * (chartHeight - 2 * padding)) / 4;
+    <View className="items-center">
+      <View style={{ width: size, height: size }} className="relative">
+        <Svg width={size} height={size}>
+          {/* Niveles de fondo */}
+          {levelPaths.map((path, index) => (
+            <Path
+              key={index}
+              d={path}
+              fill="none"
+              stroke={colors.color5}
+              strokeWidth={1}
+              opacity={0.3}
+            />
+          ))}
+
+          {/* Líneas desde el centro a cada vértice */}
+          {emotions.map((_, index) => {
+            const point = getPoint(index, 5);
             return (
               <Line
-                key={level}
-                x1={padding}
-                y1={y}
-                x2={chartWidth - padding}
-                y2={y}
+                key={index}
+                x1={center}
+                y1={center}
+                x2={point.x}
+                y2={point.y}
                 stroke={colors.color5}
                 strokeWidth={1}
                 opacity={0.3}
               />
             );
           })}
-          
+
+          {/* Polígono de datos */}
           <Path
-            d={pathData}
-            fill="none"
+            d={dataPath}
+            fill={colors.color1}
+            fillOpacity={0.3}
             stroke={colors.color1}
             strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
           />
-          
-          {points.map((point, index) => (
-            <Circle
-              key={index}
-              cx={point.x}
-              cy={point.y}
-              r={6}
-              fill={emotionColors[point.emotion]}
-              stroke="#FFFFFF"
-              strokeWidth={2}
-            />
-          ))}
-          
-          {points.map((point, index) => {
-            let shouldShow = true;
-            if (selectedDays === 30) {
-              shouldShow = index % 5 === 0 || index === points.length - 1;
-            } else if (selectedDays === 15) {
-              shouldShow = index % 3 === 0 || index === points.length - 1;
-            }
+
+          {/* Puntos en cada vértice */}
+          {normalizedData.map((item, index) => {
+            if (item.value === 0) return null; // Solo dibujamos si tiene registros
             
-            if (!shouldShow) return null;
-            
+            const point = getPoint(index, item.normalizedValue);
             return (
-              <SvgText
+              <Circle
                 key={index}
-                x={point.x}
-                y={chartHeight - 10}
-                textAnchor="middle"
-                fontSize="12"
-                fill={colors.oscuro}
-                opacity={0.7}
-              >
-                {point.dayNumber}
-              </SvgText>
+                cx={point.x}
+                cy={point.y}
+                r={6}
+                fill={emotionColors[item.emotion]}
+                stroke="#FFFFFF"
+                strokeWidth={3}
+              />
             );
           })}
         </Svg>
-      </View>
-      
-      <View className="mt-2 mb-2">
-        <Text className="text-xs text-center text-oscuro opacity-60">
-          Los números indican los días del mes
-        </Text>
-      </View>
-      
-      <View className="mt-4 flex-row justify-center flex-wrap">
-        {[
-          { emotion: 'alegria' as EmotionType, level: 5 },
-          { emotion: 'ansiedad' as EmotionType, level: 4 },
-          { emotion: 'miedo' as EmotionType, level: 3 },
-          { emotion: 'enojo' as EmotionType, level: 2 },
-          { emotion: 'tristeza' as EmotionType, level: 1 }
-        ].map(({ emotion }) => {
-          const color = emotionColors[emotion];
-          const SvgIcon = emotionSvgs[emotion];
+
+        {/* Etiquetas de emociones en las esquinas */}
+        {normalizedData.map((item, index) => {
+          const labelPoint = getLabelPoint(index);
+          const SvgIcon = emotionSvgs[item.emotion];
+          
           return (
-            <View key={emotion} className="items-center mx-2 mb-2">
+            <View
+              key={item.emotion}
+              className="absolute items-center justify-center"
+              style={{
+                left: labelPoint.x - 20,
+                top: labelPoint.y - 20,
+                width: 40,
+              }}
+            >
               <View 
-                className="w-8 h-8 rounded-full items-center justify-center mb-1"
-                style={{ backgroundColor: color + '30' }}
+                className="w-10 h-10 rounded-full items-center justify-center"
+                style={{ 
+                  backgroundColor: emotionColors[item.emotion] + '30'
+                }}
               >
-                <SvgIcon width={20} height={20} />
+                <SvgIcon width={24} height={24} />
               </View>
-              <Text className="text-xs text-oscuro font-medium">
-                {emotionLabels[emotion]}
-              </Text>
             </View>
           );
         })}
@@ -1024,8 +947,16 @@ export default function EmotionStatsScreen() {
             />
           )}
 
-          {/* 4. Gráfico de líneas */}
-          {hasMonthlyData && <LineChart monthlyRawData={monthlyRawData} mapEmotionName={mapEmotionName} />}
+          {/* 4. Gráfico de radar */}
+          {hasMonthlyData && (
+            <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
+              <Text className="text-lg font-bold text-oscuro mb-1">Radar Emocional</Text>
+              <Text className="text-sm text-oscuro opacity-70 mb-4">
+                {currentMonth} {currentYear}
+              </Text>
+              <RadarChart data={completeMonthlyData} size={280} />
+            </View>
+          )}
 
           {/* 5. Patrones Semanales */}
           {hasMonthlyData && <DailyMoodBar monthlyRawData={monthlyRawData} mapEmotionName={mapEmotionName} />}
