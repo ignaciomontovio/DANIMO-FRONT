@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Circle, Line, Path, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, Line, Path } from "react-native-svg";
 
 // Import SVG emotions
 import Alegria from "@/assets/Emojis/emojis/mios/alegria.svg";
@@ -49,9 +49,11 @@ const emotionSvgs: Record<EmotionType, React.ComponentType<any>> = {
 
 const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-const standardBarColor = "#4ECDC4";
+const activityColors = [
+  "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", 
+  "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E9", "#F8C471"
+];
 
-// Componente para gráfico circular (Donut Chart)
 const DonutChart = ({ data, size = 160 }: { data: Record<EmotionType, number>; size?: number }) => {
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
   if (total === 0) return null;
@@ -111,7 +113,6 @@ const DonutChart = ({ data, size = 160 }: { data: Record<EmotionType, number>; s
   );
 };
 
-// Componente para gráfico de barras detallado
 const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
   title: string;
   data: Record<EmotionType, number>;
@@ -125,7 +126,6 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
 
   return (
     <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-      {/* Header */}
       <View className="mb-4">
         <Text className="text-lg font-bold text-oscuro mb-1">{title}</Text>
         {subtitle && (
@@ -133,11 +133,10 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
         )}
       </View>
       
-      {/* Charts */}
       <View className="space-y-3">
         {emociones.map((emocion, index) => {
           const value = valores[index];
-          if (value === 0) return null; // No mostrar emociones con 0 registros
+          if (value === 0) return null;
           
           const color = emotionColors[emocion];
           const barWidth = maxValue > 0 ? (value / maxValue) * (screenWidth - 140) : 0;
@@ -145,7 +144,6 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
 
           return (
             <View key={index}>
-              {/* Emotion label with icon */}
               <View className="flex-row items-center space-x-3">
                 <View 
                   className="w-8 h-8 rounded-full items-center justify-center"
@@ -172,8 +170,6 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
                   <Text className="text-base font-bold text-oscuro w-10 text-right">{percentage}%</Text>
                 </View>
               </View>
-              
-
             </View>
           );
         })}
@@ -182,7 +178,6 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
   );
 };
 
-// Componente para gráfico de barras compacto
 const CompactBarChart = ({ title, data, subtitle }: {
   title: string;
   data: Record<EmotionType, number>;
@@ -243,248 +238,154 @@ const CompactBarChart = ({ title, data, subtitle }: {
   );
 };
 
-const LineChart = ({ monthlyRawData, mapEmotionName }: {
-  monthlyRawData: any[] | null;
-  mapEmotionName: (emotion: string) => EmotionType;
+const RadarChart = ({ data, size = 300 }: { 
+  data: Record<EmotionType, number>; 
+  size?: number;
 }) => {
-  const [selectedDays, setSelectedDays] = useState<number>(7);
-  const chartWidth = screenWidth - 80;
-  const chartHeight = 200;
-  const padding = 40;
+  const emotions: EmotionType[] = ['alegria', 'ansiedad', 'miedo', 'enojo', 'tristeza'];
+  const center = size / 2;
+  const maxRadius = (size / 2) - 50;
+  const levels = 5;
+  
+  // Normalizar los valores a un máximo de 5
+  const maxValue = Math.max(...Object.values(data), 1);
+  const normalizedData = emotions.map(emotion => ({
+    emotion,
+    value: data[emotion],
+    normalizedValue: (data[emotion] / maxValue) * 5
+  }));
 
-  const dayOptions = [
-    { value: 7, label: '7 días' },
-    { value: 15, label: '15 días' }, 
-    { value: 30, label: '30 días' }
-  ];
+  // Calcular puntos del polígono
+  const getPoint = (index: number, value: number) => {
+    const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+    const radius = (value / 5) * maxRadius;
+    return {
+      x: center + radius * Math.cos(angle),
+      y: center + radius * Math.sin(angle)
+    };
+  };
 
-  // Obtener los últimos N días con datos
-  const getLastDaysData = () => {
-    if (!monthlyRawData || monthlyRawData.length === 0) return [];
+  // Calcular puntos para las etiquetas
+  const getLabelPoint = (index: number) => {
+    const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+    const labelRadius = maxRadius + 35;
+    return {
+      x: center + labelRadius * Math.cos(angle),
+      y: center + labelRadius * Math.sin(angle)
+    };
+  };
 
-    // Agrupar por fecha y obtener la emoción más frecuente del día
-    const dailyData: Record<string, Record<EmotionType, number>> = {};
-    
-    monthlyRawData.forEach(record => {
-      const date = record.date;
-      const emotion = mapEmotionName(record.emotionName);
-      
-      if (!dailyData[date]) {
-        dailyData[date] = {
-          alegria: 0,
-          tristeza: 0,
-          enojo: 0,
-          miedo: 0,
-          ansiedad: 0
-        };
-      }
-      
-      dailyData[date][emotion]++;
+  // Calcular puntos para las líneas de nivel
+  const getLevelPoints = (level: number) => {
+    return emotions.map((_, index) => {
+      const angle = (Math.PI * 2 * index) / emotions.length - Math.PI / 2;
+      const radius = (level / levels) * maxRadius;
+      return {
+        x: center + radius * Math.cos(angle),
+        y: center + radius * Math.sin(angle)
+      };
     });
-
-    // Convertir a array y ordenar por fecha
-    const sortedData = Object.entries(dailyData)
-      .map(([date, emotions]) => {
-        // Encontrar la emoción más frecuente
-        const mostFrequent = Object.entries(emotions).reduce((max, [emotion, count]) => 
-          count > max.count ? { emotion: emotion as EmotionType, count } : max,
-          { emotion: 'alegria' as EmotionType, count: 0 }
-        );
-        
-        return {
-          date,
-          emotion: mostFrequent.emotion,
-          dayNumber: parseInt(date.split('-')[2])
-        };
-      })
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .slice(-selectedDays); // Últimos N días seleccionados
-
-    return sortedData;
   };
 
-  const data = getLastDaysData();
+  // Generar path del polígono de datos
+  const dataPath = normalizedData.map((item, index) => {
+    const point = getPoint(index, item.normalizedValue);
+    return `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
+  }).join(' ') + ' Z';
 
-  if (data.length === 0) {
-    return (
-      <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-        <View className="mb-4">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
-            
-            {/* Selector rotativo de días */}
-            <TouchableOpacity 
-              className="bg-white rounded-lg px-3 py-2 flex-row items-center"
-              onPress={() => {
-                const currentIndex = dayOptions.findIndex(opt => opt.value === selectedDays);
-                const nextIndex = (currentIndex + 1) % dayOptions.length;
-                setSelectedDays(dayOptions[nextIndex].value);
-              }}
-            >
-              <Text className="text-xs font-medium text-oscuro mr-1">
-                {dayOptions.find(opt => opt.value === selectedDays)?.label}
-              </Text>
-              <Text className="text-xs text-oscuro">⌄</Text>
-            </TouchableOpacity>
-          </View>
-          <Text className="text-sm text-oscuro opacity-70">Últimos {selectedDays} días</Text>
-        </View>
-        
-        <View className="items-center py-8">
-          <FontAwesome name="line-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
-          <Text className="text-oscuro text-center opacity-70">Sin suficientes registros para mostrar la gráfica</Text>
-        </View>
-      </View>
-    );
-  }
-
-  // Mapear emociones a valores numéricos para el gráfico
-  const emotionValues: Record<EmotionType, number> = {
-    alegria: 5,
-    ansiedad: 4,
-    miedo: 3, 
-    enojo: 2,
-    tristeza: 1
-  };
-
-  // Calcular puntos para la línea
-  const points = data.map((item, index) => {
-    const x = padding + (index * (chartWidth - 2 * padding)) / Math.max(data.length - 1, 1);
-    const y = chartHeight - padding - ((emotionValues[item.emotion] - 1) * (chartHeight - 2 * padding)) / 4;
-    return { x, y, emotion: item.emotion, dayNumber: item.dayNumber };
+  // Generar paths de los niveles
+  const levelPaths = Array.from({ length: levels }, (_, i) => {
+    const level = i + 1;
+    const points = getLevelPoints(level);
+    return points.map((point, index) => 
+      `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+    ).join(' ') + ' Z';
   });
 
-  // Crear path para la línea
-  const pathData = points.reduce((path, point, index) => {
-    const command = index === 0 ? 'M' : 'L';
-    return `${path} ${command} ${point.x} ${point.y}`;
-  }, '');
-
   return (
-    <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-      <View className="mb-4">
-        <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-lg font-bold text-oscuro">Evolución emocional</Text>
-          
-          {/* Selector rotativo de días */}
-          <TouchableOpacity 
-            className="bg-white rounded-lg px-3 py-2 flex-row items-center"
-            onPress={() => {
-              const currentIndex = dayOptions.findIndex(opt => opt.value === selectedDays);
-              const nextIndex = (currentIndex + 1) % dayOptions.length;
-              setSelectedDays(dayOptions[nextIndex].value);
-            }}
-          >
-            <Text className="text-xs font-medium text-oscuro mr-1">
-              {dayOptions.find(opt => opt.value === selectedDays)?.label}
-            </Text>
-            <Text className="text-xs text-oscuro">⌄</Text>
-          </TouchableOpacity>
-        </View>
-        <Text className="text-sm text-oscuro opacity-70">Últimos {selectedDays} días</Text>
-      </View>
-      
-      <View style={{ width: chartWidth, height: chartHeight }}>
-        <Svg width={chartWidth} height={chartHeight}>
-          {/* Líneas de fondo horizontales */}
-          {[1, 2, 3, 4, 5].map((level) => {
-            const y = chartHeight - padding - ((level - 1) * (chartHeight - 2 * padding)) / 4;
+    <View className="items-center">
+      <View style={{ width: size, height: size }} className="relative">
+        <Svg width={size} height={size}>
+          {/* Niveles de fondo */}
+          {levelPaths.map((path, index) => (
+            <Path
+              key={index}
+              d={path}
+              fill="none"
+              stroke={colors.color5}
+              strokeWidth={1}
+              opacity={0.3}
+            />
+          ))}
+
+          {/* Líneas desde el centro a cada vértice */}
+          {emotions.map((_, index) => {
+            const point = getPoint(index, 5);
             return (
               <Line
-                key={level}
-                x1={padding}
-                y1={y}
-                x2={chartWidth - padding}
-                y2={y}
+                key={index}
+                x1={center}
+                y1={center}
+                x2={point.x}
+                y2={point.y}
                 stroke={colors.color5}
                 strokeWidth={1}
                 opacity={0.3}
               />
             );
           })}
-          
-          {/* Línea principal */}
+
+          {/* Polígono de datos */}
           <Path
-            d={pathData}
-            fill="none"
+            d={dataPath}
+            fill={colors.color1}
+            fillOpacity={0.3}
             stroke={colors.color1}
             strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
           />
-          
-          {/* Puntos en la línea */}
-          {points.map((point, index) => (
-            <Circle
-              key={index}
-              cx={point.x}
-              cy={point.y}
-              r={6}
-              fill={emotionColors[point.emotion]}
-              stroke="#FFFFFF"
-              strokeWidth={2}
-            />
-          ))}
-          
-          {/* Números de días en el eje X */}
-          {points.map((point, index) => {
-            // Para 30 días, mostrar solo cada 5 días para evitar superposición
-            // Para 15 días, mostrar cada 3 días
-            // Para 7 días, mostrar todos
-            let shouldShow = true;
-            if (selectedDays === 30) {
-              shouldShow = index % 5 === 0 || index === points.length - 1; // Cada 5 días + último
-            } else if (selectedDays === 15) {
-              shouldShow = index % 3 === 0 || index === points.length - 1; // Cada 3 días + último
-            }
+
+          {/* Puntos en cada vértice */}
+          {normalizedData.map((item, index) => {
+            if (item.value === 0) return null; // Solo dibujamos si tiene registros
             
-            if (!shouldShow) return null;
-            
+            const point = getPoint(index, item.normalizedValue);
             return (
-              <SvgText
+              <Circle
                 key={index}
-                x={point.x}
-                y={chartHeight - 10}
-                textAnchor="middle"
-                fontSize="12"
-                fill={colors.oscuro}
-                opacity={0.7}
-              >
-                {point.dayNumber}
-              </SvgText>
+                cx={point.x}
+                cy={point.y}
+                r={6}
+                fill={emotionColors[item.emotion]}
+                stroke="#FFFFFF"
+                strokeWidth={3}
+              />
             );
           })}
         </Svg>
-      </View>
-      
-      {/* Label explicativo para los números */}
-      <View className="mt-2 mb-2">
-        <Text className="text-xs text-center text-oscuro opacity-60">
-          Los números indican los días del mes
-        </Text>
-      </View>
-      
-      <View className="mt-4 flex-row justify-center flex-wrap">
-        {[
-          { emotion: 'alegria' as EmotionType, level: 5 },
-          { emotion: 'ansiedad' as EmotionType, level: 4 },
-          { emotion: 'miedo' as EmotionType, level: 3 },
-          { emotion: 'enojo' as EmotionType, level: 2 },
-          { emotion: 'tristeza' as EmotionType, level: 1 }
-        ].map(({ emotion }) => {
-          const color = emotionColors[emotion];
-          const SvgIcon = emotionSvgs[emotion];
+
+        {/* Etiquetas de emociones en las esquinas */}
+        {normalizedData.map((item, index) => {
+          const labelPoint = getLabelPoint(index);
+          const SvgIcon = emotionSvgs[item.emotion];
+          
           return (
-            <View key={emotion} className="items-center mx-2 mb-2">
+            <View
+              key={item.emotion}
+              className="absolute items-center justify-center"
+              style={{
+                left: labelPoint.x - 20,
+                top: labelPoint.y - 20,
+                width: 40,
+              }}
+            >
               <View 
-                className="w-8 h-8 rounded-full items-center justify-center mb-1"
-                style={{ backgroundColor: color + '30' }}
+                className="w-10 h-10 rounded-full items-center justify-center"
+                style={{ 
+                  backgroundColor: emotionColors[item.emotion] + '30'
+                }}
               >
-                <SvgIcon width={20} height={20} />
+                <SvgIcon width={24} height={24} />
               </View>
-              <Text className="text-xs text-oscuro font-medium">
-                {emotionLabels[emotion]}
-              </Text>
             </View>
           );
         })}
@@ -503,14 +404,12 @@ const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: {
       return dayLabels.map(() => ({ emotions: [], totalCount: 0, isTie: false }));
     }
 
-    // Agrupar por día de la semana (0 = domingo, 1 = lunes, etc.)
     const dayStats: Record<number, Record<EmotionType, number>> = {};
     
     monthlyRawData.forEach(record => {
-      // Crear fecha sin problemas de timezone
       const [year, month, day] = record.date.split('-').map(Number);
-      const date = new Date(year, month - 1, day); // month - 1 porque JavaScript usa 0-based months
-      const dayOfWeek = date.getDay(); // 0 = domingo
+      const date = new Date(year, month - 1, day);
+      const dayOfWeek = date.getDay();
       const emotion = mapEmotionName(record.emotionName);
       
       if (!dayStats[dayOfWeek]) {
@@ -526,20 +425,17 @@ const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: {
       dayStats[dayOfWeek][emotion]++;
     });
 
-    // Convertir a formato para el gráfico
     return dayLabels.map((_, index) => {
       const dayData = dayStats[index];
       if (!dayData) {
         return { emotions: [], totalCount: 0, isTie: false };
       }
       
-      // Encontrar el máximo count
       const maxCount = Math.max(...Object.values(dayData));
       if (maxCount === 0) {
         return { emotions: [], totalCount: 0, isTie: false };
       }
       
-      // Encontrar todas las emociones que tienen el máximo count
       const topEmotions = Object.entries(dayData)
         .filter(([_, count]) => count === maxCount)
         .map(([emotion, count]) => ({ emotion: emotion as EmotionType, count }));
@@ -586,7 +482,6 @@ const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: {
           
           return (
             <View key={day} className="items-center space-y-3">
-              {/* Barra - dividida si hay empate */}
               <View 
                 className="w-8 rounded-t overflow-hidden"
                 style={{ 
@@ -608,7 +503,6 @@ const DailyMoodBar = ({ monthlyRawData, mapEmotionName }: {
                 ))}
               </View>
               
-              {/* Label del día */}
               <Text className="text-xs text-oscuro font-medium text-center">
                 {day}
               </Text>
@@ -649,6 +543,66 @@ const EmptyStateCard = ({ title, subtitle }: { title: string; subtitle: string }
   </View>
 );
 
+const ActivityDonutChart = ({ data, size = 160 }: { data: Record<string, number>; size?: number }) => {
+  const total = Object.values(data).reduce((sum, val) => sum + val, 0);
+  if (total === 0) return null;
+
+  const radius = size / 2 - 20;
+  const strokeWidth = 30;
+  const center = size / 2;
+  const circumference = 2 * Math.PI * radius;
+
+  let cumulativePercentage = 0;
+  const sortedActivities = Object.entries(data).sort(([,a], [,b]) => b - a);
+  
+  return (
+    <View className="items-center">
+      <View style={{ width: size, height: size }} className="relative">
+        <Svg width={size} height={size} className="absolute">
+          {sortedActivities.map(([activity, value], index) => {
+            if (value === 0) return null;
+            
+            const percentage = value / total;
+            const strokeDasharray = `${percentage * circumference} ${circumference}`;
+            const strokeDashoffset = -cumulativePercentage * circumference;
+            const color = activityColors[index % activityColors.length];
+            
+            cumulativePercentage += percentage;
+            
+            return (
+              <Circle
+                key={activity}
+                cx={center}
+                cy={center}
+                r={radius}
+                stroke={color}
+                strokeWidth={strokeWidth}
+                fill="transparent"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </Svg>
+        
+        <View 
+          className="absolute items-center justify-center bg-fondo rounded-full"
+          style={{ 
+            width: size - 80, 
+            height: size - 80,
+            top: 40,
+            left: 40,
+          }}
+        >
+          <Text className="text-4xl font-bold" style={{ color: colors.oscuro }}>{total}</Text>
+          <Text className="text-sm font-medium" style={{ color: colors.oscuro }}>actividades</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
 export default function EmotionStatsScreen() {
   const { 
     weeklyStats, 
@@ -663,17 +617,27 @@ export default function EmotionStatsScreen() {
     yearlyStats,
     loadingYearly,
     errorYearly,
-    fetchYearlyStats
+    fetchYearlyStats,
+    weeklyActivities,
+    monthlyActivities,
+    loadingWeeklyActivities,
+    loadingMonthlyActivities,
+    errorWeeklyActivities,
+    errorMonthlyActivities,
+    fetchWeeklyActivities,
+    fetchMonthlyActivities
   } = useStatsStore();
 
-  // Estado para controlar el mes del calendario - siempre resetear al mes actual
   const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
+  const [activityMonthDate, setActivityMonthDate] = useState({ month: 0, year: 0 });
+  const [radarDate, setRadarDate] = useState({ month: 0, year: 0 });
 
-  // Resetear al mes actual cada vez que se entra a la pantalla
   useFocusEffect(
     useCallback(() => {
       const now = new Date();
       setCalendarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+      setActivityMonthDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+      setRadarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
     }, [])
   );
 
@@ -686,12 +650,19 @@ export default function EmotionStatsScreen() {
     fetchMonthlyStats(currentMonth, currentYear);
     fetchYearlyStats(currentYear);
     
-    // Inicializar calendario para el mes actual
+    fetchWeeklyActivities().catch(console.error);
+    fetchMonthlyActivities(currentMonth, currentYear).catch(console.error);
+    
     setCalendarData(null);
     setLoadingCalendar(true);
+    setActivityMonthDate({ month: currentMonth, year: currentYear });
   }, []);
 
-  // Función para navegar meses en el calendario
+  useEffect(() => {
+    if (activityMonthDate.month === 0) return;
+    fetchMonthlyActivities(activityMonthDate.month, activityMonthDate.year).catch(console.error);
+  }, [activityMonthDate]);
+
   const navigateCalendarMonth = (direction: 'prev' | 'next') => {
     setCalendarDate(prev => {
       let newMonth = prev.month;
@@ -715,17 +686,72 @@ export default function EmotionStatsScreen() {
     });
   };
 
-  // Determinar si el calendario muestra el mes actual
   const isCurrentMonth = () => {
     const now = new Date();
     return calendarDate.month === now.getMonth() + 1 && calendarDate.year === now.getFullYear();
   };
 
-  // Estado para datos específicos del calendario
+  const navigateActivityMonth = (direction: 'prev' | 'next') => {
+    setActivityMonthDate(prev => {
+      let newMonth = prev.month;
+      let newYear = prev.year;
+      
+      if (direction === 'prev') {
+        newMonth--;
+        if (newMonth < 1) {
+          newMonth = 12;
+          newYear--;
+        }
+      } else {
+        newMonth++;
+        if (newMonth > 12) {
+          newMonth = 1;
+          newYear++;
+        }
+      }
+      
+      return { month: newMonth, year: newYear };
+    });
+  };
+
+  const isCurrentActivityMonth = () => {
+    const now = new Date();
+    return activityMonthDate.month === now.getMonth() + 1 && activityMonthDate.year === now.getFullYear();
+  };
+
+  const navigateRadarMonth = (direction: 'prev' | 'next') => {
+    setRadarDate(prev => {
+      let newMonth = prev.month;
+      let newYear = prev.year;
+      
+      if (direction === 'prev') {
+        newMonth--;
+        if (newMonth < 1) {
+          newMonth = 12;
+          newYear--;
+        }
+      } else {
+        newMonth++;
+        if (newMonth > 12) {
+          newMonth = 1;
+          newYear++;
+        }
+      }
+      
+      return { month: newMonth, year: newYear };
+    });
+  };
+
+  const isCurrentRadarMonth = () => {
+    const now = new Date();
+    return radarDate.month === now.getMonth() + 1 && radarDate.year === now.getFullYear();
+  };
+
   const [calendarData, setCalendarData] = useState<any[] | null>(null);
   const [loadingCalendar, setLoadingCalendar] = useState(false);
+  const [radarData, setRadarData] = useState<Record<string, number> | null>(null);
+  const [loadingRadar, setLoadingRadar] = useState(false);
 
-  // Función para cargar datos específicos del calendario sin afectar otros gráficos
   const fetchCalendarDataOnly = async (month: number, year: number) => {
     setLoadingCalendar(true);
     try {
@@ -756,7 +782,46 @@ export default function EmotionStatsScreen() {
     }
   };
 
-  // Cargar datos específicos para el mes del calendario
+  const fetchRadarDataOnly = async (month: number, year: number) => {
+    setLoadingRadar(true);
+    try {
+      const token = useUserLogInStore.getState().token;
+      if (!token) throw new Error('No hay token de autenticación');
+      
+      const response = await fetch(URL_BASE + URL_STATS + '/month', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
+        },
+        body: JSON.stringify({ month, year }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.json();
+        throw new Error(errorText.error);
+      }
+      
+      const rawData = await response.json();
+      
+      // Procesar los datos para obtener el conteo de emociones
+      const emotionCounts: Record<string, number> = {};
+      if (Array.isArray(rawData)) {
+        rawData.forEach(record => {
+          const emotion = mapEmotionName(record.emotionName);
+          emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+        });
+      }
+      
+      setRadarData(emotionCounts);
+    } catch (error) {
+      console.error('Error loading radar data:', error);
+      setRadarData(null);
+    } finally {
+      setLoadingRadar(false);
+    }
+  };
+
   useEffect(() => {
     if (calendarDate.month === 0) return;
     if (isCurrentMonth()) {
@@ -768,6 +833,18 @@ export default function EmotionStatsScreen() {
       fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
     }
   }, [calendarDate, monthlyRawData, loadingMonthly]);
+
+  useEffect(() => {
+    if (radarDate.month === 0) return;
+    if (isCurrentRadarMonth()) {
+      setLoadingRadar(loadingMonthly);
+      if (!loadingMonthly && monthlyStats) {
+        setRadarData(monthlyStats);
+      }
+    } else {
+      fetchRadarDataOnly(radarDate.month, radarDate.year);
+    }
+  }, [radarDate, monthlyStats, loadingMonthly]);
 
   const mapEmotionName = (emotion: string): EmotionType => {
     const emotionMap: Record<string, EmotionType> = {
@@ -813,7 +890,7 @@ export default function EmotionStatsScreen() {
 
   const generateCalendar = () => {
     const year = calendarDate.year;
-    const month = calendarDate.month - 1; // JavaScript months are 0-based
+    const month = calendarDate.month - 1;
     
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
@@ -861,6 +938,11 @@ export default function EmotionStatsScreen() {
   const currentMonth = monthNames[new Date().getMonth()];
   const currentYear = new Date().getFullYear();
 
+  // Helper function to get capitalized month name
+  const getCapitalizedMonthYear = (month: number, year: number) => {
+    return `${monthNames[month - 1]} ${year}`;
+  };
+
   return (
     <LinearGradient
       colors={[colors.color5, colors.fondo]}
@@ -887,8 +969,7 @@ export default function EmotionStatsScreen() {
             />
           ) : (
             <View className="bg-fondo bg-opacity-80 rounded-2xl p-5 mb-3">
-              <Text className="text-lg font-bold text-oscuro mb-1">Círculo Emocional
-              </Text>
+              <Text className="text-lg font-bold text-oscuro mb-1">Círculo Emocional</Text>
               <Text className="text-sm text-oscuro opacity-70 mb-4">
                 {currentMonth} {currentYear}
               </Text>
@@ -918,7 +999,7 @@ export default function EmotionStatsScreen() {
             </View>
           )}
 
-          {/* 2. Últimos 7 días - Estilo compacto */}
+          {/* 2. Últimos 7 días */}
           {loadingWeekly ? (
             <LoadingCard message="Cargando semana..." />
           ) : errorWeekly ? (
@@ -936,7 +1017,7 @@ export default function EmotionStatsScreen() {
             />
           )}
 
-          {/* 3. Este mes - Gráfico detallado */}
+          {/* 3. Este mes */}
           {loadingMonthly ? (
             <LoadingCard message="Cargando mes..." />
           ) : errorMonthly ? (
@@ -955,8 +1036,67 @@ export default function EmotionStatsScreen() {
             />
           )}
 
-          {/* 4. Gráfico de líneas para últimos N días */}
-          {hasMonthlyData && <LineChart monthlyRawData={monthlyRawData} mapEmotionName={mapEmotionName} />}
+          {/* 4. Gráfico de radar */}
+          {(hasMonthlyData || radarData) && (
+            <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-oscuro mb-1">Radar Emocional</Text>
+                
+                <View className="flex-row justify-center items-center space-x-4 mb-2">
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateRadarMonth('prev')}
+                  >
+                    <FontAwesome name="chevron-left" size={16} color={colors.color1} />
+                  </TouchableOpacity>
+                  
+                  <Text className="text-sm text-center text-oscuro opacity-70 px-4">
+                    {getCapitalizedMonthYear(radarDate.month, radarDate.year)}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateRadarMonth('next')}
+                    disabled={isCurrentRadarMonth()}
+                    style={{ opacity: isCurrentRadarMonth() ? 0.3 : 1 }}
+                  >
+                    <FontAwesome 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isCurrentRadarMonth() ? colors.oscuro : colors.color1} 
+                    />
+                  </TouchableOpacity>
+                </View>
+                
+                {!isCurrentRadarMonth() && (
+                  <TouchableOpacity 
+                    className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
+                    style={{ backgroundColor: colors.color1 + '20' }}
+                    onPress={() => {
+                      const now = new Date();
+                      setRadarDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                  >
+                    <Text className="text-xs font-medium" style={{ color: colors.color1 }}>
+                      Volver al mes actual
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              
+              {loadingRadar ? (
+                <View className="items-center py-8">
+                  <ActivityIndicator size="large" color={colors.color1} />
+                  <Text className="text-oscuro mt-4">Cargando radar emocional...</Text>
+                </View>
+              ) : (
+                <RadarChart 
+                  data={ensureAllEmotions(processData(isCurrentRadarMonth() ? monthlyStats : radarData))} 
+                  size={280} 
+                />
+              )}
+            </View>
+          )}
 
           {/* 5. Patrones Semanales */}
           {hasMonthlyData && <DailyMoodBar monthlyRawData={monthlyRawData} mapEmotionName={mapEmotionName} />}
@@ -968,7 +1108,6 @@ export default function EmotionStatsScreen() {
                 Calendario emocional
               </Text>
               
-              {/* Header con navegación */}
               <View className="flex-row justify-center items-center space-x-4">
                 <TouchableOpacity 
                   className="p-2"
@@ -978,13 +1117,9 @@ export default function EmotionStatsScreen() {
                 </TouchableOpacity>
                 
                 <Text className="text-sm text-center text-oscuro opacity-70 px-4">
-                  {new Date(calendarDate.year, calendarDate.month - 1).toLocaleDateString('es-ES', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
+                  {getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}
                 </Text>
                 
-                {/* Solo mostrar flecha derecha si no es el mes actual */}
                 <TouchableOpacity 
                   className="p-2"
                   onPress={() => navigateCalendarMonth('next')}
@@ -999,7 +1134,6 @@ export default function EmotionStatsScreen() {
                 </TouchableOpacity>
               </View>
               
-              {/* Botón para volver al mes actual si no lo está viendo */}
               {!isCurrentMonth() && (
                 <TouchableOpacity 
                   className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
@@ -1025,12 +1159,8 @@ export default function EmotionStatsScreen() {
               <View className="items-center py-8">
                 <FontAwesome name="calendar-o" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
                 <Text className="text-base text-center text-oscuro opacity-70 mb-6">
-                  Sin registros en {new Date(calendarDate.year, calendarDate.month - 1).toLocaleDateString('es-ES', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
+                  Sin registros en {getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}
                 </Text>
-                {/* Solo mostrar botón si es el mes actual */}
                 {isCurrentMonth() && (
                   <TouchableOpacity 
                     className="bg-color1 rounded-xl px-6 py-3"
@@ -1042,7 +1172,6 @@ export default function EmotionStatsScreen() {
               </View>
             ) : (
               <View>
-                {/* Días de la semana */}
                 <View className="flex-row justify-center mb-4">
                   {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((day, index) => (
                     <View key={index} className="w-10 h-8 justify-center items-center">
@@ -1051,7 +1180,6 @@ export default function EmotionStatsScreen() {
                   ))}
                 </View>
 
-                {/* Calendario */}
                 <View className="space-y-2">
                   {calendarDates.map((week, i) => (
                     <View key={i} className="flex-row justify-center space-x-1">
@@ -1078,11 +1206,11 @@ export default function EmotionStatsScreen() {
                               borderColor: isToday ? '#6B7280' : 'transparent',
                             }}
                           >
-                              <Text className={`text-xs font-bold ${
-                                emotion ? 'text-white' : 'text-oscuro'
-                              }`}>
-                                {dayNumber}
-                              </Text>
+                            <Text className={`text-xs font-bold ${
+                              emotion ? 'text-white' : 'text-oscuro'
+                            }`}>
+                              {dayNumber}
+                            </Text>
                           </View>
                         );
                       })}
@@ -1090,7 +1218,6 @@ export default function EmotionStatsScreen() {
                   ))}
                 </View>
 
-                {/* Emociones */}
                 <View className="mt-6 pt-4 border-t border-color5">
                   <Text className="text-center text-oscuro font-semibold mb-3">Emociones</Text>
                   <View className="flex-row flex-wrap justify-center space-x-4">
@@ -1116,7 +1243,7 @@ export default function EmotionStatsScreen() {
             )}
           </View>
 
-          {/* 7. Este Año - Compacto */}
+          {/* 7. Este Año */}
           {loadingYearly ? (
             <LoadingCard message="Cargando año..." />
           ) : errorYearly ? (
@@ -1132,6 +1259,215 @@ export default function EmotionStatsScreen() {
               subtitle="Emociones predominantes"
               data={completeYearlyData}
             />
+          )}
+
+          {/* SECCIÓN DE ACTIVIDADES */}
+
+          {/* 8. Actividades Semanales (7 días) */}
+          {loadingWeeklyActivities ? (
+            <LoadingCard message="Cargando actividades semanales..." />
+          ) : errorWeeklyActivities ? (
+            !errorWeeklyActivities.includes('404') && !errorWeeklyActivities.includes('fetch') ? (
+              <ErrorCard message={errorWeeklyActivities} />
+            ) : null
+          ) : weeklyActivities && Object.keys(weeklyActivities).length > 0 ? (
+            <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+              <Text className="text-lg font-bold text-oscuro mb-1">Actividades - Últimos 7 días</Text>
+              <Text className="text-sm text-oscuro opacity-70 mb-4">
+                Tus actividades más frecuentes esta semana
+              </Text>
+              
+              <ActivityDonutChart data={weeklyActivities} size={180} />
+              
+              <View className="space-y-4 mt-4">
+                <Text className="text-sm font-bold text-oscuro mb-2">Detalles por actividad:</Text>
+                {Object.entries(weeklyActivities)
+                  .sort(([,a], [,b]) => b - a)
+                  .map(([activity, value], index) => {
+                    const maxValue = Math.max(...Object.values(weeklyActivities));
+                    const barWidth = maxValue > 0 ? (value / maxValue) * (screenWidth - 220) : 0;
+                    const color = activityColors[index % activityColors.length];
+                    
+                    return (
+                      <View key={activity} className="mb-2">
+                        <View className="flex-row justify-between items-center mb-1">
+                          <Text className="text-xs font-medium text-oscuro capitalize flex-1" numberOfLines={1}>
+                            {activity}
+                          </Text>
+                          <Text className="text-xs font-bold text-oscuro ml-2">
+                          
+                          </Text>
+                        </View>
+                        
+                        <View className="h-4 rounded-full" style={{ backgroundColor: '#E5E7EB' }}>
+                          <View 
+                            className="h-full rounded-full flex-row items-center justify-center" 
+                            style={{ 
+                              width: Math.max(barWidth, 30),
+                              backgroundColor: color
+                            }} 
+                          >
+                            <Text className="text-xs font-bold text-white">
+                              {value}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+              </View>
+            </View>
+          ) : null}
+
+          {/* 9. Actividades del Mes - CON NAVEGACIÓN */}
+          {loadingMonthlyActivities ? (
+            <LoadingCard message="Cargando actividades del mes..." />
+          ) : errorMonthlyActivities ? (
+            <ErrorCard message={errorMonthlyActivities} />
+          ) : monthlyActivities && Object.keys(monthlyActivities).length > 0 ? (
+            <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-oscuro mb-1">Actividades del Mes</Text>
+                
+                <View className="flex-row justify-center items-center space-x-4 mb-2">
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('prev')}
+                  >
+                    <FontAwesome name="chevron-left" size={16} color={colors.color1} />
+                  </TouchableOpacity>
+                  
+                  <Text className="text-sm text-center text-oscuro opacity-70 px-4">
+                    {getCapitalizedMonthYear(activityMonthDate.month, activityMonthDate.year)}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('next')}
+                    disabled={isCurrentActivityMonth()}
+                    style={{ opacity: isCurrentActivityMonth() ? 0.3 : 1 }}
+                  >
+                    <FontAwesome 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isCurrentActivityMonth() ? colors.oscuro : colors.color1} 
+                    />
+                  </TouchableOpacity>
+                </View>
+                
+                {!isCurrentActivityMonth() && (
+                  <TouchableOpacity 
+                    className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
+                    style={{ backgroundColor: colors.color1 + '20' }}
+                    onPress={() => {
+                      const now = new Date();
+                      setActivityMonthDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                  >
+                    <Text className="text-xs font-medium" style={{ color: colors.color1 }}>
+                      Volver al mes actual
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                
+                <Text className="text-sm text-oscuro opacity-70 mt-2">
+                  Tus actividades más frecuentes este mes
+                </Text>
+              </View>
+              
+              <ActivityDonutChart data={monthlyActivities} size={180} />
+              
+              <View className="space-y-4 mt-4">
+                <Text className="text-sm font-bold text-oscuro mb-2">Detalles por actividad:</Text>
+                {Object.entries(monthlyActivities)
+                  .sort(([,a], [,b]) => b - a)
+                  .map(([activity, value], index) => {
+                    const maxValue = Math.max(...Object.values(monthlyActivities));
+                    const barWidth = maxValue > 0 ? (value / maxValue) * (screenWidth - 220) : 0;
+                    const color = activityColors[index % activityColors.length];
+                    
+                    return (
+                      <View key={activity} className="mb-2">
+                        <View className="flex-row justify-between items-center mb-1">
+                          <Text className="text-xs font-medium text-oscuro capitalize flex-1" numberOfLines={1}>
+                            {activity}
+                          </Text>
+                          <Text className="text-xs font-bold text-oscuro ml-2">
+                          </Text>
+                        </View>
+                        
+                        <View className="h-4 rounded-full" style={{ backgroundColor: '#E5E7EB' }}>
+                          <View 
+                            className="h-full rounded-full flex-row items-center justify-center" 
+                            style={{ 
+                              width: Math.max(barWidth, 30),
+                              backgroundColor: color
+                            }} 
+                          >
+                            <Text className="text-xs font-bold text-white">
+                              {value}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+              </View>
+            </View>
+          ) : (
+            <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-oscuro mb-1">Actividades del Mes</Text>
+                
+                <View className="flex-row justify-center items-center space-x-4 mb-2">
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('prev')}
+                  >
+                    <FontAwesome name="chevron-left" size={16} color={colors.color1} />
+                  </TouchableOpacity>
+                  
+                  <Text className="text-sm text-center text-oscuro opacity-70 px-4">
+                    {getCapitalizedMonthYear(activityMonthDate.month, activityMonthDate.year)}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    className="p-2"
+                    onPress={() => navigateActivityMonth('next')}
+                    disabled={isCurrentActivityMonth()}
+                    style={{ opacity: isCurrentActivityMonth() ? 0.3 : 1 }}
+                  >
+                    <FontAwesome 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isCurrentActivityMonth() ? colors.oscuro : colors.color1} 
+                    />
+                  </TouchableOpacity>
+                </View>
+                
+                {!isCurrentActivityMonth() && (
+                  <TouchableOpacity 
+                    className="mt-2 rounded-lg px-3 py-1 self-center border border-color1"
+                    style={{ backgroundColor: colors.color1 + '20' }}
+                    onPress={() => {
+                      const now = new Date();
+                      setActivityMonthDate({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                  >
+                    <Text className="text-xs font-medium" style={{ color: colors.color1 }}>
+                      Volver al mes actual
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              
+              <View className="items-center py-8">
+                <FontAwesome name="bar-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
+                <Text className="text-center text-oscuro opacity-70">
+                  No hay actividades registradas en este mes
+                </Text>
+              </View>
+            </View>
           )}
 
         </ScrollView>

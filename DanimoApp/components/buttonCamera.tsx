@@ -145,7 +145,6 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
       if (detectedEmotionName) {
         setDetectedEmotion(detectedEmotionName);
         onEmotionDetected?.(detectedEmotionName);
-        console.log('✅ Emoción detectada por backend:', detectedEmotionName);
       } else {
         throw new Error('SERVER_DOWN');
       }
@@ -201,7 +200,8 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 0.8,
-      aspect: [16, 9],
+      aspect: [1, 1], // Aspecto cuadrado, mejor para selfies de rostro
+      cameraType: ImagePicker.CameraType.front, // Cámara frontal por defecto para selfies
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -227,7 +227,7 @@ export default function ButtonCamera({ onImageTaken, onEmotionDetected }: Button
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.8,
-      aspect: [16, 9],
+      aspect: [1, 1], // Aspecto cuadrado, mejor para rostros
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {

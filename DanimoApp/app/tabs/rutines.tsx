@@ -6,12 +6,12 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 import LinearGradient from "react-native-linear-gradient";
@@ -131,7 +131,9 @@ export default function Rutines() {
             {loading ? (
               <ActivityIndicator size="large" color="#000" />
             ) : rutines.length > 0 ? (
-              rutines.filter((rutines) => emotions[rutines.emotion[0]]).map((el, index) => (
+              rutines.filter((rutina) => 
+                rutina.emotion.some((emocion) => emotions[emocion])
+              ).map((el, index) => (
                 <CardRutine
                   key={index}
                   element={el}

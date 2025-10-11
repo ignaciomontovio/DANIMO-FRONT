@@ -90,30 +90,49 @@ export default function LoginRegisterScreen() {
     checkLogin();
   }, [UserLogIn, mail, setUserLogIn, setUserSession, token, url_auth, userType]);
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch(URL_BASE + url_auth + "/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password: passw.trim(),
-        }),
-      });
+ const handleLogin = async () => {
+  try {
+    const response = await fetch(URL_BASE + url_auth + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        password: passw.trim(),
+      }),
+    });
 
-      if (!response.ok) {
-        const errorText = await response.json();
-        throw new Error(errorText.error);
-      }
-
-      const data = await response.json();
-      setUserSession(email, data.token);
-      setUserLogIn(true);
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Email o contraseña incorrecta");
+    if (!response.ok) {
+      const errorText = await response.json();
+      throw new Error(errorText.error);
     }
-  };
+
+    const data = await response.json();
+    
+    // Decodificar el token JWT para extraer el userId
+    let userId: string | undefined;
+    
+    try {
+      const tokenParts = data.token.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        userId = payload.userId;
+      }
+    } catch (decodeError) {
+      console.error("Error al decodificar el token:", decodeError);
+    }
+    
+    // Fallback: intentar obtener userId de la respuesta directa
+    if (!userId) {
+      userId = data.userId || data.id || data.user?.id || data.user?._id || data._id;
+    }
+    
+    setUserSession(email, data.token, userId);
+    setUserLogIn(true);
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Email o contraseña incorrecta");
+  }
+};
 
   const handleRegister = async () => {
     const passwordRegex =
