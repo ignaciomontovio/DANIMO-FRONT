@@ -1,4 +1,4 @@
-import { ButtonDark, ButtonInfo } from "@/components/buttons";
+import { ButtonAccept, ButtonDark } from "@/components/buttons";
 import React from "react";
 import { Modal, Text, View } from "react-native";
 
@@ -34,8 +34,8 @@ export function CustomModal({
           <Text className="text-base text-center text-gray-700 mb-6">
             {message}
           </Text>
-          <ButtonDark onPress={onConfirm || onClose} text={buttonText} />
-          <ButtonInfo onPress={onConfirm || onClose} text={"Continuar en el chat"} />
+          <ButtonDark onPress={onConfirm} text={buttonText} />
+          <ButtonAccept onPress={onClose} text={"Continuar en el chat"} />
         </View>
       </View>
     </Modal>

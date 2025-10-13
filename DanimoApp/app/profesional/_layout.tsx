@@ -51,12 +51,6 @@ export default function TabsLayout() {
         }}
       /> 
       <Tabs.Screen 
-        name="rutines" 
-        options={{
-          title: "Rutinas"
-        }}
-      />  
-      <Tabs.Screen 
         name="profile" 
         options={{
           title: displayName

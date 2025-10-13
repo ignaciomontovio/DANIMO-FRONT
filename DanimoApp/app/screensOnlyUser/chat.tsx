@@ -115,6 +115,7 @@ export default function Chat() {
         { type: "received", text: data.message || JSON.stringify(data) },
       ]);
       console.log(data);
+      setShowRutina(true)
       if(data.recommendRoutine === "true" || data.recommendRoutine === true ){
         setPredominantEmotion(data.predominantEmotion)
         setShowRutina(true)
@@ -276,8 +277,11 @@ export default function Chat() {
           message={`Hemos detectado que no estas pasando un buen momento. Por eso, creemos que esta rutina puede ayudarte.`}
           buttonText="Ir a rutina"
           onConfirm={() => {
-            setShowRutina(false);
-            // router.push("/tabs/rutines"); 
+            router.push({
+              pathname:"/tabs/rutines",
+              params: { emotionFromChat: predominantEmotion }
+            });
+
           }}
         />
 

@@ -3,25 +3,30 @@ import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { ALL_EMOTIONS, URL_BASE, URL_RUTINE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Rutines() {
+  const { emotionFromChat } = useLocalSearchParams<{ emotionFromChat: string }>();
+  
   const [loading, setLoading] = useState(true);
   const [rutines, setRutines] = useState<Rutine[]>([]);
   const token = useUserLogInStore((state) => state.token);
   const [emotions, setEmotions] = useState<Record<string, boolean>>({});
+  if (emotionFromChat){
+    setEmotions((prev) => ({ ...prev, [emotionFromChat]: true }));
+  }
 
   const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
   const ACTIVE_PILL_STYLE = "bg-color1 text-white shadow-lg";
