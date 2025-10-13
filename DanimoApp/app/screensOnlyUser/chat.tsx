@@ -263,13 +263,17 @@ export default function Chat() {
           onClose={() => setShowWarning(false)}
           title="Alerta SOS"
           message="Registramos un uso excesivo de la aplicación."
+          buttonText="Salir del chat"
+          onConfirm={() => {
+            router.push("/tabs/home"); 
+          }}
         />
 
         <CustomModal
           visible={showRutina}
           onClose={() => setShowRutina(false)}
           title="Dani te recomienda esta rutina"
-          message={`Tu emoción predominante es ${predominantEmotion}`}
+          message={`Hemos detectado que no estas pasando un buen momento. Por eso, creemos que esta rutina puede ayudarte.`}
           buttonText="Ir a rutina"
           onConfirm={() => {
             setShowRutina(false);
