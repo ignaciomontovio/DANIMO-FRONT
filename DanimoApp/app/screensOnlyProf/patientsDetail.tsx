@@ -137,7 +137,14 @@ export default function PatientDetailScreen() {
               
               {/* Botones de acción */}
               <View className="space-y-3">
-                <ButtonAccept text="Estadisticas"  />
+                <ButtonAccept text="Estadisticas" onPress={()=>{ 
+                      router.replace({
+                          pathname: "/screensOnlyProf/statsPatient",
+                          params: { patientId },
+                        });
+                      }}
+                />
+
                 <ButtonAccept text="Historial chat" onPress={()=>{ 
                     router.push({
                         pathname: "/screensOnlyProf/historialDeChat",

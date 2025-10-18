@@ -11,6 +11,7 @@ import { Alert, Animated, Easing, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { cardRiskMsj, riskMessagesType } from "./historicPatient";
+
 export default function HistorialDeChat() {
   const token = useUserLogInStore((state) => state.token);
   const [weekResume, setWeekResume] = useState("");

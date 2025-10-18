@@ -22,7 +22,6 @@ export default function TabsLayout() {
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
           if (route.name === "home") iconName = "home";
-          else if (route.name === "stats") iconName = "bar-chart";
           else if (route.name === "rutines") iconName = "medkit";
           else if (route.name === "profile") iconName = "user";
 
@@ -44,13 +43,13 @@ export default function TabsLayout() {
           title: "Inicio"
         }}
       />
-      <Tabs.Screen 
-        name="stats" 
+       <Tabs.Screen 
+        name="rutines" 
         options={{
-          title: "Reportes"
+          title: "Rutinas"
         }}
       /> 
-      <Tabs.Screen 
+       <Tabs.Screen 
         name="profile" 
         options={{
           title: displayName

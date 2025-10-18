@@ -128,9 +128,10 @@ export default function LoginRegisterScreen() {
     
     setUserSession(email, data.token, userId);
     setUserLogIn(true);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Login error:", error);
-    alert("Email o contraseña incorrecta");
+    const message = error instanceof Error ? error.message : String(error);
+    alert("Error de inicio de sesión: " + message);
   }
 };
 

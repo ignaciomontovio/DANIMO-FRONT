@@ -21,16 +21,16 @@ type ActivityRecord = {
 };
 
 type ActivityResponse = {
-  hobbies: Array<{
+  hobbies: {
     activityName: string;
     percentage?: string;
     count?: number;
-  }>;
-  activities: Array<{
+  }[];
+  activities: {
     activityName: string;
     percentage?: string;
     count?: number;
-  }>;
+  }[];
 };
 
 type StatsState = {
@@ -64,14 +64,14 @@ type StatsState = {
   errorCustomActivities: string | null;
   
   // Actions
-  fetchWeeklyStats: () => Promise<void>;
-  fetchMonthlyStats: (month: number, year: number) => Promise<void>;
-  fetchYearlyStats: (year: number) => Promise<void>;
+  fetchWeeklyStats: (userId?: string) => Promise<void>;
+  fetchMonthlyStats: (month: number, year: number,userId?: string) => Promise<void>;
+  fetchYearlyStats: (year: number, userId?: string) => Promise<void>;
   
   // Activity Actions
-  fetchWeeklyActivities: () => Promise<void>;
-  fetchMonthlyActivities: (month: number, year: number) => Promise<void>;
-  fetchCustomActivities: (since: string, until: string) => Promise<void>;
+  fetchWeeklyActivities: (userId?: string) => Promise<void>;
+  fetchMonthlyActivities: (month: number, year: number, userId?: string) => Promise<void>;
+  fetchCustomActivities: (since: string, until: string, userId?: string) => Promise<void>;
   
   // Clear functions
   clearWeeklyStats: () => void;
@@ -80,7 +80,7 @@ type StatsState = {
   clearActivities: () => void;
 };
 
-const processStatsData = (data: Array<{ date: string; emotionName: string }>): EmotionCount => {
+const processStatsData = (data: { date: string; emotionName: string }[]): EmotionCount => {
   const emotionCount: EmotionCount = {};
   
   data.forEach(item => {
@@ -91,8 +91,12 @@ const processStatsData = (data: Array<{ date: string; emotionName: string }>): E
   return emotionCount;
 };
 
-const getUserId = async (): Promise<string> => {
+const getUserId = async (overrideUserId?: string): Promise<string> => {
   // Intentar obtener userId del store
+  if (overrideUserId) {
+    return overrideUserId;
+  }
+  
   const storedUserId = useUserLogInStore.getState().userId;
   
   if (storedUserId) {
@@ -213,11 +217,11 @@ export const useStatsStore = create<StatsState>((set, get) => ({
   errorMonthlyActivities: null,
   errorCustomActivities: null,
   
-  fetchWeeklyStats: async () => {
+  fetchWeeklyStats: async (userId?: string) => {
     set({ loadingWeekly: true, errorWeekly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/week', {});
+      const data = await makeAuthenticatedRequest('/week', {userId: userId || await getUserId()});
       const processedData = processStatsData(data);
       set({ weeklyStats: processedData, loadingWeekly: false });
     } catch (error) {
@@ -227,12 +231,12 @@ export const useStatsStore = create<StatsState>((set, get) => ({
       });
     }
   },
-  
-  fetchMonthlyStats: async (month: number, year: number) => {
+
+  fetchMonthlyStats: async (month: number, year: number, userId?: string) => {
     set({ loadingMonthly: true, errorMonthly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/month', { month, year });
+      const data = await makeAuthenticatedRequest('/month', { month, year, userId: userId || await getUserId() });
       const processedData = processStatsData(data);
       set({ 
         monthlyStats: processedData, 
@@ -247,11 +251,11 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchYearlyStats: async (year: number) => {
+  fetchYearlyStats: async (year: number, userId?: string) => {
     set({ loadingYearly: true, errorYearly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/year', { year });
+      const data = await makeAuthenticatedRequest('/year', { year, userId: userId || await getUserId() });
       const processedData = processStatsData(data);
       set({ yearlyStats: processedData, loadingYearly: false });
     } catch (error) {
@@ -262,12 +266,13 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
 
-  fetchWeeklyActivities: async () => {
+  fetchWeeklyActivities: async (userId?: string) => {
     set({ loadingWeeklyActivities: true, errorWeeklyActivities: null });
+    console.log("fetchWeeklyActivities called with userId:", userId);
     
     try {
-      const userId = await getUserId();
       if (!userId) {
+        userId = await getUserId(userId);
         set({ weeklyActivities: {}, loadingWeeklyActivities: false });
         return;
       }
@@ -277,7 +282,7 @@ export const useStatsStore = create<StatsState>((set, get) => ({
         throw new Error('No hay token de autenticación');
       }
       
-      const bodyData = { id: userId };
+      const bodyData = { userId: userId };
       
       const response = await fetch(`${URL_BASE}${URL_STATS}/activities-week`, {
         method: 'POST',
@@ -289,6 +294,10 @@ export const useStatsStore = create<StatsState>((set, get) => ({
       });
       
       if (!response.ok) {
+        console.log("_________________________");
+        console.log(response.body);
+        console.log("_________________________");
+        
         if (response.status === 401) {
           set({ weeklyActivities: {}, loadingWeeklyActivities: false });
           return;
@@ -322,12 +331,12 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchMonthlyActivities: async (month: number, year: number) => {
+  fetchMonthlyActivities: async (month: number, year: number, userId?: string) => {
     set({ loadingMonthlyActivities: true, errorMonthlyActivities: null });
     
     try {
-      const userId = await getUserId();
       if (!userId) {
+        userId = await getUserId();
         set({ monthlyActivities: {}, loadingMonthlyActivities: false });
         return;
       }
@@ -342,7 +351,7 @@ export const useStatsStore = create<StatsState>((set, get) => ({
         month: month,
         year: year
       };
-
+      
       const response = await fetch(`${URL_BASE}${URL_STATS}/activities-month`, {
         method: 'POST',
         headers: {
@@ -351,7 +360,9 @@ export const useStatsStore = create<StatsState>((set, get) => ({
         },
         body: JSON.stringify(bodyData),
       });
-
+      console.log("***************************");
+      console.log(bodyData);
+      console.log("***************************");
       if (!response.ok) {
         if (response.status === 401) {
           set({ monthlyActivities: {}, loadingMonthlyActivities: false });
@@ -386,11 +397,11 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchCustomActivities: async (since: string, until: string) => {
+  fetchCustomActivities: async (since: string, until: string, userId?: string) => {
     set({ loadingCustomActivities: true, errorCustomActivities: null });
     
     try {
-      const userId = await getUserId();
+      const userId = await getUserId(userId);
       
       const bodyData = {
         id: userId,

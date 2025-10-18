@@ -603,7 +603,7 @@ const ActivityDonutChart = ({ data, size = 160 }: { data: Record<string, number>
   );
 };
 
-export default function EmotionStatsScreen() {
+export default function EmotionStatsScreen({ userId }: { userId?: string }) {
   const { 
     weeklyStats, 
     loadingWeekly, 
@@ -628,6 +628,11 @@ export default function EmotionStatsScreen() {
     fetchMonthlyActivities
   } = useStatsStore();
 
+  let isProf = false;
+  if (userId) {
+    isProf = true;
+    console.log(userId);
+  }
   const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
   const [activityMonthDate, setActivityMonthDate] = useState({ month: 0, year: 0 });
   const [radarDate, setRadarDate] = useState({ month: 0, year: 0 });
@@ -646,22 +651,23 @@ export default function EmotionStatsScreen() {
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
     
-    fetchWeeklyStats();
-    fetchMonthlyStats(currentMonth, currentYear);
-    fetchYearlyStats(currentYear);
-    
-    fetchWeeklyActivities().catch(console.error);
-    fetchMonthlyActivities(currentMonth, currentYear).catch(console.error);
-    
+    fetchWeeklyStats(userId);
+    fetchMonthlyStats(currentMonth, currentYear,userId);
+    fetchYearlyStats(currentYear,userId);
+
+    fetchWeeklyActivities(userId).catch(console.error);
+    fetchMonthlyActivities(currentMonth, currentYear, userId).catch(console.error);
+
     setCalendarData(null);
     setLoadingCalendar(true);
     setActivityMonthDate({ month: currentMonth, year: currentYear });
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   useEffect(() => {
     if (activityMonthDate.month === 0) return;
     fetchMonthlyActivities(activityMonthDate.month, activityMonthDate.year).catch(console.error);
-  }, [activityMonthDate]);
+  }, [activityMonthDate, fetchMonthlyActivities]);
 
   const navigateCalendarMonth = (direction: 'prev' | 'next') => {
     setCalendarDate(prev => {
@@ -692,6 +698,10 @@ export default function EmotionStatsScreen() {
   };
 
   const navigateActivityMonth = (direction: 'prev' | 'next') => {
+    console.log("***************");
+    console.log("navigateActivityMonth: ", activityMonthDate);
+    console.log("***************");
+    
     setActivityMonthDate(prev => {
       let newMonth = prev.month;
       let newYear = prev.year;
@@ -712,6 +722,9 @@ export default function EmotionStatsScreen() {
       
       return { month: newMonth, year: newYear };
     });
+    console.log("***************");
+    console.log("navigateActivityMonth: ", activityMonthDate);
+    console.log("***************");
   };
 
   const isCurrentActivityMonth = () => {
@@ -752,7 +765,7 @@ export default function EmotionStatsScreen() {
   const [radarData, setRadarData] = useState<Record<string, number> | null>(null);
   const [loadingRadar, setLoadingRadar] = useState(false);
 
-  const fetchCalendarDataOnly = async (month: number, year: number) => {
+  const fetchCalendarDataOnly = async (month: number, year: number, userId?: string) => {
     setLoadingCalendar(true);
     try {
       const token = useUserLogInStore.getState().token;
@@ -764,7 +777,7 @@ export default function EmotionStatsScreen() {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + token,
         },
-        body: JSON.stringify({ month, year }),
+        body: JSON.stringify({ month, year, userId }),
       });
       
       if (!response.ok) {
@@ -782,7 +795,7 @@ export default function EmotionStatsScreen() {
     }
   };
 
-  const fetchRadarDataOnly = async (month: number, year: number) => {
+  const fetchRadarDataOnly = async (month: number, year: number, userId?: string) => {
     setLoadingRadar(true);
     try {
       const token = useUserLogInStore.getState().token;
@@ -794,7 +807,7 @@ export default function EmotionStatsScreen() {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + token,
         },
-        body: JSON.stringify({ month, year }),
+        body: JSON.stringify({ month, year, userId }),
       });
       
       if (!response.ok) {
@@ -830,8 +843,9 @@ export default function EmotionStatsScreen() {
         setCalendarData(monthlyRawData);
       }
     } else {
-      fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
+      fetchCalendarDataOnly(calendarDate.month, calendarDate.year, userId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calendarDate, monthlyRawData, loadingMonthly]);
 
   useEffect(() => {
@@ -842,8 +856,9 @@ export default function EmotionStatsScreen() {
         setRadarData(monthlyStats);
       }
     } else {
-      fetchRadarDataOnly(radarDate.month, radarDate.year);
+      fetchRadarDataOnly(radarDate.month, radarDate.year, userId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radarDate, monthlyStats, loadingMonthly]);
 
   const mapEmotionName = (emotion: string): EmotionType => {
@@ -952,7 +967,7 @@ export default function EmotionStatsScreen() {
     >
       <HeaderGoBack
         text="Estadísticas"
-        onPress={() => router.push("/tabs/home")}
+        onPress={() => router.back()}
       />
       <SafeAreaView className="flex-1">
         <ScrollView className="px-4 pt-4 pb-40" showsVerticalScrollIndicator={false}>
