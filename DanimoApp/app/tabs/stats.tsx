@@ -5,7 +5,7 @@ import { useStatsStore } from "@/stores/stats";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -529,17 +529,23 @@ const ErrorCard = ({ message }: { message: string }) => (
   </View>
 );
 
-const EmptyStateCard = ({ title, subtitle }: { title: string; subtitle: string }) => (
+const EmptyStateCard = ({ title, subtitle, isProfessionalView = false }: { 
+  title: string; 
+  subtitle: string;
+  isProfessionalView?: boolean;
+}) => (
   <View className="bg-fondo bg-opacity-80 rounded-2xl p-8 items-center mb-3">
     <FontAwesome name="pie-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
     <Text className="text-xl font-bold text-center text-oscuro mb-2">{title}</Text>
     <Text className="text-base text-center text-oscuro opacity-70 mb-6">{subtitle}</Text>
-    <TouchableOpacity 
-      className="bg-color1 rounded-xl px-6 py-3"
-      onPress={() => router.push("/tabs/home")}
-    >
-      <Text className="text-fondo font-semibold">Registrar emoción</Text>
-    </TouchableOpacity>
+    {!isProfessionalView && (
+      <TouchableOpacity 
+        className="bg-color1 rounded-xl px-6 py-3"
+        onPress={() => router.push("/tabs/home")}
+      >
+        <Text className="text-fondo font-semibold">Registrar emoción</Text>
+      </TouchableOpacity>
+    )}
   </View>
 );
 
@@ -604,6 +610,8 @@ const ActivityDonutChart = ({ data, size = 160 }: { data: Record<string, number>
 };
 
 export default function EmotionStatsScreen() {
+  const { patientId } = useLocalSearchParams<{ patientId?: string }>();
+  
   const { 
     weeklyStats, 
     loadingWeekly, 
@@ -646,22 +654,25 @@ export default function EmotionStatsScreen() {
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
     
-    fetchWeeklyStats();
-    fetchMonthlyStats(currentMonth, currentYear);
-    fetchYearlyStats(currentYear);
+    // Pasar patientId a TODAS las funciones de stats
+    fetchWeeklyStats(patientId);
+    fetchMonthlyStats(currentMonth, currentYear, patientId);
+    fetchYearlyStats(currentYear, patientId);
     
-    fetchWeeklyActivities().catch(console.error);
-    fetchMonthlyActivities(currentMonth, currentYear).catch(console.error);
+    // Pasar patientId si existe (cuando es profesional viendo stats de paciente)
+    fetchWeeklyActivities(patientId).catch(console.error);
+    fetchMonthlyActivities(currentMonth, currentYear, patientId).catch(console.error);
     
     setCalendarData(null);
     setLoadingCalendar(true);
     setActivityMonthDate({ month: currentMonth, year: currentYear });
-  }, []);
+  }, [patientId]);
 
   useEffect(() => {
     if (activityMonthDate.month === 0) return;
-    fetchMonthlyActivities(activityMonthDate.month, activityMonthDate.year).catch(console.error);
-  }, [activityMonthDate]);
+    // Pasar patientId cuando cambia el mes
+    fetchMonthlyActivities(activityMonthDate.month, activityMonthDate.year, patientId).catch(console.error);
+  }, [activityMonthDate, patientId]);
 
   const navigateCalendarMonth = (direction: 'prev' | 'next') => {
     setCalendarDate(prev => {
@@ -758,13 +769,15 @@ export default function EmotionStatsScreen() {
       const token = useUserLogInStore.getState().token;
       if (!token) throw new Error('No hay token de autenticación');
       
+      const bodyData = patientId ? { month, year, userId: patientId } : { month, year };
+      
       const response = await fetch(URL_BASE + URL_STATS + '/month', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + token,
         },
-        body: JSON.stringify({ month, year }),
+        body: JSON.stringify(bodyData),
       });
       
       if (!response.ok) {
@@ -788,13 +801,15 @@ export default function EmotionStatsScreen() {
       const token = useUserLogInStore.getState().token;
       if (!token) throw new Error('No hay token de autenticación');
       
+      const bodyData = patientId ? { month, year, userId: patientId } : { month, year };
+      
       const response = await fetch(URL_BASE + URL_STATS + '/month', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + token,
         },
-        body: JSON.stringify({ month, year }),
+        body: JSON.stringify(bodyData),
       });
       
       if (!response.ok) {
@@ -832,7 +847,7 @@ export default function EmotionStatsScreen() {
     } else {
       fetchCalendarDataOnly(calendarDate.month, calendarDate.year);
     }
-  }, [calendarDate, monthlyRawData, loadingMonthly]);
+  }, [calendarDate, monthlyRawData, loadingMonthly, patientId]);
 
   useEffect(() => {
     if (radarDate.month === 0) return;
@@ -844,7 +859,7 @@ export default function EmotionStatsScreen() {
     } else {
       fetchRadarDataOnly(radarDate.month, radarDate.year);
     }
-  }, [radarDate, monthlyStats, loadingMonthly]);
+  }, [radarDate, monthlyStats, loadingMonthly, patientId]);
 
   const mapEmotionName = (emotion: string): EmotionType => {
     const emotionMap: Record<string, EmotionType> = {
@@ -950,10 +965,20 @@ export default function EmotionStatsScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
-      <HeaderGoBack
-        text="Estadísticas"
-        onPress={() => router.push("/tabs/home")}
-      />
+      {patientId ? (
+        <HeaderGoBack
+          text="Estadísticas del Paciente"
+          onPress={() => router.push({
+            pathname: "/screensOnlyProf/patientsDetail",
+            params: { patientId }
+          })}
+        />
+      ) : (
+        <HeaderGoBack
+          text="Estadísticas"
+          onPress={() => router.push("/tabs/home")}
+        />
+      )}
       <SafeAreaView className="flex-1">
         <ScrollView className="px-4 pt-4 pb-40" showsVerticalScrollIndicator={false}>
           
@@ -965,7 +990,10 @@ export default function EmotionStatsScreen() {
           ) : !hasMonthlyData ? (
             <EmptyStateCard 
               title="Círculo Emocional" 
-              subtitle="Registra tus emociones para ver tu resumen"
+              subtitle={patientId 
+                ? "El paciente no tiene registros de emociones este mes" 
+                : "Registra tus emociones para ver tu resumen"}
+              isProfessionalView={!!patientId}
             />
           ) : (
             <View className="bg-fondo bg-opacity-80 rounded-2xl p-5 mb-3">
@@ -1007,7 +1035,10 @@ export default function EmotionStatsScreen() {
           ) : !hasWeeklyData ? (
             <EmptyStateCard 
               title="Últimos 7 días" 
-              subtitle="Registra emociones para ver tu progreso semanal"
+              subtitle={patientId 
+                ? "El paciente no tiene registros en los últimos 7 días" 
+                : "Registra emociones para ver tu progreso semanal"}
+              isProfessionalView={!!patientId}
             />
           ) : (
             <CompactBarChart 
@@ -1025,7 +1056,10 @@ export default function EmotionStatsScreen() {
           ) : !hasMonthlyData ? (
             <EmptyStateCard 
               title="Este mes" 
-              subtitle="Registra emociones para ver tu progreso mensual detallado"
+              subtitle={patientId 
+                ? "El paciente no tiene registros este mes" 
+                : "Registra emociones para ver tu progreso mensual detallado"}
+              isProfessionalView={!!patientId}
             />
           ) : (
             <EmotionChart 
@@ -1159,9 +1193,12 @@ export default function EmotionStatsScreen() {
               <View className="items-center py-8">
                 <FontAwesome name="calendar-o" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
                 <Text className="text-base text-center text-oscuro opacity-70 mb-6">
-                  Sin registros en {getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}
+                  {patientId 
+                    ? `El paciente no tiene registros en ${getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}`
+                    : `Sin registros en ${getCapitalizedMonthYear(calendarDate.month, calendarDate.year)}`
+                  }
                 </Text>
-                {isCurrentMonth() && (
+                {isCurrentMonth() && !patientId && (
                   <TouchableOpacity 
                     className="bg-color1 rounded-xl px-6 py-3"
                     onPress={() => router.push("/tabs/home")}
@@ -1251,7 +1288,10 @@ export default function EmotionStatsScreen() {
           ) : !hasYearlyData ? (
             <EmptyStateCard 
               title={`Año ${currentYear}`} 
-              subtitle="Registra emociones para ver tu progreso anual"
+              subtitle={patientId 
+                ? `El paciente no tiene registros en el año ${currentYear}` 
+                : "Registra emociones para ver tu progreso anual"}
+              isProfessionalView={!!patientId}
             />
           ) : (
             <CompactBarChart 
@@ -1267,9 +1307,7 @@ export default function EmotionStatsScreen() {
           {loadingWeeklyActivities ? (
             <LoadingCard message="Cargando actividades semanales..." />
           ) : errorWeeklyActivities ? (
-            !errorWeeklyActivities.includes('404') && !errorWeeklyActivities.includes('fetch') ? (
-              <ErrorCard message={errorWeeklyActivities} />
-            ) : null
+            <ErrorCard message={errorWeeklyActivities} />
           ) : weeklyActivities && Object.keys(weeklyActivities).length > 0 ? (
             <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
               <Text className="text-lg font-bold text-oscuro mb-1">Actividades - Últimos 7 días</Text>
@@ -1464,7 +1502,10 @@ export default function EmotionStatsScreen() {
               <View className="items-center py-8">
                 <FontAwesome name="bar-chart" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
                 <Text className="text-center text-oscuro opacity-70">
-                  No hay actividades registradas en este mes
+                  {patientId 
+                    ? "El paciente no tiene actividades registradas en este mes"
+                    : "No hay actividades registradas en este mes"
+                  }
                 </Text>
               </View>
             </View>

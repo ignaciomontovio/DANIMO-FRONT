@@ -37,9 +37,16 @@ export default function TabsLayout() {
       />
       <Tabs.Screen 
         name="stats" 
-        options={{
-          title: "Estadísticas"
-        }}
+        options={({ route }: any) => ({
+          title: "Estadísticas",
+          tabBarStyle: route.params?.patientId 
+            ? { display: "none" } 
+            : {
+                backgroundColor: colors.oscuro,
+                height: 70,
+                paddingBottom: 10,
+              }
+        })}
       />
       <Tabs.Screen
         name="sos"

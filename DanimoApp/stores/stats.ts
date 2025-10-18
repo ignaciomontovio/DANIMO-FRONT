@@ -64,13 +64,13 @@ type StatsState = {
   errorCustomActivities: string | null;
   
   // Actions
-  fetchWeeklyStats: () => Promise<void>;
-  fetchMonthlyStats: (month: number, year: number) => Promise<void>;
-  fetchYearlyStats: (year: number) => Promise<void>;
+  fetchWeeklyStats: (userId?: string) => Promise<void>;
+  fetchMonthlyStats: (month: number, year: number, userId?: string) => Promise<void>;
+  fetchYearlyStats: (year: number, userId?: string) => Promise<void>;
   
   // Activity Actions
-  fetchWeeklyActivities: () => Promise<void>;
-  fetchMonthlyActivities: (month: number, year: number) => Promise<void>;
+  fetchWeeklyActivities: (userId?: string) => Promise<void>;
+  fetchMonthlyActivities: (month: number, year: number, userId?: string) => Promise<void>;
   fetchCustomActivities: (since: string, until: string) => Promise<void>;
   
   // Clear functions
@@ -213,11 +213,13 @@ export const useStatsStore = create<StatsState>((set, get) => ({
   errorMonthlyActivities: null,
   errorCustomActivities: null,
   
-  fetchWeeklyStats: async () => {
+  fetchWeeklyStats: async (userId?: string) => {
     set({ loadingWeekly: true, errorWeekly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/week', {});
+      const userIdToUse = userId || await getUserId();
+      const bodyData = userIdToUse !== (await getUserId()) ? { userId: userIdToUse } : {};
+      const data = await makeAuthenticatedRequest('/week', bodyData);
       const processedData = processStatsData(data);
       set({ weeklyStats: processedData, loadingWeekly: false });
     } catch (error) {
@@ -228,11 +230,15 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchMonthlyStats: async (month: number, year: number) => {
+  fetchMonthlyStats: async (month: number, year: number, userId?: string) => {
     set({ loadingMonthly: true, errorMonthly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/month', { month, year });
+      const userIdToUse = userId || await getUserId();
+      const bodyData = userIdToUse !== (await getUserId()) 
+        ? { month, year, userId: userIdToUse } 
+        : { month, year };
+      const data = await makeAuthenticatedRequest('/month', bodyData);
       const processedData = processStatsData(data);
       set({ 
         monthlyStats: processedData, 
@@ -247,11 +253,15 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchYearlyStats: async (year: number) => {
+  fetchYearlyStats: async (year: number, userId?: string) => {
     set({ loadingYearly: true, errorYearly: null });
     
     try {
-      const data = await makeAuthenticatedRequest('/year', { year });
+      const userIdToUse = userId || await getUserId();
+      const bodyData = userIdToUse !== (await getUserId()) 
+        ? { year, userId: userIdToUse } 
+        : { year };
+      const data = await makeAuthenticatedRequest('/year', bodyData);
       const processedData = processStatsData(data);
       set({ yearlyStats: processedData, loadingYearly: false });
     } catch (error) {
@@ -262,12 +272,12 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
 
-  fetchWeeklyActivities: async () => {
+  fetchWeeklyActivities: async (userId?: string) => {
     set({ loadingWeeklyActivities: true, errorWeeklyActivities: null });
     
     try {
-      const userId = await getUserId();
-      if (!userId) {
+      const userIdToUse = userId || await getUserId();
+      if (!userIdToUse) {
         set({ weeklyActivities: {}, loadingWeeklyActivities: false });
         return;
       }
@@ -277,7 +287,7 @@ export const useStatsStore = create<StatsState>((set, get) => ({
         throw new Error('No hay token de autenticación');
       }
       
-      const bodyData = { id: userId };
+      const bodyData = { userId: userIdToUse };
       
       const response = await fetch(`${URL_BASE}${URL_STATS}/activities-week`, {
         method: 'POST',
@@ -322,12 +332,12 @@ export const useStatsStore = create<StatsState>((set, get) => ({
     }
   },
   
-  fetchMonthlyActivities: async (month: number, year: number) => {
+  fetchMonthlyActivities: async (month: number, year: number, userId?: string) => {
     set({ loadingMonthlyActivities: true, errorMonthlyActivities: null });
     
     try {
-      const userId = await getUserId();
-      if (!userId) {
+      const userIdToUse = userId || await getUserId();
+      if (!userIdToUse) {
         set({ monthlyActivities: {}, loadingMonthlyActivities: false });
         return;
       }
@@ -338,7 +348,7 @@ export const useStatsStore = create<StatsState>((set, get) => ({
       }
 
       const bodyData = {
-        userId: userId,
+        userId: userIdToUse,
         month: month,
         year: year
       };

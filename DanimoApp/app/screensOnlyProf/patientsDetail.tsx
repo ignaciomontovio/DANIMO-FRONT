@@ -86,7 +86,7 @@ export default function PatientDetailScreen() {
     >
       <HeaderGoBack 
         text="Detalle de paciente" 
-        onPress={() => router.back()} 
+        onPress={() => router.push("/screensOnlyProf/patientsList")} 
       />
       
       <SafeAreaView className="flex-1">
@@ -137,7 +137,12 @@ export default function PatientDetailScreen() {
               
               {/* Botones de acción */}
               <View className="space-y-3">
-                <ButtonAccept text="Estadisticas"  />
+                <ButtonAccept text="Estadisticas" onPress={() => {
+                  router.push({
+                    pathname: "/tabs/stats",
+                    params: { patientId },
+                  });
+                }} />
                 <ButtonAccept text="Historial chat" onPress={()=>{ 
                     router.push({
                         pathname: "/screensOnlyProf/historialDeChat",
