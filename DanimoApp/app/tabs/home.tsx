@@ -73,6 +73,9 @@ export default function Home() {
         <ScrollView className="flex-1 px-4 pb-20 py-10">
           <View className="space-y-5 mb-10">
             <SearchBar placeholder="Buscar eventos o métricas..." onChangeText={(text) => console.log(text)} />
+            
+            {/* <SpeechToText/> */}
+
             <SelectFive goto="/screensOnlyUser/detailEmotion" message="¿Cuál es tu estado de ánimo?" type="Emocion"/>
             <SelectFive goto="/screensOnlyUser/detailSleep" message="¿Cómo dormiste?" type="Sueño" />
             <ButtonDark text="Profesionales Asociados" onPress={()=>{router.replace("/screensOnlyUser/ascociatedProf")}} />

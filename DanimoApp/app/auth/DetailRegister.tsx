@@ -1,4 +1,5 @@
 import { ButtonAccept } from "@/components/buttons";
+import HeaderGoBack from "@/components/headerGoBack";
 import Input, { Input_date } from "@/components/input";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
@@ -25,14 +26,17 @@ export default function DetailRegister() {
   const [userName, setUserName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userSex, setUserSex] = useState<"Masculino" | "Femenino" | "Otro" | undefined>(undefined);
+  const [userProfesion, setProfesion] = useState<"Psicologo" | "Psiquiatra" | "Psicopedagogo" | undefined>(undefined);
   const [userBirth, setUserBirth] = useState<Date | undefined>(undefined);
   const [userDNI, setUserDNI] = useState("");
   const [userLicence, setUserLicence] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisibleProf, setModalVisibleProf] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const userType = useUserLogInStore((state) => state.userType);
   const genderOptions = ["Masculino", "Femenino", "Otro"];
+  const profesionOptions = ["Psicologo", "Psiquiatra", "Psicopedagogo"];
 
   useEffect(() => {
     const showSubs = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardVisible(true));
@@ -44,6 +48,7 @@ export default function DetailRegister() {
   }, []);
 
   const toggleModal = () => setModalVisible((prev) => !prev);
+  const toggleModalProf = () => setModalVisibleProf((prev) => !prev);
 
   const isAdult = (date: Date): boolean => {
     const today = new Date();
@@ -67,6 +72,7 @@ export default function DetailRegister() {
     if (isProf) {
       payload.license = userLicence.trim() || "";
       payload.dni = userDNI.trim() || "";
+      payload.occupation = userProfesion?.trim() || "";
     }
 
     try {
@@ -124,9 +130,44 @@ export default function DetailRegister() {
     </View>
   );
 
+  const renderProfesionSelector = () => (
+    <View>
+      <View className="relative mb-4">
+        <FontAwesome name="briefcase" size={18} color="gray" style={{ position: "absolute", top: 16, left: 12 }} />
+        <TouchableOpacity
+          onPress={toggleModalProf}
+          className="w-full pl-10 pr-4 py-3 border border-oscuro rounded-md"
+          accessibilityRole="button"
+        >
+          <Text className="text-oscuro">{userProfesion ?? "Selecciona tu profesión"}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal isVisible={isModalVisibleProf} onBackdropPress={toggleModalProf}>
+        <View className="bg-fondo rounded-xl p-4">
+          <Text className="text-lg font-bold mb-2">Selecciona tu profesión</Text>
+          {profesionOptions.map((option) => (
+            <TouchableOpacity
+              key={option}
+              onPress={() => {
+                setProfesion(option as "Psicologo" | "Psiquiatra" | "Psicopedagogo");
+                setModalVisibleProf(false);
+              }}
+              className="py-2"
+            >
+              <Text className="text-base">{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Modal>
+    </View>
+  );
+
+
   return (
     <SafeAreaProvider>
       <LinearGradient colors={[colors.color5, colors.fondo]} className="w-full h-full">
+      <HeaderGoBack text="Registro" onPress={() => router.replace("/auth/LoginRegisterScreen")} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.select({ android: "height" })}
@@ -149,6 +190,7 @@ export default function DetailRegister() {
                   <>
                     <Input icon="id-card" placeholder="DNI" keyboardType="decimal-pad" value={userDNI} onChangeText={setUserDNI} />
                     <Input icon="id-card" placeholder="Matrícula profesional" value={userLicence} onChangeText={setUserLicence} />
+                    {renderProfesionSelector()}
                   </>
                 )}
 

@@ -8,13 +8,23 @@ import { Text, TouchableOpacity } from "react-native";
 // Componente del switcher de usuario para el navbar profesional
 
 export default function TabsLayout() {
+  const firstName = useUserLogInStore((state) => state.firstName);
+  const lastName = useUserLogInStore((state) => state.lastName);
+  const userMail = useUserLogInStore((state) => state.mail);
+  
+  // Priorizar nombre completo, luego firstName, luego email, luego fallback
+  const displayName = firstName 
+    ? `${firstName}${lastName ? ` ${lastName}` : ''}`
+    : userMail 
+      ? userMail.split('@')[0] 
+      : "Perfil";
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
           if (route.name === "home") iconName = "home";
-          else if (route.name === "stats") iconName = "bar-chart";
           else if (route.name === "rutines") iconName = "medkit";
           else if (route.name === "profile") iconName = "user";
 
@@ -30,10 +40,24 @@ export default function TabsLayout() {
         headerShown: false,
       })}
     >
-      <Tabs.Screen name="home" />
-      <Tabs.Screen name="stats" /> 
-      <Tabs.Screen name="rutines" />  
-      <Tabs.Screen name="profile" />
+      <Tabs.Screen 
+        name="home" 
+        options={{
+          title: "Inicio"
+        }}
+      />
+      <Tabs.Screen 
+        name="rutines" 
+        options={{
+          title: "Rutinas"
+        }}
+      />
+      <Tabs.Screen 
+        name="profile" 
+        options={{
+          title: displayName
+        }}
+      />
     </Tabs>
     
   );

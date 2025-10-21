@@ -28,7 +28,7 @@ export default function PatientsListScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
-      <HeaderGoBack text="Pacientes" onPress={() => router.back()} />
+      <HeaderGoBack text="Pacientes" onPress={() => router.push("/profesional/home")} />
 
       <SafeAreaView className="flex-1">
         <View className="px-4 pt-4 pb-2">

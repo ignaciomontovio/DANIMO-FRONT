@@ -7,10 +7,10 @@ import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, ScrollView, Text, View, Animated, Easing } from "react-native";
+import { Alert, Animated, Easing, ScrollView, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
+import { cardRiskMsj, riskMessagesType } from "./historicPatient";
 export default function HistorialDeChat() {
   const token = useUserLogInStore((state) => state.token);
   const [weekResume, setWeekResume] = useState("");
@@ -18,6 +18,7 @@ export default function HistorialDeChat() {
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const patients = usePatientStore((state: { patients: any }) => state.patients);
   const patient = patients.find((p: patientProfile) => p.id === patientId);
+  const [riskMessages, setRiskMessages] = useState<riskMessagesType[]>([]);
 
   // Animación de rotación
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -62,8 +63,9 @@ export default function HistorialDeChat() {
           throw new Error(errorText.error);
         }
 
-        const data = await response.json();
+        const data = await response.json();        
         setWeekResume(data.summary);
+        setRiskMessages(Array.isArray(data.riskMessages) ? data.riskMessages : []);
       } catch (error) {
         console.error("Error al obtener resumen de paciente:", error);
         Alert.alert("Error", "No se pudo obtener resumen de paciente.");
@@ -94,6 +96,7 @@ export default function HistorialDeChat() {
         />
 
         <ScrollView className="flex-1 px-5 py-5">
+          {cardRiskMsj(riskMessages)}
           {/* Tarjeta resumen */}
           <View className="bg-fondo rounded-2xl p-4 shadow-md">
             <View className="flex-row items-center justify-center">

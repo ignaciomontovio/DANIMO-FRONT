@@ -11,7 +11,6 @@ export interface UserProfile extends Record<string, string | undefined> {
   d_birth: string;
   occupation: string;
   livesWith: string;
-  code: string;
 }
 
 export interface ProfProfile extends Record<string, string | undefined> {
@@ -53,7 +52,6 @@ export const profileCardConfigUsuario: CardConfig<UserProfile> = {
       <ShowInfo text={formatDate(item.d_birth)} icon="calendar" />
       <ShowInfo text={item.livesWith} icon="home" />
       <ShowInfo text={item.occupation} icon="briefcase" />
-      <ShowInfo text={item.code} icon="share" />
     </>
   ),
 };

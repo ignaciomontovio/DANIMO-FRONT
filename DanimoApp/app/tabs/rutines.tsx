@@ -1,10 +1,9 @@
-
 import CardRutine, { Rutine } from "@/app/cards/cardRutine";
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { ALL_EMOTIONS, URL_BASE, URL_RUTINE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,15 +18,19 @@ import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Rutines() {
+  const { emotionFromChat } = useLocalSearchParams<{ emotionFromChat: string }>();
+  
   const [loading, setLoading] = useState(true);
   const [rutines, setRutines] = useState<Rutine[]>([]);
   const token = useUserLogInStore((state) => state.token);
   const [emotions, setEmotions] = useState<Record<string, boolean>>({});
+  if (emotionFromChat){
+    setEmotions((prev) => ({ ...prev, [emotionFromChat]: true }));
+  }
 
   const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
-  const ACTIVE_PILL_STYLE = "bg-color1 text-white";
-  const INACTIVE_PILL_STYLE = "bg-color5 text-oscuro";
-
+  const ACTIVE_PILL_STYLE = "bg-color1 text-white shadow-lg";
+  const INACTIVE_PILL_STYLE = "bg-gray-200 text-gray-400 opacity-50";
 
   const fetchData = useCallback(async () => {
     try {
@@ -56,7 +59,6 @@ export default function Rutines() {
         : [], 
     }));
 
-
     setRutines(rutinasConEmails);
 
     console.log("Rutinas con emails:", JSON.stringify(rutinasConEmails, null, 2));
@@ -74,7 +76,7 @@ export default function Rutines() {
     fetchData();
     const initialEmotions = Object.fromEntries(
       ALL_EMOTIONS
-        .filter(emotion => emotion !== "Alegria")
+        .filter(emotion => emotion !== "Alegría")
         .map(emotion => [emotion, false])
     );
     initialEmotions["Tristeza"] = true
@@ -85,6 +87,7 @@ export default function Rutines() {
   const toggle = (key: string, state: Record<string, boolean>, setState: (val: Record<string, boolean>) => void) => {
     setState({ ...state, [key]: !state[key] });
   };
+
   const PillContainer = ({
       list,
       setList,
@@ -93,14 +96,7 @@ export default function Rutines() {
       setList: (val: Record<string, boolean>) => void;
     }) => (
       <View className="relative mt-5">
-        <View
-          className="absolute top-0 left-0 right-0 bottom-0 bg-fondo rounded-2xl"
-          style={{
-            opacity: 0.7,
-            shadowColor: "#000",
-            elevation: 10,
-          }}
-        />
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-fondo rounded-2xl opacity-70 shadow-xl shadow-black/20" />
         <View className="p-2 rounded-2xl">
           <View className="flex-row flex-wrap justify-center">
             {Object.entries(list).map(([key, selected]) => (
@@ -109,8 +105,7 @@ export default function Rutines() {
                 className={`${PILL_STYLE} ${selected ? ACTIVE_PILL_STYLE : INACTIVE_PILL_STYLE}`}
                 onPress={() => toggle(key, list, setList)}
               >
-                {/* <FontAwesome name="tag" size={20} color={colors.oscuro} /> */}
-                <Text>{key}</Text>
+                <Text className={selected ? "text-white font-bold" : "text-gray-400"}>{key}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -136,13 +131,14 @@ export default function Rutines() {
           setList: setEmotions,
         })}
 
-
         <ScrollView className="flex-1 px-5 py-5">
           <View className="flex-1 items-center pb-20 pt-5">
             {loading ? (
               <ActivityIndicator size="large" color="#000" />
             ) : rutines.length > 0 ? (
-              rutines.filter((rutines) => emotions[rutines.emotion[0]]).map((el, index) => (
+              rutines.filter((rutina) => 
+                rutina.emotion.some((emocion) => emotions[emocion])
+              ).map((el, index) => (
                 <CardRutine
                   key={index}
                   element={el}

@@ -1,5 +1,5 @@
 # Ejecutar
-npm install
+npm install / npm install --save-exact
 npx expo install
 npx expo prebuild --clean 
 npx expo run:android 
