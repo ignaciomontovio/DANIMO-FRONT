@@ -1,8 +1,11 @@
 import { colors } from "@/stores/colors";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import React from "react";
+import { Text, TouchableOpacity } from "react-native";
+
+// Componente del switcher de usuario para el navbar profesional
 
 export default function TabsLayout() {
   const firstName = useUserLogInStore((state) => state.firstName);

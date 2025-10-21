@@ -49,7 +49,7 @@ export const profileCardConfigUsuario: CardConfig<UserProfile> = {
       <ShowInfo text={item.name} icon="user" />
       <ShowInfo text={item.lastName} icon="user" />
       <ShowInfo text={item.email} icon="envelope" />
-      <ShowInfo text={formatDate(item.d_birth)} icon="birthday-cake" />
+      <ShowInfo text={formatDate(item.d_birth)} icon="calendar" />
       <ShowInfo text={item.livesWith} icon="home" />
       <ShowInfo text={item.occupation} icon="briefcase" />
     </>
@@ -64,7 +64,7 @@ export const profileCardConfigProfesional: CardConfig<ProfProfile> = {
       <ShowInfo text={item.name} icon="user" />
       <ShowInfo text={item.lastName} icon="user" />
       <ShowInfo text={item.email} icon="envelope" />
-      <ShowInfo text={formatDate(item.d_birth)} icon="birthday-cake" />
+      <ShowInfo text={formatDate(item.d_birth)} icon="calendar" />
     </>
   ),
 };
@@ -77,7 +77,7 @@ export const getProfileEditConfig = (userType: string): EditConfig => {
       fields: [
         { key: "name", icon: "user", placeholder: "Nombre", type: "text" },
         { key: "lastName", icon: "user", placeholder: "Apellido", type: "text" },
-        { key: "d_birth", icon: "birthday-cake", placeholder: "Fecha de nacimiento", type: "date" },
+        { key: "d_birth", icon: "calendar", placeholder: "Fecha de nacimiento", type: "date" },
       ],
     };
   } else {
@@ -86,7 +86,7 @@ export const getProfileEditConfig = (userType: string): EditConfig => {
       fields: [
         { key: "name", icon: "user", placeholder: "Nombre", type: "text" },
         { key: "lastName", icon: "user", placeholder: "Apellido", type: "text" },
-        { key: "d_birth", icon: "birthday-cake", placeholder: "Fecha de nacimiento", type: "date" },
+        { key: "d_birth", icon: "calendar", placeholder: "Fecha de nacimiento", type: "date" },
         { key: "livesWith", icon: "home", placeholder: "Vive con", type: "text" },
         { key: "occupation", icon: "briefcase", placeholder: "Ocupación", type: "text" },
       ],
