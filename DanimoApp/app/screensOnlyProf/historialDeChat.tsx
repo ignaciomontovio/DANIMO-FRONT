@@ -19,6 +19,7 @@ export default function HistorialDeChat() {
   const patients = usePatientStore((state: { patients: any }) => state.patients);
   const patient = patients.find((p: patientProfile) => p.id === patientId);
   const [riskMessages, setRiskMessages] = useState<riskMessagesType[]>([]);
+  const scrollRef = useRef<ScrollView>(null);
 
   // Animación de rotación
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -95,7 +96,10 @@ export default function HistorialDeChat() {
           onPress={() => router.replace("/profesional/home")}
         />
 
-        <ScrollView className="flex-1 px-5 py-5">
+        <ScrollView 
+          className="flex-1 px-5 py-5"
+          ref={scrollRef}
+        >
           {cardRiskMsj(riskMessages)}
           {/* Tarjeta resumen */}
           <View className="bg-fondo rounded-2xl p-4 shadow-md">
@@ -128,10 +132,10 @@ export default function HistorialDeChat() {
               </View>
             )}
 
-            <Text className="text-sm text-oscuro font-bold">{weekResume}</Text>
+            <Text className="text-sm text-oscuro font-bold">{weekResume}{weekResume}</Text>
           </View>
 
-          <View className="justify-end mt-8 space-y-4">
+          <View className="justify-end mt-8 space-y-4 mb-20">
             <ButtonAccept
               text="Reportes"
               onPress={() => console.log("Ver detalles")}

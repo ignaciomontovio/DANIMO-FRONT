@@ -115,7 +115,6 @@ export default function Chat() {
         { type: "received", text: data.message || JSON.stringify(data) },
       ]);
       console.log(data);
-      setShowRutina(true)
       if(data.recommendRoutine === "true" || data.recommendRoutine === true ){
         setPredominantEmotion(data.predominantEmotion)
         setShowRutina(true)
