@@ -132,7 +132,7 @@ export default function HistorialDeChat() {
               </View>
             )}
 
-            <Text className="text-sm text-oscuro font-bold">{weekResume}{weekResume}</Text>
+            <Text className="text-sm text-oscuro font-bold">{weekResume}</Text>
           </View>
 
           <View className="justify-end mt-8 space-y-4 mb-20">
