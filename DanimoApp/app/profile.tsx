@@ -9,6 +9,7 @@ import React from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+
 export default function Profile() {
     const token = useUserLogInStore((state) => state.token);
     const userEmail = useUserLogInStore((state) => state.mail); 
@@ -71,7 +72,11 @@ export default function Profile() {
     };
     
     const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
+    const setUserType = useUserLogInStore((state) => state.setUserType);
+    const setUserSession = useUserLogInStore((state) => state.setUserSession);
     const handleLogoff = () => {
+      setUserType(null);
+      setUserSession("", "");
       setUserLogIn(false);
       router.replace("../auth/LoginRegisterScreen");
     };

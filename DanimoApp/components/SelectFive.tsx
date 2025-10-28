@@ -49,6 +49,13 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
     4: "Miedo",
     5: "Tristeza"
   };
+  const sleepLabels: Record<number, string> = {
+    1: "Excelente",
+    2: "Bueno", 
+    3: "Regular",
+    4: "Malo",
+    5: "Muy malo"
+  };
 
   const animatePress = (index: number, num: number) => {
     Animated.sequence([
@@ -93,7 +100,7 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
           const emotion = getByNumber(num);
           const label = type === "Emocion" 
             ? emotionLabels[num] 
-            : (typeof emotion === "string" ? emotion : emotion?.name ?? num.toString());
+            : (typeof emotion === "string" ? emotion : emotion?.name ?? sleepLabels[num]);
           return (
             <TouchableWithoutFeedback key={num} onPress={() => animatePress(idx, num)} onLongPress={() => showInfoModal(num)}>
               <Animated.View 

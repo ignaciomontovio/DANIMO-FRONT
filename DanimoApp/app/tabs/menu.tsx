@@ -70,6 +70,8 @@ const UserSwitcher = () => {
 export default function Profile() {
 
   const setUserLogIn = useUserLogInStore((state: { setUserLogIn: (userLogIn: true | false) => void }) => state.setUserLogIn);
+  const setUserType = useUserLogInStore((state) => state.setUserType);
+  const setUserSession = useUserLogInStore((state) => state.setUserSession);
   const userType = useUserLogInStore((state) => state.userType);
   const token = useUserLogInStore((state) => state.token);
   const [name, setName] = useState("");
@@ -87,6 +89,8 @@ export default function Profile() {
 
   const handleLogoff = () => {
     setUserLogIn(false);
+    setUserSession("", "");
+    setUserType(null);
     router.replace("../auth/LoginRegisterScreen");
   };
 

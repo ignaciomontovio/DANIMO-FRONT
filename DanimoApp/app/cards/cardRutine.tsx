@@ -3,11 +3,13 @@ import ShowInfo from "@/components/showInfo";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  Image,
+  Linking,
+  Pressable,
   Text,
   TouchableOpacity,
   View
 } from "react-native";
-import { WebView } from "react-native-webview";
 
 export const RutineTypes = ["Video", "Pasos" , "Texto" , ""];
 
@@ -148,19 +150,45 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
         
         {/* Debug temporal */}
         
-        {element.type === "Video" ? (
-          <View className="w-full aspect-video rounded-xl overflow-hidden mb-4 mt-4 justify-center item-center">
-            <WebView
-              source={{ uri: getEmbeddedYoutubeUrl(content.body) }}
-              style={{ flex: 1 }}
-              allowsFullscreenVideo
-            />
+  {element.type === "Video" ? (
+    <View className="w-full aspect-video rounded-xl overflow-hidden mb-4 mt-4 justify-center items-center bg-black">
+      {getYoutubeThumbnailUrl(content.body) ? (
+        <Pressable
+          onPress={() => {
+            const url = getYoutubeWatchUrl(content.body);
+            if (url) Linking.openURL(url);
+          }}
+          className="w-full h-full"
+        >
+          <Image
+            source={{ uri: getYoutubeThumbnailUrl(content.body)! }}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+          <View className="absolute inset-0 items-center justify-center">
+            <Text
+              style={{
+                backgroundColor: "rgba(0,0,0,0.6)",
+                color: "white",
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 20,
+                fontWeight: "bold",
+              }}
+            >
+              ▶ Ver en YouTube
+            </Text>
           </View>
-        ) : element.type === "Pasos" ? (
-          renderPasos(content.body)
-        ) : (
-          <ShowInfo text={content.body} icon="file-text" />
-        )}
+        </Pressable>
+      ) : (
+        <Text>No se pudo cargar el video</Text>
+      )}
+    </View>
+  ) : element.type === "Pasos" ? (
+    renderPasos(content.body)
+  ) : (
+    <ShowInfo text={content.body} icon="file-text" />
+  )}
 
         {pov === "profesional" && element.createdBy !== "system" && <ButtonDark text="Editar" onPress={onButton} />}
       </View>
@@ -169,8 +197,20 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
   );
 }
 
-function getEmbeddedYoutubeUrl(url: string): string {
-  const match = url.match(/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
-  const videoId = match?.[1];
-  return `https://www.youtube.com/embed/${videoId}`;
+function extractYoutubeId(url: string): string | null {
+  if (!url) return null;
+  const match = url.match(
+    /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match?.[1] ?? null;
+}
+
+function getYoutubeThumbnailUrl(url: string): string | null {
+  const id = extractYoutubeId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+
+function getYoutubeWatchUrl(url: string): string | null {
+  const id = extractYoutubeId(url);
+  return id ? `https://www.youtube.com/watch?v=${id}` : null;
 }
