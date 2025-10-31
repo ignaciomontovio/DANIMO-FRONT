@@ -1,7 +1,6 @@
 import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_BASE, URL_STATS } from "@/stores/consts";
-import { useSleepStore } from "@/stores/sleeps";
 import { useStatsStore } from "@/stores/stats";
 import { useUserLogInStore } from "@/stores/userLogIn";
 import { FontAwesome } from "@expo/vector-icons";
@@ -550,6 +549,110 @@ const EmptyStateCard = ({ title, subtitle, isProfessionalView = false }: {
   </View>
 );
 
+const SleepStatsCard = ({ 
+  weeklySleepStats, 
+  dayLabels, 
+  screenWidth, 
+  colors 
+}: { 
+  weeklySleepStats: any;
+  dayLabels: string[];
+  screenWidth: number;
+  colors: any;
+}) => {
+  // Helper function para obtener color por calidad
+  const getQualityColor = (quality: number) => {
+    if (quality >= 4) return colors.color1; // Rosa principal - Excelente
+    if (quality >= 3) return colors.color2; // Rosa claro - Bueno  
+    if (quality >= 2) return colors.color4; // Lavanda - Regular
+    return colors.color5; // Lavanda oscuro - Malo/Sin datos
+  };
+
+  return (
+    <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+      <Text className="text-lg font-bold text-oscuro mb-1">Estadísticas de Sueño</Text>
+      <Text className="text-sm text-oscuro opacity-70 mb-4">
+        Tus registros de sueño de los últimos 7 días
+      </Text>
+      
+      {/* Gráfico de barras por día */}
+      <View className="space-y-3">
+        <Text className="text-sm font-bold text-oscuro">Detalle por día:</Text>
+        {dayLabels.map((dayLabel, index) => {
+          // Buscar datos del día por fecha
+          const today = new Date();
+          const targetDate = new Date(today);
+          targetDate.setDate(today.getDate() - (today.getDay() - index + 7) % 7);
+          const dateStr = targetDate.toISOString().split('T')[0];
+          
+          const dayData = weeklySleepStats.sleeps.find((sleep: any) => 
+            sleep.date.split('T')[0] === dateStr
+          );
+          const hours = dayData?.sleepHours || 0;
+          const quality = dayData?.sleepQuality || 0;
+          const maxHours = 12; // Escala máxima para las barras
+          const barWidth = hours > 0 ? (hours / maxHours) * (screenWidth - 160) : 0;
+          
+          return (
+            <View key={index} className="flex-row items-center space-x-3">
+              <Text className="text-xs font-medium text-oscuro w-8">
+                {dayLabel}
+              </Text>
+              
+              <View className="flex-1">
+                <View className="h-6 rounded-lg overflow-hidden" style={{ backgroundColor: colors.fondo }}>
+                  {hours > 0 && (
+                    <View 
+                      className="h-full rounded-lg flex-row items-center justify-center"
+                      style={{ 
+                        width: Math.max(barWidth, 40),
+                        backgroundColor: getQualityColor(quality)
+                      }}
+                    >
+                      <Text className="text-xs font-bold" style={{ color: colors.oscuro }}>
+                        {hours.toFixed(1)}h
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+              
+              <View className="w-12 items-center">
+                {quality > 0 ? (
+                  <Text className="text-xs font-bold text-oscuro">
+                    {quality}/5
+                  </Text>
+                ) : (
+                  <Text className="text-xs text-oscuro opacity-50">-</Text>
+                )}
+              </View>
+            </View>
+          );
+        })}
+      </View>
+      
+      {/* Leyenda de calidad */}
+      <View className="mt-4 pt-3 border-t" style={{ borderColor: colors.color5 }}>
+        <Text className="text-xs font-medium text-oscuro mb-2">Calidad del sueño:</Text>
+        <View className="flex-row justify-around">
+          <View className="flex-row items-center space-x-1">
+            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color1 }} />
+            <Text className="text-xs text-oscuro">Excelente (4-5)</Text>
+          </View>
+          <View className="flex-row items-center space-x-1">
+            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color2 }} />
+            <Text className="text-xs text-oscuro">Bueno (3)</Text>
+          </View>
+          <View className="flex-row items-center space-x-1">
+            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color4 }} />
+            <Text className="text-xs text-oscuro">Regular (2)</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
 const ActivityDonutChart = ({ data, size = 160 }: { data: Record<string, number>; size?: number }) => {
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
   if (total === 0) return null;
@@ -634,15 +737,14 @@ export default function EmotionStatsScreen() {
     errorWeeklyActivities,
     errorMonthlyActivities,
     fetchWeeklyActivities,
-    fetchMonthlyActivities
-  } = useStatsStore();
-
-  const {
+    fetchMonthlyActivities,
     weeklySleepStats,
     loadingWeeklySleep,
     errorWeeklySleep,
     fetchWeeklySleepStats
-  } = useSleepStore();
+  } = useStatsStore();
+
+
 
   const [calendarDate, setCalendarDate] = useState({ month: 0, year: 0 });
   const [activityMonthDate, setActivityMonthDate] = useState({ month: 0, year: 0 });
@@ -667,12 +769,12 @@ export default function EmotionStatsScreen() {
     fetchMonthlyStats(currentMonth, currentYear, patientId);
     fetchYearlyStats(currentYear, patientId);
     
-    // Cargar estadísticas de sueño
-    fetchWeeklySleepStats(patientId);
-    
     // Pasar patientId si existe (cuando es profesional viendo stats de paciente)
     fetchWeeklyActivities(patientId).catch(console.error);
     fetchMonthlyActivities(currentMonth, currentYear, patientId).catch(console.error);
+    
+    // Agregar llamada para sleep stats
+    fetchWeeklySleepStats(patientId);
     
     setCalendarData(null);
     setLoadingCalendar(true);
@@ -1317,150 +1419,35 @@ export default function EmotionStatsScreen() {
             <LoadingCard message="Cargando estadísticas de sueño..." />
           ) : errorWeeklySleep ? (
             <ErrorCard message={errorWeeklySleep} />
-          ) : !weeklySleepStats || !weeklySleepStats.sleeps || weeklySleepStats.sleeps.length === 0 ? (
-            <EmptyStateCard 
-              title="Estadísticas de Sueño" 
-              subtitle={patientId 
-                ? "El paciente no tiene registros de sueño esta semana"
-                : "Registra tu sueño para ver tus estadísticas"}
-              isProfessionalView={!!patientId}
+          ) : weeklySleepStats && weeklySleepStats.sleeps && weeklySleepStats.sleeps.length > 0 ? (
+            <SleepStatsCard 
+              weeklySleepStats={weeklySleepStats}
+              dayLabels={dayLabels}
+              screenWidth={screenWidth}
+              colors={colors}
             />
-          ) : (() => {
-            // Generar array completo de 7 días
-            const today = new Date();
-            const last7Days = [];
-            
-            for (let i = 6; i >= 0; i--) {
-              const date = new Date(today);
-              date.setDate(date.getDate() - i);
-              const dateString = date.toISOString().split('T')[0];
-              
-              // Buscar si hay datos para este día
-              const sleepData = weeklySleepStats.sleeps.find(sleep => sleep.date === dateString);
-              
-              last7Days.push({
-                date: dateString,
-                dayName: date.toLocaleDateString('es-ES', { weekday: 'short' }),
-                sleepHours: sleepData?.sleepHours || 0,
-                sleepQuality: sleepData?.sleepQuality || 0,
-                hasData: !!sleepData
-              });
-            }
-            
-            return (
-              <View className="bg-fondo bg-opacity-80 rounded-2xl p-4 mb-3">
-                <Text className="text-lg font-bold text-oscuro mb-1">Estadísticas de Sueño</Text>
-                <Text className="text-sm text-oscuro opacity-70 mb-4">Últimos 7 días</Text>
-
-                {/* Promedios */}
-                <View className="flex-row justify-between mb-6 px-4">
-                  <View className="items-center flex-1">
-                    <View className="mb-2">
-                      <FontAwesome name="clock-o" size={24} color={colors.color1} />
-                    </View>
-                    <Text className="text-3xl font-bold text-color1">
-                      {weeklySleepStats.averageHours.toFixed(1)}
-                    </Text>
-                    <Text className="text-sm text-oscuro opacity-70 text-center">Horas promedio</Text>
-                  </View>
-                  
-                  <View className="w-px bg-oscuro opacity-20 mx-4" />
-                  
-                  <View className="items-center flex-1">
-                    <View className="mb-2">
-                      <FontAwesome name="star" size={24} color={colors.color1} />
-                    </View>
-                    <Text className="text-3xl font-bold text-color1">
-                      {weeklySleepStats.averageQuality.toFixed(1)}
-                    </Text>
-                    <Text className="text-sm text-oscuro opacity-70 text-center">Calidad promedio</Text>
-                  </View>
-                </View>
-
-                {/* Gráfico de barras diario - TODOS LOS DÍAS */}
-                <View className="mt-4">
-                  <Text className="text-sm font-bold text-oscuro mb-3">Registro diario</Text>
-                  {last7Days.map((day, index) => {
-                    const maxHours = 12;
-                    const barWidth = day.hasData ? Math.min((day.sleepHours / maxHours) * 100, 100) : 0;
-                    
-                    return (
-                      <View key={`sleep-${index}-${day.date}`} className="mb-4">
-                        <View className="flex-row justify-between items-center mb-1">
-                          <Text className="text-xs font-medium text-oscuro capitalize w-12">
-                            {day.dayName}
-                          </Text>
-                          <Text className="text-xs text-oscuro opacity-70">
-                            {day.hasData ? `${day.sleepHours.toFixed(1)}h` : 'Sin datos'}
-                          </Text>
-                        </View>
-                        <View className="flex-row items-center space-x-3">
-                          <View className="flex-1 h-4 rounded-full" style={{ backgroundColor: '#E5E7EB' }}>
-                            {day.hasData ? (
-                              <View 
-                                className="h-full rounded-full"
-                                style={{ 
-                                  width: `${barWidth}%`,
-                                  backgroundColor: colors.color1,
-                                  opacity: Math.max(day.sleepQuality / 5, 0.2)
-                                }}
-                              />
-                            ) : (
-                              <View 
-                                className="h-full rounded-full"
-                                style={{ 
-                                  width: '100%',
-                                  backgroundColor: '#E5E7EB',
-                                  borderStyle: 'dashed',
-                                  borderWidth: 1,
-                                  borderColor: colors.oscuro + '40'
-                                }}
-                              />
-                            )}
-                          </View>
-                          <View 
-                            className="w-8 h-8 rounded-full items-center justify-center"
-                            style={{ 
-                              backgroundColor: day.hasData ? colors.color1 + '30' : '#E5E7EB'
-                            }}
-                          >
-                            <Text className="text-xs font-bold" style={{
-                              color: day.hasData ? colors.color1 : colors.oscuro + '60'
-                            }}>
-                              {day.hasData ? day.sleepQuality : '-'}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </View>
-
-                {/* Leyenda */}
-                <View className="mt-4 pt-4 border-t border-color5">
-                  <View className="flex-row items-center justify-between px-2">
-                    <View className="flex-row items-center">
-                      <View className="w-4 h-4 rounded mr-2" style={{ backgroundColor: colors.color1, opacity: 0.2 }} />
-                      <Text className="text-xs text-oscuro opacity-70">Calidad baja</Text>
-                    </View>
-                    <View className="flex-row items-center">
-                      <View className="w-4 h-4 rounded mr-2" style={{ backgroundColor: colors.color1, opacity: 1 }} />
-                      <Text className="text-xs text-oscuro opacity-70">Calidad alta</Text>
-                    </View>
-                    <View className="flex-row items-center">
-                      <View className="w-4 h-4 rounded mr-2" style={{ 
-                        backgroundColor: '#E5E7EB',
-                        borderStyle: 'dashed',
-                        borderWidth: 1,
-                        borderColor: colors.oscuro + '40'
-                      }} />
-                      <Text className="text-xs text-oscuro opacity-70">Sin registro</Text>
-                    </View>
-                  </View>
-                </View>
+          ) : (
+            <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
+              <Text className="text-lg font-bold text-oscuro mb-1">Estadísticas de Sueño</Text>
+              <View className="items-center py-8">
+                <FontAwesome name="bed" size={60} color={colors.oscuro} style={{ opacity: 0.5, marginBottom: 16 }} />
+                <Text className="text-center text-oscuro opacity-70">
+                  {patientId 
+                    ? "El paciente no tiene registros de sueño esta semana"
+                    : "No hay registros de sueño esta semana"
+                  }
+                </Text>
+                {!patientId && (
+                  <TouchableOpacity 
+                    className="bg-color1 rounded-xl px-4 py-2 mt-4"
+                    onPress={() => router.push("/tabs/home")}
+                  >
+                    <Text className="text-fondo font-semibold text-sm">Registrar sueño</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            );
-          })()}
+            </View>
+          )}
 
           {/* SECCIÓN DE ACTIVIDADES */}
 
