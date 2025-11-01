@@ -27,7 +27,7 @@ export default function Chat() {
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState("");
   const [showWarning, setShowWarning] = useState(false);
-  const [showRutina, setShowRutina] = useState(true);
+  const [showRutina, setShowRutina] = useState(false);
   const [showContactProf, setShowContactProf] = useState(false);
   const [predominantEmotion, setPredominantEmotion] = useState("");
   const [isKeyboarVisible, setIsKeyboarVisible] = useState(false);
