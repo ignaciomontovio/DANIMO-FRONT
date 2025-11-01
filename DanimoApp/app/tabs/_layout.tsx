@@ -66,13 +66,6 @@ export default function TabsLayout() {
           title: "Menú",
         }}
       />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          tabBarButton: () => null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
     </Tabs>
   );
 }

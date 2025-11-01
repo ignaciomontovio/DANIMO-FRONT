@@ -79,9 +79,9 @@ export default function LoginRegisterScreen() {
         const valid = await validateToken(token, mail);
         if (valid) {
           if (userType === "profesional") {
-            router.push("/profesional/home");
+            router.replace("/profesional/home");
           } else {
-            router.push("/tabs/home");
+            router.replace("/tabs/home");
           }
         }
       }

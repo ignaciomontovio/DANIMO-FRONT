@@ -27,7 +27,7 @@ type SelectFiveProps = {
 };
 
 const goToDetail = (num: number, goto: AllowedRoutes) => {
-  router.push({ pathname: goto, params: { value: num.toString() } });
+  router.replace({ pathname: goto, params: { value: num.toString() } });
 };
 
 export default function SelectFive({ message, goto, type }: SelectFiveProps) {
