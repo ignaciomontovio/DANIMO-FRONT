@@ -560,13 +560,48 @@ const SleepStatsCard = ({
   screenWidth: number;
   colors: any;
 }) => {
-  // Helper function para obtener color por calidad
-  const getQualityColor = (quality: number) => {
-    if (quality >= 4) return colors.color1; // Rosa principal - Excelente
-    if (quality >= 3) return colors.color2; // Rosa claro - Bueno  
-    if (quality >= 2) return colors.color4; // Lavanda - Regular
-    return colors.color5; // Lavanda oscuro - Malo/Sin datos
+  // Helper function to render stars based on quality
+  const renderStars = (quality: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <FontAwesome
+          key={i}
+          name={i <= quality ? "star" : "star-o"}
+          size={16}
+          color={i <= quality ? colors.color1 : colors.color5}
+          style={{ marginHorizontal: 1 }}
+        />
+      );
+    }
+    return stars;
   };
+
+  // Helper function to get day name in Spanish
+  const getDayNameInSpanish = (dayIndex: number) => {
+    const spanishDays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return spanishDays[dayIndex];
+  };
+
+  // Get current week dates
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const week = [];
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - currentDay + i);
+      week.push({
+        date: date.toISOString().split('T')[0],
+        dayName: getDayNameInSpanish(i),
+        isToday: date.toDateString() === today.toDateString()
+      });
+    }
+    return week;
+  };
+
+  const weekDates = getCurrentWeekDates();
 
   return (
     <View className="bg-fondo rounded-3xl p-5 shadow-lg mb-4" style={{ elevation: 8 }}>
@@ -575,55 +610,77 @@ const SleepStatsCard = ({
         Tus registros de sueño de los últimos 7 días
       </Text>
       
-      {/* Gráfico de barras por día */}
-      <View className="space-y-3">
+      {/* Mostrar resumen general */}
+      {weeklySleepStats.averageQuality > 0 && (
+        <View className="rounded-2xl p-4 mb-4 border-2" style={{ 
+          backgroundColor: colors.fondo, 
+          borderColor: colors.color1 + '40' 
+        }}>
+          <View className="flex-row justify-between items-center">
+            <View className="flex-1">
+              <Text className="text-sm font-bold" style={{ color: colors.color1 }}>Promedio Semanal</Text>
+              <Text className="text-xs text-oscuro opacity-70">
+                {weeklySleepStats.averageHours.toFixed(1)} horas por noche
+              </Text>
+            </View>
+            <View className="flex-row items-center">
+              {renderStars(Math.round(weeklySleepStats.averageQuality))}
+            </View>
+          </View>
+        </View>
+      )}
+      
+      {/* Detalle diario con estrellas */}
+      <View className="space-y-4">
         <Text className="text-sm font-bold text-oscuro">Detalle por día:</Text>
-        {dayLabels.map((dayLabel, index) => {
-          // Buscar datos del día por fecha
-          const today = new Date();
-          const targetDate = new Date(today);
-          targetDate.setDate(today.getDate() - (today.getDay() - index + 7) % 7);
-          const dateStr = targetDate.toISOString().split('T')[0];
-          
+        {weekDates.map((weekDay, index) => {
           const dayData = weeklySleepStats.sleeps.find((sleep: any) => 
-            sleep.date.split('T')[0] === dateStr
+            sleep.date.split('T')[0] === weekDay.date
           );
           const hours = dayData?.sleepHours || 0;
           const quality = dayData?.sleepQuality || 0;
-          const maxHours = 12; // Escala máxima para las barras
-          const barWidth = hours > 0 ? (hours / maxHours) * (screenWidth - 160) : 0;
           
           return (
-            <View key={index} className="flex-row items-center space-x-3">
-              <Text className="text-xs font-medium text-oscuro w-8">
-                {dayLabel}
-              </Text>
-              
+            <View 
+              key={index} 
+              className="flex-row items-center justify-between p-3 rounded-xl"
+              style={{ 
+                backgroundColor: weekDay.isToday 
+                  ? colors.color1 + '15' 
+                  : colors.fondo,
+                borderWidth: weekDay.isToday ? 2 : 0,
+                borderColor: weekDay.isToday ? colors.color1 + '40' : 'transparent'
+              }}
+            >
               <View className="flex-1">
-                <View className="h-6 rounded-lg overflow-hidden" style={{ backgroundColor: colors.fondo }}>
-                  {hours > 0 && (
-                    <View 
-                      className="h-full rounded-lg flex-row items-center justify-center"
-                      style={{ 
-                        width: Math.max(barWidth, 40),
-                        backgroundColor: getQualityColor(quality)
-                      }}
-                    >
-                      <Text className="text-xs font-bold" style={{ color: colors.oscuro }}>
-                        {hours.toFixed(1)}h
-                      </Text>
-                    </View>
+                <Text className={`font-bold ${weekDay.isToday ? 'text-color1' : 'text-oscuro'}`}>
+                  {weekDay.dayName}
+                  {weekDay.isToday && (
+                    <Text className="text-xs font-normal"> (Hoy)</Text>
                   )}
-                </View>
+                </Text>
+                <Text className="text-xs text-oscuro opacity-70 mt-1">
+                  {hours > 0 ? `${hours.toFixed(1)} horas` : 'Sin registro'}
+                </Text>
               </View>
               
-              <View className="w-12 items-center">
+              <View className="items-end">
                 {quality > 0 ? (
-                  <Text className="text-xs font-bold text-oscuro">
-                    {quality}/5
-                  </Text>
+                  <View className="flex-row">
+                    {renderStars(quality)}
+                  </View>
                 ) : (
-                  <Text className="text-xs text-oscuro opacity-50">-</Text>
+                  <View className="flex-row">
+                    {[1, 2, 3, 4, 5].map(i => (
+                      <FontAwesome
+                        key={i}
+                        name="star-o"
+                        size={16}
+                        color={colors.color5}
+                        style={{ marginHorizontal: 1, opacity: 0.3 }}
+                      />
+                    ))}
+                  </View>
                 )}
               </View>
             </View>
@@ -631,21 +688,61 @@ const SleepStatsCard = ({
         })}
       </View>
       
-      {/* Leyenda de calidad */}
+      {/* Leyenda de estrellas */}
       <View className="mt-4 pt-3 border-t" style={{ borderColor: colors.color5 }}>
-        <Text className="text-xs font-medium text-oscuro mb-2">Calidad del sueño:</Text>
-        <View className="flex-row justify-around">
-          <View className="flex-row items-center space-x-1">
-            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color1 }} />
-            <Text className="text-xs text-oscuro">Excelente (4-5)</Text>
+        <Text className="text-xs font-medium text-oscuro mb-3 text-center">
+          Escala de Calidad del Sueño
+        </Text>
+        <View className="space-y-2">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+            </View>
+            <Text className="text-xs text-oscuro ml-3">Excelente</Text>
           </View>
-          <View className="flex-row items-center space-x-1">
-            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color2 }} />
-            <Text className="text-xs text-oscuro">Bueno (3)</Text>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+            </View>
+            <Text className="text-xs text-oscuro ml-3">Muy bueno</Text>
           </View>
-          <View className="flex-row items-center space-x-1">
-            <View className="w-3 h-3 rounded" style={{ backgroundColor: colors.color4 }} />
-            <Text className="text-xs text-oscuro">Regular (2)</Text>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+            </View>
+            <Text className="text-xs text-oscuro ml-3">Bueno</Text>
+          </View>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+            </View>
+            <Text className="text-xs text-oscuro ml-3">Regular</Text>
+          </View>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <FontAwesome name="star" size={12} color={colors.color1} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+              <FontAwesome name="star-o" size={12} color={colors.color5} />
+            </View>
+            <Text className="text-xs text-oscuro ml-3">Malo</Text>
           </View>
         </View>
       </View>
