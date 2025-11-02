@@ -10,6 +10,117 @@ import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
+// Mapeo de actividades y hobbies a iconos representativos
+const ACTIVITY_ICONS: { [key: string]: keyof typeof FontAwesome.glyphMap } = {
+  // Deportes y ejercicio
+  'correr': 'heart',
+  'caminar': 'street-view',
+  'nadar': 'tint',
+  'ciclismo': 'bicycle',
+  'fútbol': 'futbol-o',
+  'básquet': 'circle',
+  'tenis': 'circle-o',
+  'gimnasio': 'male',
+  'yoga': 'leaf',
+  'pilates': 'heart',
+  'boxeo': 'hand-rock-o',
+  'escalada': 'arrow-up',
+  'deportes': 'trophy',
+  'ejercicio': 'heartbeat',
+  
+  // Actividades creativas
+  'leer': 'book',
+  'escribir': 'pencil',
+  'dibujar': 'paint-brush',
+  'pintar': 'paint-brush',
+  'fotografía': 'camera',
+  'música': 'headphones',
+  'musica': 'headphones',
+  'tocar instrumento': 'music',
+  'cantar': 'microphone',
+  'bailar': 'music',
+  'cocinar': 'cutlery',
+  'jardineria': 'tree',
+  'jardinería': 'tree',
+  'jardin': 'tree',
+  'jardín': 'tree',
+  'limpiar': 'home',
+  'limpieza': 'home',
+  'ordenar': 'check-square',
+  'compras': 'shopping-cart',
+  'investigar': 'search',
+  'resumir': 'file-text',
+  'finanzas': 'money',
+  'television': 'tv',
+  'televisión': 'tv',
+  'televios': 'tv',
+  'tv': 'tv',
+  
+  // Actividades sociales
+  'amigos': 'users',
+  'amistades': 'users',
+  'pareja': 'heart',
+  'familia': 'home',
+  'salir': 'glass',
+  'cine': 'film',
+  'teatro': 'eye',
+  'concierto': 'music',
+  'fiesta': 'birthday-cake',
+  'reunión': 'comments',
+  
+  // Tecnología y entretenimiento
+  'videojuegos': 'gamepad',
+  'netflix': 'tv',
+  'youtube': 'play',
+  'redes sociales': 'share-alt',
+  'internet': 'wifi',
+  'podcast': 'headphones',
+  
+  // Trabajo y estudio
+  'trabajar': 'briefcase',
+  'estudiar': 'graduation-cap',
+  'reunión laboral': 'users',
+  'presentación': 'bar-chart',
+  
+  // Relajación y bienestar
+  'meditar': 'leaf',
+  'relajarse': 'bed',
+  'masaje': 'hand-peace-o',
+  'spa': 'heart',
+  'dormir': 'moon-o',
+  'descansar': 'bed',
+  
+  // Viajes y aventura
+  'viajar': 'plane',
+  'pasear': 'map-marker',
+  'playa': 'sun-o',
+  'montaña': 'arrow-up',
+  'parque': 'tree',
+  
+  // Por defecto
+  'default': 'star'
+};
+
+// Función para obtener el icono apropiado
+const getActivityIcon = (activityName: string): keyof typeof FontAwesome.glyphMap => {
+  const normalizedName = activityName.toLowerCase();
+  
+  // Buscar coincidencia exacta
+  if (ACTIVITY_ICONS[normalizedName]) {
+    return ACTIVITY_ICONS[normalizedName];
+  }
+  
+  // Buscar coincidencia parcial
+  for (const [key, icon] of Object.entries(ACTIVITY_ICONS)) {
+    if (normalizedName.includes(key) || key.includes(normalizedName)) {
+      return icon;
+    }
+  }
+  
+  // Icono por defecto
+  return ACTIVITY_ICONS.default;
+};
+
 const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
 const ACTIVE_PILL_STYLE = "bg-color1 text-white";
 const INACTIVE_PILL_STYLE = "bg-color5 text-oscuro";
@@ -87,8 +198,12 @@ export default function DetailEmotionScreen() {
               className={`${PILL_STYLE} ${selected ? ACTIVE_PILL_STYLE : INACTIVE_PILL_STYLE}`}
               onPress={() => toggle(key, list, setList)}
             >
-              <FontAwesome name="tag" size={20} color={colors.oscuro} />
-              <Text>{key}</Text>
+              <FontAwesome 
+                name={getActivityIcon(key)} 
+                size={20} 
+                color={selected ? colors.fondo : colors.oscuro} 
+              />
+              <Text className={selected ? 'text-white' : 'text-oscuro'}>{key}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -194,7 +309,7 @@ export default function DetailEmotionScreen() {
         // si ya regitro preguntar si es la misma
         Alert.alert(
           "Registro de emoción",
-          "Ya registraste la emocion " + 
+          "Ya registraste la emoción " + 
           alreadyRegistered.emotion.emotionName + 
           " hoy como principal, ¿quieres cambiarla por esta?",
           [
@@ -236,7 +351,7 @@ export default function DetailEmotionScreen() {
       end={{ x: 0, y: 1 }}
       className="w-full h-full"
     >
-      <HeaderGoBack text="Emocion" onPress={() => router.replace("/tabs/home")} />
+      <HeaderGoBack text="Emoción" onPress={() => router.replace("/tabs/home")} />
       <SafeAreaView className="flex-1">
         <ScrollView 
           className="flex-1 px-6 pt-10" 

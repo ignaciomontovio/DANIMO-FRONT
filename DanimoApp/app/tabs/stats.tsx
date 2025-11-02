@@ -157,8 +157,8 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
                 <Text className="text-sm font-medium text-oscuro capitalize w-20">
                   {emotionLabels[emocion]}
                 </Text>
-                <View className="flex-1 flex-row items-center">
-                  <View className="flex-1 h-3 rounded-full mr-3 max-w-32" style={{ backgroundColor: '#E5E7EB' }}>
+                <View className="flex-1" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View className="h-3 rounded-full" style={{ backgroundColor: '#E5E7EB', width: 120 }}>
                     <View 
                       className="h-full rounded-full"
                       style={{
@@ -167,7 +167,7 @@ const EmotionChart = ({ title, data, subtitle, showPercentages = false }: {
                       }}
                     />
                   </View>
-                  <Text className="text-base font-bold text-oscuro w-10 text-right">{percentage}%</Text>
+                  <Text className="text-base font-bold text-oscuro" style={{ minWidth: 40, textAlign: 'right' }}>{percentage}%</Text>
                 </View>
               </View>
             </View>
@@ -218,8 +218,8 @@ const CompactBarChart = ({ title, data, subtitle }: {
               <Text className="text-sm font-medium text-oscuro capitalize w-20">
                 {emotionLabels[emocion]}
               </Text>
-              <View className="flex-1 flex-row items-center">
-                <View className="flex-1 h-3 rounded-full mr-3 max-w-32" style={{ backgroundColor: '#E5E7EB' }}>
+              <View className="flex-1" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View className="h-3 rounded-full" style={{ backgroundColor: '#E5E7EB', width: 120 }}>
                   <View 
                     className="h-full rounded-full"
                     style={{
@@ -228,7 +228,7 @@ const CompactBarChart = ({ title, data, subtitle }: {
                     }}
                   />
                 </View>
-                <Text className="text-base font-bold text-oscuro w-10 text-right">{percentage}%</Text>
+                <Text className="text-base font-bold text-oscuro" style={{ minWidth: 40, textAlign: 'right' }}>{percentage}%</Text>
               </View>
             </View>
           );

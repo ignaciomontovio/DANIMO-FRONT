@@ -33,12 +33,12 @@ export default function ShareCode() {
         }
   
         const data = await response.json();
-        console.log("CODIGO: " + data);
+        console.log("CÓDIGO: " + data);
 
         setCode(data.token); 
       } catch (error) {
-        console.error("Error al obtener codigo:", error);
-        Alert.alert("Error", "No se pudo obtener codigo.");
+        console.error("Error al obtener código:", error);
+        Alert.alert("Error", "No se pudo obtener código.");
       } finally {
         setLoading(false);
       }

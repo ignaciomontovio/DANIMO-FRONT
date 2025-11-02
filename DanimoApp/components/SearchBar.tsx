@@ -1,23 +1,55 @@
 import { colors } from "@/stores/colors";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
-import { TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { TextInput, TouchableOpacity, View } from "react-native";
 
-export default function SearchBar({ placeholder = "Buscar...", onChangeText }: { placeholder?: string; onChangeText?: (text: string) => void }) {
+export default function SearchBar({ 
+  placeholder = "Buscar...", 
+  onChangeText, 
+  onSearch,
+  value = ''
+}: { 
+  placeholder?: string; 
+  onChangeText?: (text: string) => void;
+  onSearch?: (text: string) => void;
+  value?: string;
+}) {
+  const [searchText, setSearchText] = useState(value);
+
+  // Sincronizar con el valor externo
+  React.useEffect(() => {
+    setSearchText(value);
+  }, [value]);
+
+  const handleTextChange = (text: string) => {
+    setSearchText(text);
+    onChangeText?.(text);
+  };
+
+  const handleSearch = () => {
+    if (searchText.trim()) {
+      onSearch?.(searchText);
+    }
+  };
+
   return (
     <View className="flex-row items-center bg-fondo px-4 rounded-xl border-gray-300 m-5"
      style={{
             shadowColor: "#000",
             elevation: 10, // Para Android
           }}> 
-      <FontAwesome name="search" size={20} color="#999" />
+      <TouchableOpacity onPress={handleSearch}>
+        <FontAwesome name="search" size={20} color={colors.color1} />
+      </TouchableOpacity>
       <TextInput
         className="ml-2 flex-1"
         placeholder={placeholder}
         placeholderTextColor="#aaa"
-        onChangeText={onChangeText}
+        value={searchText}
+        onChangeText={handleTextChange}
+        onSubmitEditing={handleSearch}
+        returnKeyType="search"
         style={{ color: colors.oscuro }}
-
       />
     </View>
   );

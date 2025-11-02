@@ -78,6 +78,37 @@ export default function HistorialDeChat() {
     [patientId, token]
   );
 
+  // Función para generar reporte completo
+  const generateReport = async () => {
+    try {
+      Alert.alert(
+        "Generar Reporte",
+        `¿Deseas generar un reporte completo del paciente ${patient.firstName} ${patient.lastName}?`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          { 
+            text: "Generar", 
+            onPress: async () => {
+              Alert.alert(
+                "Reporte Generado",
+                `Reporte del paciente ${patient.firstName} ${patient.lastName}:\n\n` +
+                `📧 Email: ${patient.email}\n` +
+                `📅 Fecha de nacimiento: ${patient.birthDate.split("T")[0]}\n` +
+                `⚥ Género: ${patient.gender}\n\n` +
+                `📊 Resumen de la semana:\n${weekResume || "Sin datos disponibles"}\n\n` +
+                `⚠️ Mensajes de riesgo: ${riskMessages.length} detectados\n\n`,
+                [{ text: "Cerrar" }]
+              );
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error("Error al generar reporte:", error);
+      Alert.alert("Error", "No se pudo generar el reporte.");
+    }
+  };
+
   useEffect(() => {
     fetchData();
     console.log("FIRST RENDER");
@@ -138,7 +169,7 @@ export default function HistorialDeChat() {
           <View className="justify-end mt-8 space-y-4 mb-20">
             <ButtonAccept
               text="Reportes"
-              onPress={() => console.log("Ver detalles")}
+              onPress={generateReport}
             />
             <ButtonDark
               text="Personalizado"
@@ -150,7 +181,7 @@ export default function HistorialDeChat() {
               }}
             />
             <ButtonDark
-              text="Historico"
+              text="Histórico"
               onPress={() => {
                 router.push({
                   pathname: "/screensOnlyProf/historicPatient",

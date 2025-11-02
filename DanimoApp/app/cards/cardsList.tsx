@@ -182,7 +182,7 @@ function Card<T>({ element, onIcon, onButton, icon, cardConfig, showDeleteIcon,s
       <View className="p-6 bg-fondo rounded-b-2xl">
         {cardConfig.renderContent(element)}
         <ButtonDark text="Editar" onPress={onButton} />
-        {showCloseSession && <ButtonDark text="Cerrar Sesion" onPress={onCloseSession} />}        
+        {showCloseSession && <ButtonDark text="Cerrar Sesión" onPress={onCloseSession} />}        
       </View>
     </View>
   );
