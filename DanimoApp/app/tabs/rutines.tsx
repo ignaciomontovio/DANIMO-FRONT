@@ -24,9 +24,14 @@ export default function Rutines() {
   const [rutines, setRutines] = useState<Rutine[]>([]);
   const token = useUserLogInStore((state) => state.token);
   const [emotions, setEmotions] = useState<Record<string, boolean>>({});
-  if (emotionFromChat){
-    setEmotions((prev) => ({ ...prev, [emotionFromChat]: true }));
-  }
+
+
+  useEffect(() => {
+    if (emotionFromChat) {
+      setEmotions((prev) => ({ ...prev, [emotionFromChat]: true }));
+    }
+  }, [emotionFromChat]);
+
 
   const PILL_STYLE = "pl-2 pr-3 py-2 rounded-r-full text-sm font-semibold mr-2 mb-2 flex-row space-x-1";
   const ACTIVE_PILL_STYLE = "bg-color1 text-white shadow-lg";
@@ -70,7 +75,7 @@ export default function Rutines() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { 
     fetchData();
@@ -125,11 +130,12 @@ export default function Rutines() {
           text="Rutinas"
           onPress={() => router.replace("/tabs/home")}
         />
-        
-        {PillContainer({
+        <PillContainer list={emotions} setList={setEmotions} />
+
+        {/* {PillContainer({
           list: emotions,
           setList: setEmotions,
-        })}
+        })} */}
 
         <ScrollView className="flex-1 px-5 py-5">
           <View className="flex-1 items-center pb-20 pt-5">

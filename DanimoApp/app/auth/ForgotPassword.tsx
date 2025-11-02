@@ -1,3 +1,4 @@
+import HeaderGoBack from "@/components/headerGoBack";
 import { colors } from "@/stores/colors";
 import { URL_AUTH, URL_AUTH_PROF, URL_BASE } from "@/stores/consts";
 import { useUserLogInStore } from "@/stores/userLogIn";
@@ -72,6 +73,10 @@ export default function ForgotPassword() {
           end={{ x: 0, y: 1 }}
           className="w-full h-full"
       >
+        <HeaderGoBack
+          text="Olvidé mi contraseña"
+          onPress={() => router.push("/auth/LoginRegisterScreen")}
+        />
         <StatusBar />
           <View className="flex-1 justify-center items-center px-4">
             <View

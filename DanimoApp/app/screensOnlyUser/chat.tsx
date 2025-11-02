@@ -214,7 +214,7 @@ export default function Chat() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={"height"}>
         <HeaderGoBack
           text="DANI.AI"
-          onPress={() => router.push("/tabs/home")}
+          onPress={() => router.replace("/tabs/home")}
           img={require("../../assets/images/logo.png")}
         />
 
@@ -265,7 +265,7 @@ export default function Chat() {
           message="Registramos un uso excesivo de la aplicación."
           buttonText="Salir del chat"
           onConfirm={() => {
-            router.push("/tabs/home"); 
+            router.replace("/tabs/home");
           }}
         />
 
@@ -273,16 +273,17 @@ export default function Chat() {
           visible={showRutina}
           onClose={() => setShowRutina(false)}
           title="Dani te recomienda esta rutina"
-          message={`Hemos detectado que no estas pasando un buen momento. Por eso, creemos que esta rutina puede ayudarte.`}
+          message="Hemos detectado que no estas pasando un buen momento. Por eso, creemos que esta rutina puede ayudarte."
           buttonText="Ir a rutina"
           onConfirm={() => {
-            router.push({
-              pathname:"/tabs/rutines",
-              params: { emotionFromChat: predominantEmotion }
+            setShowRutina(false);
+            router.replace({
+              pathname: "/tabs/rutines",
+              params: { emotionFromChat: predominantEmotion || "Enojo" }
             });
-
           }}
         />
+
 
         <CustomModal
           visible={showContactProf}

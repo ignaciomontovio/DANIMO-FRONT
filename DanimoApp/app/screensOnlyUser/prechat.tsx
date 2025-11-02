@@ -28,6 +28,13 @@ export default function Prechat() {
   const userType = useUserLogInStore((state) => state.userType);
   const userEmail = useUserLogInStore((state) => state.mail); // Agregar email del store
   
+  useEffect(() => {
+    if(!userType || !token || !userEmail){  
+      router.replace("/tabs/home");
+    }
+  }, [userType, router, token, userEmail]);
+
+
   // Agregar este estado para red flags:
   const [isCheckingRedFlags, setIsCheckingRedFlags] = useState(false);
   
@@ -183,10 +190,10 @@ const handleSuicideRiskDetected = () => {
 // Función para proceder al chat (código original)
 const proceedToChat = () => {
   if (detailType === "Emotion"){
-    router.push({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: emotion?.name, activities: extraData, type: "Emotion" } })
+    router.replace({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: emotion?.name, activities: extraData, type: "Emotion" } })
   }
   else {
-    router.push({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: sleep?.name, activities: [] , type: "Sleep"} })
+    router.replace({ pathname: "/screensOnlyUser/chat", params: { EmotionSleep: sleep?.name, activities: [] , type: "Sleep"} })
   }
 };
 
