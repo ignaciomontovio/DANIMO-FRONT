@@ -48,9 +48,9 @@ export default function LoginRegisterScreen() {
           body: JSON.stringify({ email: (email ?? "").trim().toLowerCase() }),
         });
 
-        if (response.status === 401) throw new Error("Registrese Nuevamente");
-        if (response.status === 403) throw new Error("Inicie sesion Nuevamente");
-        if (response.status === 404) throw new Error("Registrese Nuevamente");
+        if (response.status === 401) throw new Error("Regístrese Nuevamente");
+        if (response.status === 403) throw new Error("Inicie sesión Nuevamente");
+        if (response.status === 404) throw new Error("Regístrese Nuevamente");
 
         if (!response.ok) {
           const errorText = await response.json();

@@ -114,7 +114,7 @@ export default function PatientDetailScreen() {
               
               {/* Botones de acción */}
               <View className="space-y-3">
-                <ButtonAccept text="Estadisticas" onPress={() => {
+                <ButtonAccept text="Estadísticas" onPress={() => {
                   router.push({
                     pathname: "/tabs/stats",
                     params: { patientId },

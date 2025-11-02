@@ -102,7 +102,7 @@ export default function HistoricPatient() {
           className="w-full h-full"
         >
           <HeaderGoBack
-            text="Historico"
+            text="Histórico"
             onPress={() =>{
               router.push({
                 pathname: "/screensOnlyProf/historialDeChat",
@@ -126,11 +126,11 @@ export default function HistoricPatient() {
 
             {cardRiskMsj(riskMessages)}
 
-            {/* TARJETA Historico */}
+            {/* TARJETA Histórico */}
             <View className="bg-fondo rounded-2xl p-4 shadow-md mb-10">
               <View className="flex-row items-center justify-center mb-2">
                 <Text className="text-xl font-bold text-pink-500">
-                  Historico
+                  Histórico
                 </Text>
                 <View className="ml-5">
                   <FontAwesome 

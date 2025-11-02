@@ -83,7 +83,7 @@ export function ShowInfo_edit({
         </View>
       )}
       {type === "phone" && (
-        // validar que sea numero de telefono poner un +54 al principio
+        // validar que sea número de teléfono poner un +54 al principio
         <View className="w-full py-3 px-5 rounded-md mt-2 shadow-2xl border border-oscuro flex-row items-center justify-start">
           <FontAwesome name={icon} size={30} color={colors.oscuro} />
           <TextInput

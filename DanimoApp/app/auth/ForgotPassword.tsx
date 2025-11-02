@@ -106,11 +106,11 @@ export default function ForgotPassword() {
                     onChange={e => setEmail(e.nativeEvent.text)}
                     // no permitir cambiar ?
                   />
-                  <ButtonDark text={"Enviar codigo"} onPress={sendCode}/>
+                  <ButtonDark text={"Enviar código"} onPress={sendCode}/>
                 </View>
                 <Input
                   icon="lock"
-                  placeholder="Codigo de verificación"
+                  placeholder="Código de verificación"
                   className="border-solid border-oscuro text-oscuro"
                   onChangeText={setCode}
                 />

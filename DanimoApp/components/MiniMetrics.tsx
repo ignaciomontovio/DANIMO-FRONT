@@ -15,19 +15,16 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
     fetchMonthlyStats
   } = useStatsStore();
 
-  // Cargar datos del mes actual al montar el componente
   useEffect(() => {
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
     
-    // Solo cargar si no hay datos ya
     if (!monthlyStats && !loadingMonthly) {
       fetchMonthlyStats(currentMonth, currentYear);
     }
   }, []);
 
-  // Función para mapear nombres de emociones
   const mapEmotionName = (emotion: string): string => {
     const emotionMap: Record<string, string> = {
       'alegría': 'alegria',
@@ -42,7 +39,6 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
     return emotionMap[emotion.toLowerCase()] || emotion.toLowerCase();
   };
 
-  // Colores de las emociones
   const emotionColors: Record<string, string> = {
     alegria: "#FDE846",
     tristeza: "#057BC4", 
@@ -51,7 +47,14 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
     ansiedad: "#FF872E",
   };
 
-  // Procesar datos para mostrar - incluir todas las emociones
+  const emotionLabels: Record<string, string> = {
+    alegria: "Alegría",
+    tristeza: "Tristeza",
+    enojo: "Enojo",
+    miedo: "Miedo",
+    ansiedad: "Ansiedad",
+  };
+
   const processedData = monthlyStats ? 
     Object.keys(monthlyStats).reduce((acc, emotion) => {
       const mappedEmotion = mapEmotionName(emotion);
@@ -59,7 +62,6 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
       return acc;
     }, {} as Record<string, number>) : null;
 
-  // Crear datos completos con todas las emociones (incluyendo las que están en 0)
   const allEmotions = ['alegria', 'tristeza', 'enojo', 'miedo', 'ansiedad'];
   const completeData = processedData 
     ? allEmotions.reduce((acc, emotion) => {
@@ -71,15 +73,22 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
         return acc;
       }, {} as Record<string, number>);
 
-  // Obtener todas las emociones ordenadas por valor (mayor a menor)
   const sortedEmotions = Object.entries(completeData)
     .sort(([,a], [,b]) => b - a);
 
-  const maxValue = Math.max(...Object.values(completeData), 1); // Mínimo 1 para evitar división por 0
+  const maxValue = Math.max(...Object.values(completeData), 1);
+
+  const getMonthName = () => {
+    const months = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    return months[new Date().getMonth()];
+  };
 
   return (
     <View
-      className="w-[160px] h-[264px] bg-color5 rounded-lg p-5 relative m-2 mr-10"
+      className="w-[160px] h-[264px] bg-color5 rounded-lg p-4 relative m-2 mr-10"
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 8, height: 0 },
@@ -89,12 +98,16 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
       }}
       onTouchEnd={onPress}
     >
-      {/* Título */}
-      <Text className="text-lg font-bold text-oscuro mb-3 text-center">
-        Este Mes
-      </Text>
+      {/* Título mejorado - MÁS COMPACTO */}
+      <View className="mb-3">
+        <Text className="text-base font-bold text-oscuro text-center">
+          {getMonthName()}
+        </Text>
+        <Text className="text-[10px] text-oscuro opacity-60 text-center">
+          Registros emocionales
+        </Text>
+      </View>
 
-      {/* Contenido según el estado */}
       {loadingMonthly ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.color1} />
@@ -121,42 +134,49 @@ export default function MiniMetrics({ onPress }: MiniMetricsProps) {
           </Text>
         </View>
       ) : (
-        /* Mini gráfico de barras - Todas las emociones */
-        <View className="flex-1 justify-center">
-          <View className="space-y-2">
+        <>
+          {/* Gráfico de barras - SIN flex-1 para controlar altura */}
+          <View className="space-y-[6px]">
             {sortedEmotions.map(([emotion, value], index) => {
               const color = emotionColors[emotion] || "#999";
-              const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0; // Porcentaje del máximo
+              const label = emotionLabels[emotion] || emotion;
+              const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
               
               return (
-                <View key={index} className="flex-row items-center space-x-2">
+                <View key={index}>
+                  {/* Label de la emoción */}
+                  <View className="flex-row items-center justify-between mb-[2px]">
+                    <Text className="text-[10px] font-semibold text-oscuro">
+                      {label}
+                    </Text>
+                    <Text className="text-[10px] font-bold text-oscuro">
+                      {value}
+                    </Text>
+                  </View>
+                  
                   {/* Barra */}
-                  <View className="flex-1 h-3 bg-gray-200 rounded-full">
-                    <View className="h-full rounded-xl"
+                  <View className="h-[6px] bg-gray-200 rounded-full overflow-hidden">
+                    <View 
+                      className="h-full rounded-full"
                       style={{
                         width: `${barWidth}%`,
                         backgroundColor: color,
-                        minWidth: value > 0 ? '10%' : '0%', // Mínimo visible si tiene valor
+                        minWidth: value > 0 ? '8%' : '0%',
                       }}
                     />
                   </View>
-                  
-                  {/* Valor */}
-                  <Text className="text-xs font-bold text-oscuro w-6 text-right">
-                    {value}
-                  </Text>
                 </View>
               );
             })}
           </View>
 
-          {/* Total de registros */}
-          <View className="absolute bottom-0 left-0 right-0">
-            <Text className="text-xs text-oscuro opacity-70 text-center">
-              {Object.values(completeData).reduce((a, b) => a + b, 0)} registros
+          {/* Total de registros - POSICIÓN ABSOLUTA */}
+          <View className="absolute bottom-4 left-4 right-4 pt-2 border-t border-oscuro/10">
+            <Text className="text-[10px] text-oscuro font-semibold text-center">
+              Total: {Object.values(completeData).reduce((a, b) => a + b, 0)} registros
             </Text>
           </View>
-        </View>
+        </>
       )}
     </View>
   );

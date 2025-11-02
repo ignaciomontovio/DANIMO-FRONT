@@ -23,7 +23,7 @@ type AllowedRoutes = "/screensOnlyUser/detailEmotion" | "/screensOnlyUser/detail
 type SelectFiveProps = {
   message: string;
   goto: AllowedRoutes;
-  type: "Emocion" | "Sueño"
+  type: "Emoción" | "Sueño"
 };
 
 const goToDetail = (num: number, goto: AllowedRoutes) => {
@@ -39,7 +39,7 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
   const sleepGetter = useSleepStore((state) => state.getSleepByNumber);
 
   // Decidir cuál usar
-  const getByNumber = type === "Emocion" ? emotionGetter : sleepGetter;
+  const getByNumber = type === "Emoción" ? emotionGetter : sleepGetter;
 
   // Mapeo local para asegurar que las emociones se muestren con la ortografía correcta
   const emotionLabels: Record<number, string> = {
@@ -81,7 +81,7 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
     
   }
   let icons;
-  if (type === "Emocion") {
+  if (type === "Emoción") {
     icons = [Alegria, Ansiedad, Enojo, Miedo, Tristeza];
   } else {
     icons = [s5, s4, s3, s2, s1];
@@ -98,7 +98,7 @@ export default function SelectFive({ message, goto, type }: SelectFiveProps) {
           const Icon = icons[idx];
           // Get the emotion object and show its name or number as fallback
           const emotion = getByNumber(num);
-          const label = type === "Emocion" 
+          const label = type === "Emoción" 
             ? emotionLabels[num] 
             : (typeof emotion === "string" ? emotion : emotion?.name ?? sleepLabels[num]);
           return (
