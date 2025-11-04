@@ -116,7 +116,7 @@ export default function CardRutine({ element, delIcon, addIcon ,onButton,pov }: 
         elevation: 10,
       }}
     >
-      <View className="py-3 bg-color1 rounded-t-2xl px-4">
+      <View className={`py-3 rounded-t-2xl px-4 ${element.createdBy === "system" ? "bg-color1" : "bg-color5"}`}>
         <View className="flex-row items-center justify-between">
           {pov === "profesional" && element.createdBy !== "system" && element.Users && (
             <TouchableOpacity onPress={() => addIcon?.(element)} className="p-2">
