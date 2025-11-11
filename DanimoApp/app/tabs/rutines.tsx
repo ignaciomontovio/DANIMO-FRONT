@@ -53,6 +53,7 @@ export default function Rutines() {
     // si llega emotionFromChat, activala
     if (emotionFromChat) {
       initialEmotions[emotionFromChat] = true;
+      initialEmotions["Tristeza"] = false;
     }
 
     setEmotions(initialEmotions);
